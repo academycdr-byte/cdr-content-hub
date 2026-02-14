@@ -147,6 +147,78 @@
   color-scheme: light;
 }
 
+/* --- Dark Mode --- */
+[data-theme="dark"] {
+  /* Backgrounds */
+  --bg-primary: #0A0A0A;
+  --bg-secondary: #141414;
+  --bg-card: #1C1C1E;
+  --bg-elevated: #2C2C2E;
+  --bg-hover: #2C2C2E;
+  --bg-active: #3A3A3C;
+  --bg-input: #1C1C1E;
+
+  /* Borders */
+  --border: #2C2C2E;
+  --border-strong: #3A3A3C;
+  --border-focus: rgba(184, 255, 0, 0.5);
+
+  /* Text */
+  --text-primary: #F5F5F7;
+  --text-secondary: #AEAEB2;
+  --text-tertiary: #636366;
+  --text-inverted: #1D1D1F;
+
+  /* Accent - lime green pops on dark */
+  --accent: #B8FF00;
+  --accent-hover: #A3E600;
+  --accent-muted: rgba(184, 255, 0, 0.3);
+  --accent-surface: rgba(184, 255, 0, 0.1);
+  --accent-surface-hover: rgba(184, 255, 0, 0.18);
+
+  /* Semantic */
+  --success: #30D158;
+  --success-surface: rgba(48, 209, 88, 0.1);
+  --warning: #FFD60A;
+  --warning-surface: rgba(255, 214, 10, 0.1);
+  --error: #FF453A;
+  --error-surface: rgba(255, 69, 58, 0.1);
+  --info: #64D2FF;
+  --info-surface: rgba(100, 210, 255, 0.1);
+
+  /* Content Pillar Colors */
+  --pillar-cases: #60A5FA;
+  --pillar-cases-surface: rgba(96, 165, 250, 0.1);
+  --pillar-education: #A78BFA;
+  --pillar-education-surface: rgba(167, 139, 250, 0.1);
+  --pillar-backstage: #FB923C;
+  --pillar-backstage-surface: rgba(251, 146, 60, 0.1);
+  --pillar-authority: #FACC15;
+  --pillar-authority-surface: rgba(250, 204, 21, 0.1);
+  --pillar-personal: #F472B6;
+  --pillar-personal-surface: rgba(244, 114, 182, 0.1);
+
+  /* Sidebar stays dark */
+  --sidebar-bg: #000000;
+  --sidebar-border: rgba(255, 255, 255, 0.06);
+  --sidebar-text: rgba(255, 255, 255, 0.6);
+  --sidebar-text-active: #FFFFFF;
+  --sidebar-hover: rgba(255, 255, 255, 0.08);
+
+  /* Shadows - darker */
+  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.3);
+  --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.4);
+  --shadow-lg: 0 8px 24px rgba(0, 0, 0, 0.5);
+  --shadow-xl: 0 16px 48px rgba(0, 0, 0, 0.6);
+
+  /* Scrollbar */
+  --scrollbar-bg: #1C1C1E;
+  --scrollbar-thumb: #3A3A3C;
+  --scrollbar-hover: #636366;
+
+  color-scheme: dark;
+}
+
 /* ===== BASE ===== */
 body {
   font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;

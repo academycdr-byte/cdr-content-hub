@@ -225,6 +225,12 @@ export default function ChecklistsSettingsPage() {
           <span className="badge bg-accent-surface text-accent">
             Checklists
           </span>
+          <a
+            href="/settings/appearance"
+            className="badge bg-bg-secondary text-text-secondary hover:bg-bg-hover transition-colors cursor-pointer"
+          >
+            Aparencia
+          </a>
         </div>
       </div>
     </div>

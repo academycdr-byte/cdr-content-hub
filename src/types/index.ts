@@ -140,6 +140,102 @@ export interface BatchSessionPost {
   post?: Post;
 }
 
+// ===== Social Accounts =====
+
+export interface SocialAccount {
+  id: string;
+  userId: string;
+  platform: 'instagram' | 'tiktok';
+  displayName: string;
+  username: string;
+  profilePictureUrl: string;
+  followersCount: number;
+  autoSync: boolean;
+  lastSyncAt: string | null;
+  isActive: boolean;
+  createdAt: string;
+  // Token expiry for status indicators (tokens themselves are NOT exposed)
+  tokenExpiresAt: string | null;
+  tiktokExpiresAt: string | null;
+  // Connection status identifiers
+  igUserId: string | null;
+  tiktokOpenId: string | null;
+}
+
+// ===== Post Metrics =====
+
+export interface PostMetrics {
+  id: string;
+  postId: string | null;
+  socialAccountId: string;
+  externalId: string;
+  platform: string;
+  views: number;
+  likes: number;
+  comments: number;
+  shares: number;
+  postUrl: string;
+  thumbnailUrl: string;
+  caption: string | null;
+  mediaType: string | null;
+  publishedAt: string;
+  syncedAt: string;
+  socialAccount?: SocialAccount;
+}
+
+export interface AggregatedMetrics {
+  totals: {
+    views: number;
+    likes: number;
+    comments: number;
+    shares: number;
+    posts: number;
+  };
+  byPlatform: {
+    platform: string;
+    views: number;
+    likes: number;
+    posts: number;
+  }[];
+  byAccount: {
+    accountId: string;
+    username: string;
+    platform: string;
+    views: number;
+    posts: number;
+  }[];
+  topPosts: PostMetrics[];
+}
+
+// ===== Commission Types =====
+
+export interface CommissionConfig {
+  id: string;
+  format: string;
+  cpmValue: number;
+  updatedAt: string;
+}
+
+export interface Commission {
+  id: string;
+  userId: string;
+  metricId: string;
+  amount: number;
+  monthReference: string;
+  isPaid: boolean;
+  paidAt: string | null;
+  createdAt: string;
+  user?: { id: string; name: string; email: string };
+  metric?: PostMetrics;
+}
+
+export interface CommissionStats {
+  total: number;
+  paid: number;
+  pending: number;
+  count: number;
+}
+
 // ===== UI Types =====
 
 export interface CalendarDay {

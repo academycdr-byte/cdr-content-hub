@@ -21,6 +21,8 @@ model User {
 
   posts          Post[]
   batchSessions  BatchSession[]
+  socialAccounts SocialAccount[]
+  commissions    Commission[]
 
   @@map("users")
 }
@@ -65,6 +67,7 @@ model Post {
   createdBy           User?                @relation(fields: [createdById], references: [id])
   checklistCompletions ChecklistCompletion[]
   batchSessionPosts   BatchSessionPost[]
+  metrics             PostMetrics[]
 
   @@index([pillarId])
   @@index([status])
@@ -182,4 +185,102 @@ model BatchSessionPost {
   @@unique([sessionId, postId])
   @@index([sessionId])
   @@map("batch_session_posts")
+}
+
+// ============ SOCIAL ACCOUNTS ============
+
+model SocialAccount {
+  id                String    @id @default(cuid())
+  userId            String    @map("user_id")
+  platform          String    // 'instagram' | 'tiktok'
+  displayName       String    @map("display_name")
+  username          String
+  profilePictureUrl String    @default("") @map("profile_picture_url")
+  followersCount    Int       @default(0) @map("followers_count")
+
+  // Instagram fields
+  igUserId          String?   @map("ig_user_id")
+  accessToken       String?   @map("access_token")
+  tokenExpiresAt    DateTime? @map("token_expires_at")
+
+  // TikTok fields
+  tiktokOpenId      String?   @map("tiktok_open_id")
+  tiktokToken       String?   @map("tiktok_token")
+  tiktokRefresh     String?   @map("tiktok_refresh")
+  tiktokExpiresAt   DateTime? @map("tiktok_expires_at")
+
+  autoSync          Boolean   @default(false) @map("auto_sync")
+  lastSyncAt        DateTime? @map("last_sync_at")
+  isActive          Boolean   @default(true) @map("is_active")
+  createdAt         DateTime  @default(now()) @map("created_at")
+  updatedAt         DateTime  @default(now()) @updatedAt @map("updated_at")
+
+  user              User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  metrics           PostMetrics[]
+
+  @@unique([platform, username])
+  @@index([userId])
+  @@map("social_accounts")
+}
+
+// ============ POST METRICS ============
+
+model PostMetrics {
+  id              String    @id @default(cuid())
+  postId          String?   @map("post_id")
+  socialAccountId String    @map("social_account_id")
+  externalId      String    @unique @map("external_id")
+  platform        String
+
+  views           Int       @default(0)
+  likes           Int       @default(0)
+  comments        Int       @default(0)
+  shares          Int       @default(0)
+
+  postUrl         String    @default("") @map("post_url")
+  thumbnailUrl    String    @default("") @map("thumbnail_url")
+  caption         String?
+  mediaType       String?   @map("media_type")
+  publishedAt     DateTime  @map("published_at")
+  syncedAt        DateTime  @default(now()) @map("synced_at")
+
+  post            Post?         @relation(fields: [postId], references: [id], onDelete: SetNull)
+  socialAccount   SocialAccount @relation(fields: [socialAccountId], references: [id], onDelete: Cascade)
+  commissions     Commission[]
+
+  @@index([postId])
+  @@index([socialAccountId])
+  @@index([publishedAt])
+  @@index([platform])
+  @@map("post_metrics")
+}
+
+// ============ COMMISSION SYSTEM ============
+
+model CommissionConfig {
+  id        String   @id @default(cuid())
+  format    String   @unique // 'REEL', 'CAROUSEL', 'STATIC', 'STORY'
+  cpmValue  Float    @map("cpm_value")
+  updatedAt DateTime @default(now()) @updatedAt @map("updated_at")
+
+  @@map("commission_configs")
+}
+
+model Commission {
+  id             String    @id @default(cuid())
+  userId         String    @map("user_id")
+  metricId       String    @map("metric_id")
+  amount         Float
+  monthReference String    @map("month_reference") // 'YYYY-MM'
+  isPaid         Boolean   @default(false) @map("is_paid")
+  paidAt         DateTime? @map("paid_at")
+  createdAt      DateTime  @default(now()) @map("created_at")
+
+  user   User        @relation(fields: [userId], references: [id])
+  metric PostMetrics @relation(fields: [metricId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([metricId])
+  @@index([monthReference])
+  @@map("commissions")
 }

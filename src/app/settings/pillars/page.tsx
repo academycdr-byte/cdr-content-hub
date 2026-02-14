@@ -208,6 +208,12 @@ export default function PillarsSettingsPage() {
           >
             Checklists
           </a>
+          <a
+            href="/settings/appearance"
+            className="badge bg-bg-secondary text-text-secondary hover:bg-bg-hover transition-colors cursor-pointer"
+          >
+            Aparencia
+          </a>
         </div>
       </div>
     </div>

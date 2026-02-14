@@ -7,13 +7,17 @@ import {
   Calendar,
   Kanban,
   Lightbulb,
+  BarChart3,
+  DollarSign,
   Trophy,
   Layers,
+  Share2,
   Settings,
   LogOut,
 } from 'lucide-react';
 import { signOut } from 'next-auth/react';
 import { cn } from '@/lib/utils';
+import ThemeToggle from '@/components/ui/theme-toggle';
 
 interface NavItem {
   label: string;
@@ -26,8 +30,11 @@ const NAV_ITEMS: NavItem[] = [
   { label: 'Calendario', href: '/calendar', icon: <Calendar size={20} /> },
   { label: 'Pipeline', href: '/pipeline', icon: <Kanban size={20} /> },
   { label: 'Hooks', href: '/hooks', icon: <Lightbulb size={20} /> },
+  { label: 'Metricas', href: '/metrics', icon: <BarChart3 size={20} /> },
+  { label: 'Comissoes', href: '/commissions', icon: <DollarSign size={20} /> },
   { label: 'Resultados', href: '/results', icon: <Trophy size={20} /> },
   { label: 'Batch', href: '/batch', icon: <Layers size={20} /> },
+  { label: 'Social', href: '/social', icon: <Share2 size={20} /> },
   { label: 'Configuracoes', href: '/settings/pillars', icon: <Settings size={20} /> },
 ];
 
@@ -86,7 +93,8 @@ export default function Sidebar() {
       </nav>
 
       {/* Footer */}
-      <div className="border-t border-sidebar-border p-3">
+      <div className="border-t border-sidebar-border p-3 space-y-1">
+        <ThemeToggle />
         <button
           onClick={() => signOut({ callbackUrl: '/login' })}
           className="flex w-full items-center gap-3 rounded-lg px-3 py-2.5 text-[13px] font-medium text-sidebar-text transition-colors hover:bg-sidebar-hover hover:text-sidebar-text-active"
