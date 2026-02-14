@@ -1,13 +1,14 @@
 'use client';
 
-import { useEffect, useCallback } from 'react';
-import { BarChart3, Share2 } from 'lucide-react';
+import { useEffect, useCallback, useRef, useState } from 'react';
+import { BarChart3, Share2, RefreshCw } from 'lucide-react';
 import Link from 'next/link';
 import { useMetricsStore } from '@/stores/metrics-store';
 import MetricsOverview from '@/components/metrics/metrics-overview';
 import MetricsChart from '@/components/metrics/metrics-chart';
 import TopPostsTable from '@/components/metrics/top-posts-table';
 import { cn } from '@/lib/utils';
+import type { SocialAccount } from '@/types';
 
 const DATE_PRESETS = [
   { label: '7d', days: 7 },
@@ -37,6 +38,57 @@ export default function MetricsPage() {
     fetchAggregated,
     setDateRange,
   } = useMetricsStore();
+
+  const hasSyncedRef = useRef(false);
+  const [syncing, setSyncing] = useState(false);
+
+  // Auto-sync social accounts on first mount
+  useEffect(() => {
+    if (hasSyncedRef.current) return;
+    hasSyncedRef.current = true;
+
+    const autoSync = async () => {
+      try {
+        const accountsRes = await fetch('/api/social/accounts');
+        if (!accountsRes.ok) return;
+
+        const accounts = (await accountsRes.json()) as SocialAccount[];
+        const syncable = accounts.filter(
+          (a) => a.platform === 'instagram' || a.platform === 'tiktok'
+        );
+
+        if (syncable.length === 0) return;
+
+        setSyncing(true);
+
+        const syncPromises = syncable.map((account) => {
+          const endpoint =
+            account.platform === 'instagram'
+              ? '/api/social/instagram/sync'
+              : '/api/social/tiktok/sync';
+
+          return fetch(endpoint, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ accountId: account.id }),
+          }).catch((err) => {
+            console.error(`Failed to sync ${account.platform} account ${account.username}:`, err instanceof Error ? err.message : 'Unknown');
+          });
+        });
+
+        await Promise.allSettled(syncPromises);
+      } catch (error) {
+        console.error('Auto-sync failed:', error instanceof Error ? error.message : 'Unknown');
+      } finally {
+        setSyncing(false);
+        // Refresh metrics after sync completes
+        fetchMetrics();
+        fetchAggregated();
+      }
+    };
+
+    autoSync();
+  }, [fetchMetrics, fetchAggregated]);
 
   const loadData = useCallback(() => {
     fetchMetrics();
@@ -102,6 +154,12 @@ export default function MetricsPage() {
           <div className="flex items-center gap-2 mb-1">
             <BarChart3 size={24} className="text-accent" />
             <h1 className="text-heading-1 text-text-primary">Metricas</h1>
+            {syncing && (
+              <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-accent-surface text-accent text-xs font-medium">
+                <RefreshCw size={12} className="animate-spin" />
+                Sincronizando...
+              </span>
+            )}
           </div>
           <p className="text-sm text-text-secondary">
             Acompanhe o desempenho dos seus posts no Instagram e TikTok.

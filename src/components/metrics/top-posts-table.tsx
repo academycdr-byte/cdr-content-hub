@@ -1,7 +1,11 @@
 'use client';
 
-import { ExternalLink, Instagram, Music2 } from 'lucide-react';
+import { useState, useMemo } from 'react';
+import { ExternalLink, Instagram, Music2, ChevronDown } from 'lucide-react';
+import { cn } from '@/lib/utils';
 import type { PostMetrics } from '@/types';
+
+type SortColumn = 'views' | 'likes' | 'comments' | 'shares';
 
 interface TopPostsTableProps {
   posts: PostMetrics[];
@@ -45,7 +49,20 @@ function PlatformBadge({ platform }: { platform: string }) {
   );
 }
 
+const SORT_COLUMNS: { key: SortColumn; label: string }[] = [
+  { key: 'views', label: 'Views' },
+  { key: 'likes', label: 'Likes' },
+  { key: 'comments', label: 'Comentarios' },
+  { key: 'shares', label: 'Shares' },
+] as const;
+
 export default function TopPostsTable({ posts, loading }: TopPostsTableProps) {
+  const [sortBy, setSortBy] = useState<SortColumn>('views');
+
+  const sortedPosts = useMemo(() => {
+    return [...posts].sort((a, b) => b[sortBy] - a[sortBy]);
+  }, [posts, sortBy]);
+
   if (loading) {
     return (
       <div className="card p-5">
@@ -69,11 +86,13 @@ export default function TopPostsTable({ posts, loading }: TopPostsTableProps) {
     );
   }
 
+  const sortLabel = SORT_COLUMNS.find((c) => c.key === sortBy)?.label || 'Views';
+
   return (
     <div className="card overflow-hidden">
       <div className="p-5 border-b border-border-default">
         <p className="text-sm font-medium text-text-primary">
-          Top Posts por Views
+          Top Posts por {sortLabel}
         </p>
       </div>
 
@@ -91,12 +110,23 @@ export default function TopPostsTable({ posts, loading }: TopPostsTableProps) {
               <th className="text-left text-[11px] font-semibold uppercase tracking-wider text-text-tertiary px-3 py-3 w-24">
                 Plataforma
               </th>
-              <th className="text-right text-[11px] font-semibold uppercase tracking-wider text-text-tertiary px-3 py-3 w-20">
-                Views
-              </th>
-              <th className="text-right text-[11px] font-semibold uppercase tracking-wider text-text-tertiary px-3 py-3 w-20">
-                Likes
-              </th>
+              {SORT_COLUMNS.map((col) => (
+                <th
+                  key={col.key}
+                  onClick={() => setSortBy(col.key)}
+                  className={cn(
+                    'text-right text-[11px] font-semibold uppercase tracking-wider px-3 py-3 w-24 cursor-pointer select-none transition-colors',
+                    sortBy === col.key
+                      ? 'text-accent'
+                      : 'text-text-tertiary hover:text-text-secondary'
+                  )}
+                >
+                  <span className="inline-flex items-center gap-1 justify-end">
+                    {col.label}
+                    {sortBy === col.key && <ChevronDown size={10} />}
+                  </span>
+                </th>
+              ))}
               <th className="text-right text-[11px] font-semibold uppercase tracking-wider text-text-tertiary px-3 py-3 w-24">
                 Engajamento
               </th>
@@ -106,7 +136,7 @@ export default function TopPostsTable({ posts, loading }: TopPostsTableProps) {
             </tr>
           </thead>
           <tbody>
-            {posts.map((post, index) => (
+            {sortedPosts.map((post, index) => (
               <tr
                 key={post.id}
                 className="border-b border-border-default last:border-0 hover:bg-bg-hover transition-colors"
@@ -135,16 +165,26 @@ export default function TopPostsTable({ posts, loading }: TopPostsTableProps) {
                 <td className="px-3 py-3">
                   <PlatformBadge platform={post.platform} />
                 </td>
-                <td className="px-3 py-3 text-right">
-                  <span className="text-sm font-semibold text-text-primary">
-                    {formatNumber(post.views)}
-                  </span>
-                </td>
-                <td className="px-3 py-3 text-right">
-                  <span className="text-sm text-text-secondary">
-                    {formatNumber(post.likes)}
-                  </span>
-                </td>
+                {SORT_COLUMNS.map((col) => (
+                  <td
+                    key={col.key}
+                    className={cn(
+                      'px-3 py-3 text-right',
+                      sortBy === col.key && 'bg-accent-surface/50'
+                    )}
+                  >
+                    <span
+                      className={cn(
+                        'text-sm',
+                        sortBy === col.key
+                          ? 'font-semibold text-accent'
+                          : 'text-text-secondary'
+                      )}
+                    >
+                      {formatNumber(post[col.key])}
+                    </span>
+                  </td>
+                ))}
                 <td className="px-3 py-3 text-right">
                   <span className="text-sm font-medium text-accent">
                     {getEngagementRate(post)}
@@ -169,47 +209,80 @@ export default function TopPostsTable({ posts, loading }: TopPostsTableProps) {
       </div>
 
       {/* Mobile list */}
-      <div className="md:hidden divide-y divide-border-default">
-        {posts.map((post, index) => (
-          <div key={post.id} className="p-4 flex items-start gap-3">
-            <span className="text-xs font-bold text-text-tertiary mt-1 w-5 flex-shrink-0">
-              {index + 1}
-            </span>
-            {post.thumbnailUrl ? (
-              <img
-                src={post.thumbnailUrl}
-                alt=""
-                className="h-12 w-12 rounded-lg object-cover flex-shrink-0"
-              />
-            ) : (
-              <div className="h-12 w-12 rounded-lg bg-bg-hover flex-shrink-0" />
-            )}
-            <div className="flex-1 min-w-0">
-              <p className="text-sm text-text-primary truncate">
-                {post.caption || 'Sem legenda'}
-              </p>
-              <div className="flex items-center gap-3 mt-1">
-                <PlatformBadge platform={post.platform} />
-                <span className="text-xs text-text-secondary">
-                  {formatNumber(post.views)} views
-                </span>
-                <span className="text-xs font-medium text-accent">
-                  {getEngagementRate(post)}
-                </span>
-              </div>
-            </div>
-            {post.postUrl && (
-              <a
-                href={post.postUrl}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="text-text-tertiary hover:text-text-primary flex-shrink-0 mt-1"
+      <div className="md:hidden">
+        {/* Mobile sort selector */}
+        <div className="px-4 py-2 border-b border-border-default flex items-center gap-2">
+          <span className="text-[11px] text-text-tertiary">Ordenar por:</span>
+          <div className="flex items-center gap-1">
+            {SORT_COLUMNS.map((col) => (
+              <button
+                key={col.key}
+                onClick={() => setSortBy(col.key)}
+                className={cn(
+                  'px-2 py-1 rounded-md text-[11px] font-medium transition-colors',
+                  sortBy === col.key
+                    ? 'bg-accent text-text-inverted'
+                    : 'text-text-tertiary hover:text-text-secondary'
+                )}
               >
-                <ExternalLink size={14} />
-              </a>
-            )}
+                {col.label}
+              </button>
+            ))}
           </div>
-        ))}
+        </div>
+
+        <div className="divide-y divide-border-default">
+          {sortedPosts.map((post, index) => (
+            <div key={post.id} className="p-4 flex items-start gap-3">
+              <span className="text-xs font-bold text-text-tertiary mt-1 w-5 flex-shrink-0">
+                {index + 1}
+              </span>
+              {post.thumbnailUrl ? (
+                <img
+                  src={post.thumbnailUrl}
+                  alt=""
+                  className="h-12 w-12 rounded-lg object-cover flex-shrink-0"
+                />
+              ) : (
+                <div className="h-12 w-12 rounded-lg bg-bg-hover flex-shrink-0" />
+              )}
+              <div className="flex-1 min-w-0">
+                <p className="text-sm text-text-primary truncate">
+                  {post.caption || 'Sem legenda'}
+                </p>
+                <div className="flex items-center gap-3 mt-1">
+                  <PlatformBadge platform={post.platform} />
+                  <span className={cn(
+                    'text-xs font-medium',
+                    sortBy === 'views' ? 'text-accent' : 'text-text-secondary'
+                  )}>
+                    {formatNumber(post.views)} views
+                  </span>
+                  <span className="text-xs font-medium text-accent">
+                    {getEngagementRate(post)}
+                  </span>
+                </div>
+                {sortBy !== 'views' && (
+                  <div className="mt-1">
+                    <span className="text-xs font-medium text-accent">
+                      {formatNumber(post[sortBy])} {SORT_COLUMNS.find(c => c.key === sortBy)?.label.toLowerCase()}
+                    </span>
+                  </div>
+                )}
+              </div>
+              {post.postUrl && (
+                <a
+                  href={post.postUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-text-tertiary hover:text-text-primary flex-shrink-0 mt-1"
+                >
+                  <ExternalLink size={14} />
+                </a>
+              )}
+            </div>
+          ))}
+        </div>
       </div>
     </div>
   );
