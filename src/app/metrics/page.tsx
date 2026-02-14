@@ -9,6 +9,7 @@ import MetricsOverview from '@/components/metrics/metrics-overview';
 import MetricsChart from '@/components/metrics/metrics-chart';
 import TopPostsTable from '@/components/metrics/top-posts-table';
 import { cn } from '@/lib/utils';
+import { useToastStore } from '@/stores/toast-store';
 import type { SocialAccount } from '@/types';
 
 const DATE_PRESETS = [
@@ -48,6 +49,7 @@ export default function MetricsPage() {
   const [accounts, setAccounts] = useState<SocialAccount[]>([]);
   const [filterPlatform, setFilterPlatform] = useState('');
   const [filterAccount, setFilterAccount] = useState('');
+  const { addToast } = useToastStore();
 
   // Auto-sync social accounts on first mount
   useEffect(() => {
@@ -69,22 +71,47 @@ export default function MetricsPage() {
 
         setSyncing(true);
 
-        const syncPromises = syncable.map((account) => {
-          const endpoint =
-            account.platform === 'instagram'
-              ? '/api/social/instagram/sync'
-              : '/api/social/tiktok/sync';
+        const syncResults = await Promise.allSettled(
+          syncable.map(async (account) => {
+            const endpoint =
+              account.platform === 'instagram'
+                ? '/api/social/instagram/sync'
+                : '/api/social/tiktok/sync';
 
-          return fetch(endpoint, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ accountId: account.id }),
-          }).catch((err) => {
-            console.error(`Failed to sync ${account.platform} account ${account.username}:`, err instanceof Error ? err.message : 'Unknown');
-          });
-        });
+            const res = await fetch(endpoint, {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ accountId: account.id }),
+            });
 
-        await Promise.allSettled(syncPromises);
+            if (!res.ok) {
+              const data = await res.json().catch(() => ({})) as { error?: string };
+              throw new Error(data.error || `Erro ${res.status}`);
+            }
+            return res.json() as Promise<{ synced: number }>;
+          })
+        );
+
+        // Show feedback for sync results
+        const failed = syncResults.filter((r) => r.status === 'rejected');
+        const succeeded = syncResults.filter((r) => r.status === 'fulfilled');
+
+        if (succeeded.length > 0) {
+          const totalSynced = succeeded.reduce((sum, r) => {
+            if (r.status === 'fulfilled') {
+              const val = r.value as { synced: number };
+              return sum + (val.synced || 0);
+            }
+            return sum;
+          }, 0);
+          if (totalSynced > 0) {
+            addToast(`${totalSynced} posts sincronizados`, 'success');
+          }
+        }
+        if (failed.length > 0) {
+          const errMsg = failed[0].status === 'rejected' ? (failed[0].reason as Error).message : '';
+          addToast(`Erro ao sincronizar: ${errMsg}`, 'error');
+        }
       } catch (error) {
         console.error('Auto-sync failed:', error instanceof Error ? error.message : 'Unknown');
       } finally {

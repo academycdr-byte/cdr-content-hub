@@ -20,7 +20,7 @@ export async function GET(request: NextRequest) {
         user: {
           select: { name: true },
         },
-        metric: {
+        postMetric: {
           select: {
             views: true,
             platform: true,
@@ -41,10 +41,10 @@ export async function GET(request: NextRequest) {
       const userName = c.user?.name || 'Desconhecido';
       const safeUserName = `"${userName.replace(/"/g, '""')}"`;
 
-      const postTitle = c.metric?.post?.title || c.metric?.caption?.slice(0, 50) || 'Sem titulo';
+      const postTitle = c.postMetric?.post?.title || c.postMetric?.caption?.slice(0, 50) || 'Sem titulo';
       const safePostTitle = `"${postTitle.replace(/"/g, '""')}"`;
 
-      const views = c.metric?.views || 0;
+      const views = c.postMetric?.views || 0;
       const cpm = views > 0 ? ((c.amount / views) * 1000).toFixed(2) : '0.00';
       const amount = c.amount.toFixed(2);
       const monthRef = c.monthReference;

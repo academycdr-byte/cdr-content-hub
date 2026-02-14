@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 import { requireAuth } from '@/lib/auth';
+import { generateId } from '@/lib/utils';
 
 export async function GET(request: NextRequest) {
   try {
@@ -32,7 +33,7 @@ export async function GET(request: NextRequest) {
     const posts = await prisma.post.findMany({
       where,
       include: {
-        pillar: true,
+        contentPillar: true,
       },
       orderBy: search ? { updatedAt: 'desc' } : { scheduledDate: 'asc' },
       ...(search ? { take: 20 } : {}),
@@ -72,6 +73,7 @@ export async function POST(request: Request) {
 
     const post = await prisma.post.create({
       data: {
+        id: generateId(),
         title: body.title,
         format: body.format,
         pillarId: body.pillarId,
@@ -82,7 +84,7 @@ export async function POST(request: Request) {
         body: body.body || null,
       },
       include: {
-        pillar: true,
+        contentPillar: true,
       },
     });
 

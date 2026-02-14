@@ -1,4 +1,5 @@
 import { prisma } from '@/lib/prisma';
+import { generateId } from '@/lib/utils';
 
 const DEFAULT_CONFIGS = [
   { format: 'REEL', cpmValue: 2.0 },
@@ -23,6 +24,7 @@ export async function ensureDefaultConfigs() {
   if (missing.length > 0) {
     await prisma.commissionConfig.createMany({
       data: missing.map((c) => ({
+        id: generateId(),
         format: c.format,
         cpmValue: c.cpmValue,
       })),
@@ -100,6 +102,7 @@ export async function calculateCommissions(
 
     await prisma.commission.create({
       data: {
+        id: generateId(),
         userId,
         metricId: metric.id,
         amount: Math.round(amount * 100) / 100,

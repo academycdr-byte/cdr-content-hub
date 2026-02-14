@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 import { requireAuth } from '@/lib/auth';
+import { generateId } from '@/lib/utils';
 
 interface RouteContext {
   params: Promise<{ id: string }>;
@@ -13,7 +14,7 @@ export async function GET(_request: Request, context: RouteContext) {
     const { id } = await context.params;
     const result = await prisma.clientResult.findUnique({
       where: { id },
-      include: { images: true },
+      include: { resultImages: true },
     });
 
     if (!result) {
@@ -61,6 +62,7 @@ export async function PUT(request: Request, context: RouteContext) {
       if (body.imageUrls.length > 0) {
         await prisma.resultImage.createMany({
           data: body.imageUrls.map((img) => ({
+            id: generateId(),
             resultId: id,
             url: img.url,
             altText: img.altText || '',
@@ -73,7 +75,7 @@ export async function PUT(request: Request, context: RouteContext) {
     const result = await prisma.clientResult.update({
       where: { id },
       data: updateData,
-      include: { images: true },
+      include: { resultImages: true },
     });
 
     return NextResponse.json(result);

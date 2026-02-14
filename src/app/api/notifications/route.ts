@@ -122,7 +122,7 @@ export async function GET() {
         },
       },
       include: {
-        pillar: true,
+        contentPillar: true,
       },
       orderBy: { scheduledDate: 'asc' },
       take: 20,
@@ -168,7 +168,7 @@ export async function GET() {
         },
       },
       include: {
-        pillar: true,
+        contentPillar: true,
       },
       orderBy: { updatedAt: 'asc' },
       take: 10,

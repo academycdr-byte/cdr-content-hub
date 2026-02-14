@@ -98,7 +98,7 @@ export async function GET() {
           scheduledDate: { gte: now },
           status: { in: ['SCHEDULED', 'REVIEW', 'PRODUCTION', 'SCRIPT', 'IDEA'] },
         },
-        include: { pillar: true },
+        include: { contentPillar: true },
         orderBy: { scheduledDate: 'asc' },
         take: 3,
       }),
@@ -160,8 +160,8 @@ export async function GET() {
       id: post.id,
       title: post.title,
       scheduledDate: post.scheduledDate?.toISOString() || '',
-      pillarName: post.pillar.name,
-      pillarColor: post.pillar.color,
+      pillarName: post.contentPillar.name,
+      pillarColor: post.contentPillar.color,
       format: post.format,
     }));
 

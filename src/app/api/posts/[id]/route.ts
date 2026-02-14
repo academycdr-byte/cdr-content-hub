@@ -13,7 +13,7 @@ export async function GET(_request: Request, context: RouteContext) {
     const { id } = await context.params;
     const post = await prisma.post.findUnique({
       where: { id },
-      include: { pillar: true },
+      include: { contentPillar: true },
     });
 
     if (!post) {
@@ -61,7 +61,7 @@ export async function PUT(request: Request, context: RouteContext) {
         }),
         ...(body.assignedTo !== undefined && { assignedTo: body.assignedTo }),
       },
-      include: { pillar: true },
+      include: { contentPillar: true },
     });
 
     return NextResponse.json(post);
@@ -90,7 +90,7 @@ export async function PATCH(request: Request, context: RouteContext) {
     const post = await prisma.post.update({
       where: { id },
       data: updateData,
-      include: { pillar: true },
+      include: { contentPillar: true },
     });
 
     return NextResponse.json(post);

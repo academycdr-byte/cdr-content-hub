@@ -24,7 +24,7 @@ export async function GET() {
   try {
     const auth = await requireAuth();
     if (auth.error) return auth.error;
-    const [pillars, posts] = await Promise.all([
+    const [pillars, postsList] = await Promise.all([
       prisma.contentPillar.findMany({
         where: { isActive: true },
         orderBy: { order: 'asc' },
@@ -34,11 +34,11 @@ export async function GET() {
       }),
     ]);
 
-    const totalPosts = posts.length;
+    const totalPosts = postsList.length;
 
     // Count posts per pillar
     const pillarCounts: Record<string, number> = {};
-    for (const post of posts) {
+    for (const post of postsList) {
       pillarCounts[post.pillarId] = (pillarCounts[post.pillarId] || 0) + 1;
     }
 

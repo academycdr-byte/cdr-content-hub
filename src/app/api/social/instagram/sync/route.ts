@@ -1,8 +1,9 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getServerSession } from 'next-auth';
-import { fetchInstagramMedia } from '@/lib/instagram';
+import { fetchInstagramMedia, refreshLongLivedToken } from '@/lib/instagram';
 import { prisma } from '@/lib/prisma';
 import { authOptions } from '@/lib/auth';
+import { generateId } from '@/lib/utils';
 
 export async function POST(request: NextRequest) {
   try {
@@ -32,18 +33,36 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Check token expiration
-    if (account.tokenExpiresAt && account.tokenExpiresAt < new Date()) {
-      return NextResponse.json(
-        { error: 'Token expirado. Reconecte a conta.' },
-        { status: 401 }
-      );
+    let accessToken = account.accessToken;
+
+    // Auto-refresh expired or expiring tokens (< 7 days remaining)
+    const sevenDaysFromNow = new Date();
+    sevenDaysFromNow.setDate(sevenDaysFromNow.getDate() + 7);
+
+    if (account.tokenExpiresAt && account.tokenExpiresAt < sevenDaysFromNow) {
+      try {
+        console.log(`[IG Sync] Token expiring/expired for @${account.username}, refreshing...`);
+        const refreshed = await refreshLongLivedToken(account.accessToken);
+        accessToken = refreshed.access_token;
+        const newExpiresAt = new Date();
+        newExpiresAt.setSeconds(newExpiresAt.getSeconds() + refreshed.expires_in);
+
+        await prisma.socialAccount.update({
+          where: { id: account.id },
+          data: { accessToken, tokenExpiresAt: newExpiresAt },
+        });
+        console.log(`[IG Sync] Token renewed for @${account.username} - expires: ${newExpiresAt.toISOString()}`);
+      } catch (refreshErr) {
+        const refreshMsg = refreshErr instanceof Error ? refreshErr.message : 'Unknown';
+        console.error(`[IG Sync] Token refresh failed for @${account.username}:`, refreshMsg);
+        return NextResponse.json(
+          { error: 'Token expirado e nao foi possivel renovar. Reconecte a conta no Instagram.' },
+          { status: 401 }
+        );
+      }
     }
 
-    const posts = await fetchInstagramMedia(
-      account.accessToken,
-      account.igUserId
-    );
+    const posts = await fetchInstagramMedia(accessToken, account.igUserId);
 
     // Save PostMetrics for each synced post
     let metricsCount = 0;
@@ -61,6 +80,7 @@ export async function POST(request: NextRequest) {
           syncedAt: new Date(),
         },
         create: {
+          id: generateId(),
           socialAccountId: account.id,
           externalId: post.externalId,
           platform: 'instagram',
@@ -84,10 +104,11 @@ export async function POST(request: NextRequest) {
       data: { lastSyncAt: new Date() },
     });
 
+    console.log(`[IG Sync] @${account.username}: ${posts.length} posts, ${metricsCount} metrics synced`);
     return NextResponse.json({ synced: posts.length, metrics: metricsCount });
   } catch (error) {
     const msg = error instanceof Error ? error.message : 'Erro ao sincronizar';
-    console.error('Instagram sync error:', msg);
+    console.error('[IG Sync] Error:', msg);
     return NextResponse.json({ error: msg }, { status: 500 });
   }
 }

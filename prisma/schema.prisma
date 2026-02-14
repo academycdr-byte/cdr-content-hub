@@ -7,30 +7,102 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-// ============ AUTH & USERS ============
+model BatchSessionPost {
+  id             String       @id
+  sessionId      String       @map("session_id")
+  postId         String       @map("post_id")
+  order          Int          @default(0)
+  recordingNotes String?      @map("recording_notes")
+  post           Post         @relation(fields: [postId], references: [id])
+  batchSession   BatchSession @relation(fields: [sessionId], references: [id], onDelete: Cascade)
 
-model User {
-  id        String   @id @default(cuid())
-  name      String
-  email     String   @unique
-  password  String
-  role      String   @default("member")
-  isActive  Boolean  @default(true) @map("is_active")
-  createdAt DateTime @default(now()) @map("created_at")
-  updatedAt DateTime @default(now()) @updatedAt @map("updated_at")
-
-  posts          Post[]
-  batchSessions  BatchSession[]
-  socialAccounts SocialAccount[]
-  commissions    Commission[]
-
-  @@map("users")
+  @@unique([sessionId, postId])
+  @@index([sessionId])
+  @@map("batch_session_posts")
 }
 
-// ============ CONTENT PILLARS ============
+model BatchSession {
+  id                String             @id
+  title             String
+  scheduledDate     DateTime           @map("scheduled_date") @db.Date
+  notes             String?
+  status            String             @default("PLANNED")
+  createdById       String             @map("created_by_id")
+  batchSessionPosts BatchSessionPost[]
+  user              User               @relation(fields: [createdById], references: [id])
+
+  @@index([scheduledDate])
+  @@map("batch_sessions")
+}
+
+model ChecklistCompletion {
+  id              String            @id
+  postId          String            @map("post_id")
+  templateId      String            @map("template_id")
+  completedItems  String            @default("[]") @map("completed_items")
+  completedAt     DateTime?         @map("completed_at")
+  post            Post              @relation(fields: [postId], references: [id], onDelete: Cascade)
+  checklistTemplate ChecklistTemplate @relation(fields: [templateId], references: [id])
+
+  @@unique([postId, templateId])
+  @@map("checklist_completions")
+}
+
+model ChecklistTemplate {
+  id                   String                @id
+  stage                String                @unique
+  items                String                @default("[]")
+  checklistCompletions ChecklistCompletion[]
+
+  @@map("checklist_templates")
+}
+
+model ClientResult {
+  id              String        @id
+  clientName      String        @map("client_name")
+  clientNiche     String        @map("client_niche")
+  metricType      String        @map("metric_type")
+  metricValue     String        @map("metric_value")
+  metricUnit      String        @default("") @map("metric_unit")
+  period          String
+  description     String        @default("")
+  testimonialText String?       @map("testimonial_text")
+  createdAt       DateTime      @default(now()) @map("created_at")
+  updatedAt       DateTime      @default(now()) @map("updated_at")
+  resultImages    ResultImage[]
+
+  @@map("client_results")
+}
+
+model CommissionConfig {
+  id        String   @id
+  format    String   @unique
+  cpmValue  Float    @map("cpm_value")
+  updatedAt DateTime @default(now()) @map("updated_at")
+
+  @@map("commission_configs")
+}
+
+model Commission {
+  id             String      @id
+  userId         String      @map("user_id")
+  metricId       String      @map("metric_id")
+  amount         Float
+  monthReference String      @map("month_reference")
+  isPaid         Boolean     @default(false) @map("is_paid")
+  paidAt         DateTime?   @map("paid_at")
+  createdAt      DateTime    @default(now()) @map("created_at")
+  postMetric     PostMetrics @relation(fields: [metricId], references: [id], onDelete: Cascade)
+  user           User        @relation(fields: [userId], references: [id])
+
+  @@index([metricId])
+  @@index([monthReference])
+  @@index([userId])
+  @@map("commissions")
+}
 
 model ContentPillar {
-  id               String  @id @default(cuid())
+  id               String  @id
   name             String
   slug             String  @unique
   color            String
@@ -38,249 +110,136 @@ model ContentPillar {
   description      String  @default("")
   isActive         Boolean @default(true) @map("is_active")
   order            Int     @default(0)
-
-  posts Post[]
-  hooks Hook[]
+  hooks            Hook[]
+  posts            Post[]
 
   @@map("content_pillars")
 }
 
-// ============ POSTS ============
-
-model Post {
-  id            String    @id @default(cuid())
-  title         String
-  hook          String?
-  body          String?
-  caption       String?
-  hashtags      String?
-  format        String    @default("REEL")
-  pillarId      String    @map("pillar_id")
-  status        String    @default("IDEA")
-  scheduledDate DateTime? @map("scheduled_date") @db.Date
-  assignedTo    String?   @map("assigned_to")
-  createdById   String?   @map("created_by_id")
-  createdAt     DateTime  @default(now()) @map("created_at")
-  updatedAt     DateTime  @default(now()) @updatedAt @map("updated_at")
-
-  pillar              ContentPillar        @relation(fields: [pillarId], references: [id])
-  createdBy           User?                @relation(fields: [createdById], references: [id])
-  checklistCompletions ChecklistCompletion[]
-  batchSessionPosts   BatchSessionPost[]
-  metrics             PostMetrics[]
-
-  @@index([pillarId])
-  @@index([status])
-  @@index([scheduledDate])
-  @@index([createdById])
-  @@map("posts")
-}
-
-// ============ HOOKS ============
-
 model Hook {
-  id         String  @id @default(cuid())
-  text       String
-  pillarId   String? @map("pillar_id")
-  format     String  @default("ALL")
-  category   String  @default("QUESTION")
-  usageCount Int     @default(0) @map("usage_count")
-  isActive   Boolean @default(true) @map("is_active")
+  id            String         @id
+  text          String
+  pillarId      String?        @map("pillar_id")
+  format        String         @default("ALL")
+  category      String         @default("QUESTION")
+  usageCount    Int            @default(0) @map("usage_count")
+  isActive      Boolean        @default(true) @map("is_active")
+  contentPillar ContentPillar? @relation(fields: [pillarId], references: [id])
 
-  pillar ContentPillar? @relation(fields: [pillarId], references: [id])
-
-  @@index([pillarId])
-  @@index([format])
   @@index([category])
+  @@index([format])
+  @@index([pillarId])
   @@map("hooks")
 }
 
-// ============ CHECKLISTS ============
+model PostMetrics {
+  id              String        @id
+  postId          String?       @map("post_id")
+  socialAccountId String        @map("social_account_id")
+  externalId      String        @unique @map("external_id")
+  platform        String
+  views           Int           @default(0)
+  likes           Int           @default(0)
+  comments        Int           @default(0)
+  shares          Int           @default(0)
+  postUrl         String        @default("") @map("post_url")
+  thumbnailUrl    String        @default("") @map("thumbnail_url")
+  caption         String?
+  mediaType       String?       @map("media_type")
+  publishedAt     DateTime      @map("published_at")
+  syncedAt        DateTime      @default(now()) @map("synced_at")
+  commissions     Commission[]
+  post            Post?         @relation(fields: [postId], references: [id])
+  socialAccount   SocialAccount @relation(fields: [socialAccountId], references: [id], onDelete: Cascade)
 
-model ChecklistTemplate {
-  id    String @id @default(cuid())
-  stage String
-  items String @default("[]")
-
-  completions ChecklistCompletion[]
-
-  @@unique([stage])
-  @@map("checklist_templates")
+  @@index([platform])
+  @@index([postId])
+  @@index([publishedAt])
+  @@index([socialAccountId])
+  @@map("post_metrics")
 }
 
-model ChecklistCompletion {
-  id             String    @id @default(cuid())
-  postId         String    @map("post_id")
-  templateId     String    @map("template_id")
-  completedItems String    @default("[]") @map("completed_items")
-  completedAt    DateTime? @map("completed_at")
+model Post {
+  id                   String                @id
+  title                String
+  hook                 String?
+  body                 String?
+  caption              String?
+  hashtags             String?
+  format               String                @default("REEL")
+  pillarId             String                @map("pillar_id")
+  status               String                @default("IDEA")
+  scheduledDate        DateTime?             @map("scheduled_date") @db.Date
+  assignedTo           String?               @map("assigned_to")
+  createdById          String?               @map("created_by_id")
+  createdAt            DateTime              @default(now()) @map("created_at")
+  updatedAt            DateTime              @default(now()) @map("updated_at")
+  batchSessionPosts    BatchSessionPost[]
+  checklistCompletions ChecklistCompletion[]
+  postMetrics          PostMetrics[]
+  user                 User?                 @relation(fields: [createdById], references: [id])
+  contentPillar        ContentPillar         @relation(fields: [pillarId], references: [id])
 
-  post     Post              @relation(fields: [postId], references: [id], onDelete: Cascade)
-  template ChecklistTemplate @relation(fields: [templateId], references: [id])
-
-  @@unique([postId, templateId])
-  @@map("checklist_completions")
-}
-
-// ============ CLIENT RESULTS ============
-
-model ClientResult {
-  id              String   @id @default(cuid())
-  clientName      String   @map("client_name")
-  clientNiche     String   @map("client_niche")
-  metricType      String   @map("metric_type")
-  metricValue     String   @map("metric_value")
-  metricUnit      String   @default("") @map("metric_unit")
-  period          String
-  description     String   @default("")
-  testimonialText String?  @map("testimonial_text")
-  createdAt       DateTime @default(now()) @map("created_at")
-  updatedAt       DateTime @default(now()) @updatedAt @map("updated_at")
-
-  images ResultImage[]
-
-  @@map("client_results")
+  @@index([createdById])
+  @@index([pillarId])
+  @@index([scheduledDate])
+  @@index([status])
+  @@map("posts")
 }
 
 model ResultImage {
-  id       String @id @default(cuid())
-  resultId String @map("result_id")
-  url      String
-  altText  String @default("") @map("alt_text")
-  type     String @default("SCREENSHOT")
-
-  result ClientResult @relation(fields: [resultId], references: [id], onDelete: Cascade)
+  id           String       @id
+  resultId     String       @map("result_id")
+  url          String
+  altText      String       @default("") @map("alt_text")
+  type         String       @default("SCREENSHOT")
+  clientResult ClientResult @relation(fields: [resultId], references: [id], onDelete: Cascade)
 
   @@index([resultId])
   @@map("result_images")
 }
 
-// ============ BATCH SESSIONS ============
-
-model BatchSession {
-  id            String   @id @default(cuid())
-  title         String
-  scheduledDate DateTime @map("scheduled_date") @db.Date
-  notes         String?
-  status        String   @default("PLANNED")
-  createdById   String   @map("created_by_id")
-
-  createdBy User               @relation(fields: [createdById], references: [id])
-  posts     BatchSessionPost[]
-
-  @@index([scheduledDate])
-  @@map("batch_sessions")
-}
-
-model BatchSessionPost {
-  id             String  @id @default(cuid())
-  sessionId      String  @map("session_id")
-  postId         String  @map("post_id")
-  order          Int     @default(0)
-  recordingNotes String? @map("recording_notes")
-
-  session BatchSession @relation(fields: [sessionId], references: [id], onDelete: Cascade)
-  post    Post         @relation(fields: [postId], references: [id])
-
-  @@unique([sessionId, postId])
-  @@index([sessionId])
-  @@map("batch_session_posts")
-}
-
-// ============ SOCIAL ACCOUNTS ============
-
 model SocialAccount {
-  id                String    @id @default(cuid())
-  userId            String    @map("user_id")
-  platform          String    // 'instagram' | 'tiktok'
-  displayName       String    @map("display_name")
+  id                String        @id
+  userId            String        @map("user_id")
+  platform          String
+  displayName       String        @map("display_name")
   username          String
-  profilePictureUrl String    @default("") @map("profile_picture_url")
-  followersCount    Int       @default(0) @map("followers_count")
-
-  // Instagram fields
-  igUserId          String?   @map("ig_user_id")
-  accessToken       String?   @map("access_token")
-  tokenExpiresAt    DateTime? @map("token_expires_at")
-
-  // TikTok fields
-  tiktokOpenId      String?   @map("tiktok_open_id")
-  tiktokToken       String?   @map("tiktok_token")
-  tiktokRefresh     String?   @map("tiktok_refresh")
-  tiktokExpiresAt   DateTime? @map("tiktok_expires_at")
-
-  autoSync          Boolean   @default(false) @map("auto_sync")
-  lastSyncAt        DateTime? @map("last_sync_at")
-  isActive          Boolean   @default(true) @map("is_active")
-  createdAt         DateTime  @default(now()) @map("created_at")
-  updatedAt         DateTime  @default(now()) @updatedAt @map("updated_at")
-
-  user              User      @relation(fields: [userId], references: [id], onDelete: Cascade)
-  metrics           PostMetrics[]
+  profilePictureUrl String        @default("") @map("profile_picture_url")
+  followersCount    Int           @default(0) @map("followers_count")
+  igUserId          String?       @map("ig_user_id")
+  accessToken       String?       @map("access_token")
+  tokenExpiresAt    DateTime?     @map("token_expires_at")
+  tiktokOpenId      String?       @map("tiktok_open_id")
+  tiktokToken       String?       @map("tiktok_token")
+  tiktokRefresh     String?       @map("tiktok_refresh")
+  tiktokExpiresAt   DateTime?     @map("tiktok_expires_at")
+  autoSync          Boolean       @default(false) @map("auto_sync")
+  lastSyncAt        DateTime?     @map("last_sync_at")
+  isActive          Boolean       @default(true) @map("is_active")
+  createdAt         DateTime      @default(now()) @map("created_at")
+  updatedAt         DateTime      @default(now()) @map("updated_at")
+  postMetrics       PostMetrics[]
+  user              User          @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@unique([platform, username])
   @@index([userId])
   @@map("social_accounts")
 }
 
-// ============ POST METRICS ============
+model User {
+  id             String          @id
+  name           String
+  email          String          @unique
+  password       String
+  role           String          @default("member")
+  isActive       Boolean         @default(true) @map("is_active")
+  createdAt      DateTime        @default(now()) @map("created_at")
+  updatedAt      DateTime        @default(now()) @map("updated_at")
+  batchSessions  BatchSession[]
+  commissions    Commission[]
+  posts          Post[]
+  socialAccounts SocialAccount[]
 
-model PostMetrics {
-  id              String    @id @default(cuid())
-  postId          String?   @map("post_id")
-  socialAccountId String    @map("social_account_id")
-  externalId      String    @unique @map("external_id")
-  platform        String
-
-  views           Int       @default(0)
-  likes           Int       @default(0)
-  comments        Int       @default(0)
-  shares          Int       @default(0)
-
-  postUrl         String    @default("") @map("post_url")
-  thumbnailUrl    String    @default("") @map("thumbnail_url")
-  caption         String?
-  mediaType       String?   @map("media_type")
-  publishedAt     DateTime  @map("published_at")
-  syncedAt        DateTime  @default(now()) @map("synced_at")
-
-  post            Post?         @relation(fields: [postId], references: [id], onDelete: SetNull)
-  socialAccount   SocialAccount @relation(fields: [socialAccountId], references: [id], onDelete: Cascade)
-  commissions     Commission[]
-
-  @@index([postId])
-  @@index([socialAccountId])
-  @@index([publishedAt])
-  @@index([platform])
-  @@map("post_metrics")
-}
-
-// ============ COMMISSION SYSTEM ============
-
-model CommissionConfig {
-  id        String   @id @default(cuid())
-  format    String   @unique // 'REEL', 'CAROUSEL', 'STATIC', 'STORY'
-  cpmValue  Float    @map("cpm_value")
-  updatedAt DateTime @default(now()) @updatedAt @map("updated_at")
-
-  @@map("commission_configs")
-}
-
-model Commission {
-  id             String    @id @default(cuid())
-  userId         String    @map("user_id")
-  metricId       String    @map("metric_id")
-  amount         Float
-  monthReference String    @map("month_reference") // 'YYYY-MM'
-  isPaid         Boolean   @default(false) @map("is_paid")
-  paidAt         DateTime? @map("paid_at")
-  createdAt      DateTime  @default(now()) @map("created_at")
-
-  user   User        @relation(fields: [userId], references: [id])
-  metric PostMetrics @relation(fields: [metricId], references: [id], onDelete: Cascade)
-
-  @@index([userId])
-  @@index([metricId])
-  @@index([monthReference])
-  @@map("commissions")
+  @@map("users")
 }

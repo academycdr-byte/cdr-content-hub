@@ -25,7 +25,7 @@ export async function PATCH(request: Request, context: RouteContext) {
     const post = await prisma.post.update({
       where: { id },
       data: { status: body.status },
-      include: { pillar: true },
+      include: { contentPillar: true },
     });
 
     return NextResponse.json(post);

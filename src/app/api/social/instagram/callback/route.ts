@@ -7,6 +7,7 @@ import {
 } from '@/lib/instagram';
 import { prisma } from '@/lib/prisma';
 import { authOptions } from '@/lib/auth';
+import { generateId } from '@/lib/utils';
 
 export async function GET(request: NextRequest) {
   const { searchParams } = new URL(request.url);
@@ -73,7 +74,7 @@ export async function GET(request: NextRequest) {
     // Upsert each connected profile
     for (const profile of profiles) {
       const existing = await prisma.socialAccount.findFirst({
-        where: { platform: 'instagram', igUserId: profile.ig_user_id },
+        where: { platform: 'instagram', igUserId: profile.igUserId },
       });
 
       const accountData = {
@@ -81,9 +82,9 @@ export async function GET(request: NextRequest) {
         platform: 'instagram' as const,
         displayName: profile.name,
         username: profile.username,
-        profilePictureUrl: profile.profile_picture_url,
-        followersCount: profile.followers_count,
-        igUserId: profile.ig_user_id,
+        profilePictureUrl: profile.profilePictureUrl,
+        followersCount: profile.followersCount,
+        igUserId: profile.igUserId,
         accessToken: longToken.access_token,
         tokenExpiresAt: expiresAt,
         autoSync: true,
@@ -96,7 +97,7 @@ export async function GET(request: NextRequest) {
           data: accountData,
         });
       } else {
-        await prisma.socialAccount.create({ data: accountData });
+        await prisma.socialAccount.create({ data: { id: generateId(), ...accountData } });
       }
     }
 

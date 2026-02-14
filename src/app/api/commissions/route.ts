@@ -29,7 +29,7 @@ export async function GET(request: NextRequest) {
         user: {
           select: { id: true, name: true, email: true },
         },
-        metric: {
+        postMetric: {
           select: {
             id: true,
             views: true,

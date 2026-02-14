@@ -3,6 +3,7 @@ import { getServerSession } from 'next-auth';
 import { exchangeTikTokCode, getTikTokProfile } from '@/lib/tiktok';
 import { prisma } from '@/lib/prisma';
 import { authOptions } from '@/lib/auth';
+import { generateId } from '@/lib/utils';
 
 export async function GET(request: NextRequest) {
   const { searchParams } = new URL(request.url);
@@ -77,7 +78,7 @@ export async function GET(request: NextRequest) {
         data: accountData,
       });
     } else {
-      await prisma.socialAccount.create({ data: accountData });
+      await prisma.socialAccount.create({ data: { id: generateId(), ...accountData } });
     }
 
     const response = NextResponse.redirect(

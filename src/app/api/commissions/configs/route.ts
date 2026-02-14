@@ -3,6 +3,7 @@ import { getServerSession } from 'next-auth';
 import { prisma } from '@/lib/prisma';
 import { authOptions } from '@/lib/auth';
 import { ensureDefaultConfigs } from '@/lib/commissions';
+import { generateId } from '@/lib/utils';
 
 const VALID_FORMATS = ['REEL', 'CAROUSEL', 'STATIC', 'STORY'];
 
@@ -53,7 +54,7 @@ export async function PUT(request: NextRequest) {
     const updated = await prisma.commissionConfig.upsert({
       where: { format },
       update: { cpmValue },
-      create: { format, cpmValue },
+      create: { id: generateId(), format, cpmValue },
     });
 
     return NextResponse.json(updated);

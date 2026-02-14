@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 import { requireAuth } from '@/lib/auth';
+import { generateId } from '@/lib/utils';
 
 export async function GET(request: NextRequest) {
   try {
@@ -28,7 +29,7 @@ export async function GET(request: NextRequest) {
     const [results, total] = await Promise.all([
       prisma.clientResult.findMany({
         where,
-        include: { images: true },
+        include: { resultImages: true },
         orderBy: { createdAt: 'desc' },
         skip: (page - 1) * limit,
         take: limit,
@@ -76,6 +77,7 @@ export async function POST(request: Request) {
 
     const result = await prisma.clientResult.create({
       data: {
+        id: generateId(),
         clientName: body.clientName,
         clientNiche: body.clientNiche,
         metricType: body.metricType,
@@ -84,9 +86,10 @@ export async function POST(request: Request) {
         period: body.period,
         description: body.description || '',
         testimonialText: body.testimonialText || null,
-        images: body.imageUrls && body.imageUrls.length > 0
+        resultImages: body.imageUrls && body.imageUrls.length > 0
           ? {
               create: body.imageUrls.map((img) => ({
+                id: generateId(),
                 url: img.url,
                 altText: img.altText || '',
                 type: img.type || 'SCREENSHOT',
@@ -94,7 +97,7 @@ export async function POST(request: Request) {
             }
           : undefined,
       },
-      include: { images: true },
+      include: { resultImages: true },
     });
 
     return NextResponse.json(result, { status: 201 });

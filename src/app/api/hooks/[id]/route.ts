@@ -43,7 +43,7 @@ export async function PATCH(request: Request, context: RouteContext) {
     const hook = await prisma.hook.update({
       where: { id },
       data: updateData,
-      include: { pillar: true },
+      include: { contentPillar: true },
     });
 
     return NextResponse.json(hook);

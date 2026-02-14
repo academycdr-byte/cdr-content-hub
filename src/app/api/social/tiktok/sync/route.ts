@@ -3,6 +3,7 @@ import { getServerSession } from 'next-auth';
 import { fetchTikTokVideos, refreshTikTokToken } from '@/lib/tiktok';
 import { prisma } from '@/lib/prisma';
 import { authOptions } from '@/lib/auth';
+import { generateId } from '@/lib/utils';
 
 export async function POST(request: NextRequest) {
   try {
@@ -78,6 +79,7 @@ export async function POST(request: NextRequest) {
           syncedAt: new Date(),
         },
         create: {
+          id: generateId(),
           socialAccountId: account.id,
           externalId: video.externalId,
           platform: 'tiktok',

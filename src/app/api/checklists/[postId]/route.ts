@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 import { requireAuth } from '@/lib/auth';
+import { generateId } from '@/lib/utils';
 
 interface RouteContext {
   params: Promise<{ postId: string }>;
@@ -47,6 +48,7 @@ export async function GET(_request: Request, context: RouteContext) {
     if (!completion) {
       completion = await prisma.checklistCompletion.create({
         data: {
+          id: generateId(),
           postId,
           templateId: template.id,
           completedItems: '[]',
@@ -116,6 +118,7 @@ export async function PATCH(request: Request, context: RouteContext) {
         completedAt: allCompleted ? new Date() : null,
       },
       create: {
+        id: generateId(),
         postId,
         templateId: template.id,
         completedItems: JSON.stringify(body.completedItems),

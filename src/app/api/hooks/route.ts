@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 import { requireAuth } from '@/lib/auth';
+import { generateId } from '@/lib/utils';
 
 export async function GET(request: NextRequest) {
   try {
@@ -33,7 +34,7 @@ export async function GET(request: NextRequest) {
     const hooks = await prisma.hook.findMany({
       where,
       include: {
-        pillar: true,
+        contentPillar: true,
       },
       orderBy: [
         { usageCount: 'desc' },
@@ -71,13 +72,14 @@ export async function POST(request: Request) {
 
     const hook = await prisma.hook.create({
       data: {
+        id: generateId(),
         text: body.text.trim(),
         pillarId: body.pillarId || null,
         format: body.format || 'ALL',
         category: body.category || 'QUESTION',
       },
       include: {
-        pillar: true,
+        contentPillar: true,
       },
     });
 
