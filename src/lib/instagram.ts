@@ -172,26 +172,78 @@ export async function fetchInstagramMedia(
 
   for (const media of data.data) {
     const insights: IGInsights = {};
-    const isVideo = ['VIDEO', 'REEL'].includes(media.media_type);
 
-    try {
-      const basicMetric = isVideo ? 'reach,plays' : 'reach,impressions';
-      const basicRes = await fetch(
-        `${FB_API}/v21.0/${media.id}/insights?metric=${basicMetric}&access_token=${accessToken}`
+    // Try multiple metric combinations based on media type
+    // Reels: plays, ig_reels_aggregated_all_plays_count, reach, shares
+    // Video: plays, reach, impressions
+    // Image/Carousel: impressions, reach
+    const isReel = media.media_type === 'REEL';
+    const isVideo = media.media_type === 'VIDEO';
+    const isCarousel = media.media_type === 'CAROUSEL_ALBUM';
+
+    // Attempt 1: Get views/impressions
+    const metricsToTry: string[][] = [];
+    if (isReel) {
+      metricsToTry.push(
+        ['ig_reels_aggregated_all_plays_count', 'reach', 'shares'],
+        ['plays', 'reach', 'shares'],
+        ['reach'],
       );
+    } else if (isVideo) {
+      metricsToTry.push(
+        ['plays', 'reach', 'impressions'],
+        ['reach', 'impressions'],
+        ['impressions'],
+      );
+    } else if (isCarousel) {
+      metricsToTry.push(
+        ['impressions', 'reach'],
+        ['reach'],
+      );
+    } else {
+      metricsToTry.push(
+        ['impressions', 'reach'],
+        ['reach'],
+      );
+    }
 
-      if (basicRes.ok) {
-        const basicData = (await basicRes.json()) as {
-          data?: Array<{ name: string; values?: Array<{ value?: number }> }>;
-        };
-        if (basicData.data) {
-          for (const metric of basicData.data) {
-            insights[metric.name as keyof IGInsights] =
-              metric.values?.[0]?.value || 0;
+    let gotInsights = false;
+    for (const metrics of metricsToTry) {
+      if (gotInsights) break;
+      try {
+        const insightsRes = await fetch(
+          `${FB_API}/v21.0/${media.id}/insights?metric=${metrics.join(',')}&access_token=${accessToken}`
+        );
+        if (insightsRes.ok) {
+          const insightsData = (await insightsRes.json()) as {
+            data?: Array<{ name: string; values?: Array<{ value?: number }> }>;
+          };
+          if (insightsData.data && insightsData.data.length > 0) {
+            for (const metric of insightsData.data) {
+              const val = metric.values?.[0]?.value || 0;
+              if (metric.name === 'ig_reels_aggregated_all_plays_count' || metric.name === 'plays') {
+                insights.plays = val;
+              } else if (metric.name === 'impressions') {
+                insights.impressions = val;
+              } else if (metric.name === 'reach') {
+                insights.reach = val;
+              } else if (metric.name === 'shares') {
+                insights.shares = val;
+              }
+            }
+            gotInsights = true;
           }
+        } else {
+          const errText = await insightsRes.text();
+          console.log(`Insights attempt [${metrics.join(',')}] for ${media.id} (${media.media_type}): ${insightsRes.status} - ${errText.slice(0, 200)}`);
         }
+      } catch (err) {
+        console.log(`Insights error for ${media.id}: ${err instanceof Error ? err.message : 'unknown'}`);
       }
+    }
 
+    // If no insights endpoint worked, try shares separately
+    if (gotInsights && !insights.shares) {
       try {
         const shareRes = await fetch(
           `${FB_API}/v21.0/${media.id}/insights?metric=shares&access_token=${accessToken}`
@@ -200,18 +252,13 @@ export async function fetchInstagramMedia(
           const shareData = (await shareRes.json()) as {
             data?: Array<{ values?: Array<{ value?: number }> }>;
           };
-          if (shareData.data) {
-            insights.shares = shareData.data[0]?.values?.[0]?.value || 0;
+          if (shareData.data?.[0]?.values?.[0]?.value) {
+            insights.shares = shareData.data[0].values[0].value;
           }
         }
       } catch {
-        // Ignore share errors for older posts
+        // Shares not available for this media type
       }
-    } catch (error) {
-      console.error(
-        `Unexpected error fetching insights for ${media.id}:`,
-        error
-      );
     }
 
     const views = insights.plays || insights.impressions || insights.reach || 0;
