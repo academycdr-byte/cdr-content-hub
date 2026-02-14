@@ -15,6 +15,7 @@ interface SocialState {
   fetchAccounts: () => Promise<void>;
   syncAccount: (id: string, platform: string) => Promise<SyncResult>;
   disconnectAccount: (id: string) => Promise<boolean>;
+  toggleAutoSync: (id: string, enabled: boolean) => Promise<boolean>;
 }
 
 export const useSocialStore = create<SocialState>((set, get) => ({
@@ -83,6 +84,32 @@ export const useSocialStore = create<SocialState>((set, get) => ({
     } catch (error) {
       console.error(
         'Failed to disconnect account:',
+        error instanceof Error ? error.message : 'Unknown'
+      );
+      return false;
+    }
+  },
+
+  toggleAutoSync: async (id, enabled) => {
+    try {
+      const res = await fetch('/api/social/auto-sync', {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ accountId: id, autoSync: enabled }),
+      });
+
+      if (!res.ok) return false;
+
+      // Update local state optimistically
+      set((state) => ({
+        accounts: state.accounts.map((a) =>
+          a.id === id ? { ...a, autoSync: enabled } : a
+        ),
+      }));
+      return true;
+    } catch (error) {
+      console.error(
+        'Failed to toggle auto-sync:',
         error instanceof Error ? error.message : 'Unknown'
       );
       return false;

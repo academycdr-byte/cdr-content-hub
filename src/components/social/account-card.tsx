@@ -1,6 +1,6 @@
 'use client';
 
-import { Instagram, Music2, Users, RefreshCw, Unlink, LinkIcon } from 'lucide-react';
+import { Instagram, Music2, Users, RefreshCw, Unlink, LinkIcon, Zap } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import type { SocialAccount } from '@/types';
 
@@ -9,6 +9,7 @@ interface AccountCardProps {
   syncing: boolean;
   onSync: (id: string) => void;
   onDisconnect: (id: string) => void;
+  onToggleAutoSync?: (id: string, enabled: boolean) => void;
 }
 
 function getHealthStatus(account: SocialAccount): 'connected' | 'expiring' | 'expired' {
@@ -78,6 +79,7 @@ export default function AccountCard({
   syncing,
   onSync,
   onDisconnect,
+  onToggleAutoSync,
 }: AccountCardProps) {
   const isInstagram = account.platform === 'instagram';
   const health = getHealthStatus(account);
@@ -122,7 +124,7 @@ export default function AccountCard({
         </div>
       </div>
 
-      {/* Followers */}
+      {/* Followers + Auto-sync badge */}
       <div className="flex items-center gap-4 mt-4">
         <div className="flex items-center gap-1.5">
           <Users className="w-3.5 h-3.5 text-text-tertiary" />
@@ -131,6 +133,14 @@ export default function AccountCard({
           </span>
           <span className="text-xs text-text-tertiary">seguidores</span>
         </div>
+        {account.autoSync && (
+          <div className="flex items-center gap-1 px-2 py-0.5 rounded-full bg-success/10 border border-success/20">
+            <Zap className="w-3 h-3 text-success" />
+            <span className="text-[10px] font-semibold text-success uppercase tracking-wide">
+              Auto-sync
+            </span>
+          </div>
+        )}
       </div>
 
       {/* Last sync */}
@@ -149,6 +159,32 @@ export default function AccountCard({
       {health === 'expired' && (
         <div className="mt-3 px-3 py-2 rounded-lg bg-error-surface text-error text-xs font-medium">
           Token expirado. Reconecte a conta para continuar sincronizando.
+        </div>
+      )}
+
+      {/* Auto-sync toggle */}
+      {health !== 'expired' && onToggleAutoSync && (
+        <div className="mt-3 flex items-center justify-between">
+          <label className="text-xs text-text-secondary cursor-pointer" htmlFor={`auto-sync-${account.id}`}>
+            Sincronizar a cada 15min
+          </label>
+          <button
+            id={`auto-sync-${account.id}`}
+            role="switch"
+            aria-checked={account.autoSync}
+            onClick={() => onToggleAutoSync(account.id, !account.autoSync)}
+            className={cn(
+              'relative inline-flex h-5 w-9 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2',
+              account.autoSync ? 'bg-success' : 'bg-border-default'
+            )}
+          >
+            <span
+              className={cn(
+                'pointer-events-none inline-block h-4 w-4 transform rounded-full bg-white shadow-sm ring-0 transition-transform',
+                account.autoSync ? 'translate-x-4' : 'translate-x-0'
+              )}
+            />
+          </button>
         </div>
       )}
 

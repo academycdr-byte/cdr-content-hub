@@ -15,12 +15,14 @@ export async function GET(request: NextRequest) {
     const from = searchParams.get('from');
     const to = searchParams.get('to');
 
-    // Build date filter
+    // Build date filter (YYYY-MM-DD strings are parsed as UTC by Date constructor)
     const dateFilter: Record<string, Date> = {};
     if (from) dateFilter.gte = new Date(from);
     if (to) {
       const toDate = new Date(to);
-      toDate.setHours(23, 59, 59, 999);
+      // Use setUTCHours to ensure end-of-day is calculated in UTC,
+      // matching how Date parses YYYY-MM-DD strings (as UTC midnight)
+      toDate.setUTCHours(23, 59, 59, 999);
       dateFilter.lte = toDate;
     }
 

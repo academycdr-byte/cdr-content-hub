@@ -151,6 +151,7 @@ export interface SyncedPost {
   likes: number;
   comments: number;
   shares: number;
+  /** Full ISO 8601 timestamp from Graph API (UTC) */
   postedAt: string;
 }
 
@@ -202,7 +203,7 @@ export async function fetchInstagramMedia(
         likes: media.like_count || 0,
         comments: media.comments_count || 0,
         shares: insights.shares || 0,
-        postedAt: media.timestamp.split('T')[0],
+        postedAt: media.timestamp,
       });
     }
   }

@@ -29,7 +29,9 @@ export async function GET(request: NextRequest) {
       if (from) publishedAt.gte = new Date(from);
       if (to) {
         const toDate = new Date(to);
-        toDate.setHours(23, 59, 59, 999);
+        // Use setUTCHours to ensure end-of-day is calculated in UTC,
+        // matching how Date parses YYYY-MM-DD strings (as UTC midnight)
+        toDate.setUTCHours(23, 59, 59, 999);
         publishedAt.lte = toDate;
       }
       where.publishedAt = publishedAt;

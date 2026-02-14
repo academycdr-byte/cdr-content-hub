@@ -1,9 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getServerSession } from 'next-auth';
-import { fetchTikTokVideos, refreshTikTokToken } from '@/lib/tiktok';
 import { prisma } from '@/lib/prisma';
 import { authOptions } from '@/lib/auth';
-import { generateId } from '@/lib/utils';
+import { syncTikTokAccount } from '@/lib/sync/tiktok-sync';
 
 export async function POST(request: NextRequest) {
   try {
@@ -26,87 +25,29 @@ export async function POST(request: NextRequest) {
       where: { id: accountId, userId, platform: 'tiktok' },
     });
 
-    if (!account || !account.tiktokOpenId || !account.tiktokToken) {
+    if (!account) {
       return NextResponse.json(
-        { error: 'Conta nao conectada ao TikTok' },
-        { status: 400 }
+        { error: 'Conta nao encontrada' },
+        { status: 404 }
       );
     }
 
-    // Auto-refresh token if expired
-    let accessToken = account.tiktokToken;
-    if (
-      account.tiktokExpiresAt &&
-      account.tiktokExpiresAt < new Date() &&
-      account.tiktokRefresh
-    ) {
-      try {
-        const refreshed = await refreshTikTokToken(account.tiktokRefresh);
-        const expiresAt = new Date();
-        expiresAt.setSeconds(expiresAt.getSeconds() + refreshed.expires_in);
-        await prisma.socialAccount.update({
-          where: { id: account.id },
-          data: {
-            tiktokToken: refreshed.access_token,
-            tiktokRefresh: refreshed.refresh_token,
-            tiktokExpiresAt: expiresAt,
-          },
-        });
-        accessToken = refreshed.access_token;
-      } catch {
-        return NextResponse.json(
-          { error: 'Token expirado. Reconecte a conta.' },
-          { status: 401 }
-        );
-      }
+    const result = await syncTikTokAccount(account, 'manual');
+
+    if (result.status === 'error') {
+      return NextResponse.json(
+        { error: result.errorMessage },
+        { status: result.errorMessage?.includes('Token expirado') ? 401 : 500 }
+      );
     }
 
-    const videos = await fetchTikTokVideos(accessToken);
-
-    // Save PostMetrics for each synced video
-    let metricsCount = 0;
-    for (const video of videos) {
-      await prisma.postMetrics.upsert({
-        where: { externalId: video.externalId },
-        update: {
-          views: video.views,
-          likes: video.likes,
-          comments: video.comments,
-          shares: video.shares,
-          postUrl: video.url,
-          thumbnailUrl: video.thumbnailUrl,
-          caption: video.title,
-          syncedAt: new Date(),
-        },
-        create: {
-          id: generateId(),
-          socialAccountId: account.id,
-          externalId: video.externalId,
-          platform: 'tiktok',
-          views: video.views,
-          likes: video.likes,
-          comments: video.comments,
-          shares: video.shares,
-          postUrl: video.url,
-          thumbnailUrl: video.thumbnailUrl,
-          caption: video.title,
-          mediaType: 'VIDEO',
-          publishedAt: new Date(video.postedAt),
-        },
-      });
-      metricsCount++;
-    }
-
-    // Update last sync timestamp
-    await prisma.socialAccount.update({
-      where: { id: account.id },
-      data: { lastSyncAt: new Date() },
+    return NextResponse.json({
+      synced: result.postsFound,
+      metrics: result.postsSynced,
     });
-
-    return NextResponse.json({ synced: videos.length, metrics: metricsCount });
   } catch (error) {
     const msg = error instanceof Error ? error.message : 'Erro ao sincronizar';
-    console.error('TikTok sync error:', msg);
+    console.error('[TK Sync] Error:', msg);
     return NextResponse.json({ error: msg }, { status: 500 });
   }
 }

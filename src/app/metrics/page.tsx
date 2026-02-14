@@ -19,14 +19,22 @@ const DATE_PRESETS = [
   { label: '1 ano', days: 365 },
 ] as const;
 
+/** Format date as YYYY-MM-DD in user's local timezone */
+function toLocalDateString(date: Date): string {
+  const year = date.getFullYear();
+  const month = String(date.getMonth() + 1).padStart(2, '0');
+  const day = String(date.getDate()).padStart(2, '0');
+  return `${year}-${month}-${day}`;
+}
+
 function getDateFrom(days: number): string {
   const d = new Date();
   d.setDate(d.getDate() - days);
-  return d.toISOString().split('T')[0];
+  return toLocalDateString(d);
 }
 
 function getToday(): string {
-  return new Date().toISOString().split('T')[0];
+  return toLocalDateString(new Date());
 }
 
 export default function MetricsPage() {

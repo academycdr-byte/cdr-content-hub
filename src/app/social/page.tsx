@@ -18,6 +18,7 @@ export default function SocialPage() {
     fetchAccounts,
     syncAccount,
     disconnectAccount,
+    toggleAutoSync,
   } = useSocialStore();
 
   // Auto-refresh expiring Instagram tokens silently
@@ -86,10 +87,29 @@ export default function SocialPage() {
     [disconnectAccount, addToast]
   );
 
+  const handleToggleAutoSync = useCallback(
+    async (accountId: string, enabled: boolean) => {
+      const success = await toggleAutoSync(accountId, enabled);
+      if (success) {
+        addToast(
+          enabled
+            ? 'Auto-sync ativado. Posts serao sincronizados a cada 15 minutos.'
+            : 'Auto-sync desativado.',
+          enabled ? 'success' : 'info'
+        );
+      } else {
+        addToast('Erro ao alterar auto-sync.', 'error');
+      }
+    },
+    [toggleAutoSync, addToast]
+  );
+
   const instagramAccounts = accounts.filter(
     (a) => a.platform === 'instagram'
   );
   const tiktokAccounts = accounts.filter((a) => a.platform === 'tiktok');
+
+  const autoSyncCount = accounts.filter((a) => a.autoSync).length;
 
   // Loading skeleton
   if (loading && accounts.length === 0) {
@@ -118,6 +138,11 @@ export default function SocialPage() {
           <p className="text-sm text-text-secondary">
             {accounts.length} conta{accounts.length !== 1 ? 's' : ''}{' '}
             conectada{accounts.length !== 1 ? 's' : ''}
+            {autoSyncCount > 0 && (
+              <span className="ml-2 text-success font-medium">
+                ({autoSyncCount} com auto-sync)
+              </span>
+            )}
           </p>
         </div>
       </div>
@@ -174,6 +199,7 @@ export default function SocialPage() {
                     syncing={syncingId === account.id}
                     onSync={handleSync}
                     onDisconnect={handleDisconnect}
+                    onToggleAutoSync={handleToggleAutoSync}
                   />
                 ))}
               </div>
@@ -202,6 +228,7 @@ export default function SocialPage() {
                     syncing={syncingId === account.id}
                     onSync={handleSync}
                     onDisconnect={handleDisconnect}
+                    onToggleAutoSync={handleToggleAutoSync}
                   />
                 ))}
               </div>

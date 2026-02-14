@@ -1,16 +1,20 @@
 'use client';
 
-import { useMemo } from 'react';
+import { useMemo, useState } from 'react';
 import { useDroppable, useDraggable } from '@dnd-kit/core';
-import { Plus } from 'lucide-react';
+import { Plus, ChevronDown, ChevronUp } from 'lucide-react';
 import { cn, getMonthDays, isSameDay, isToday, formatDateISO } from '@/lib/utils';
-import type { Post } from '@/types';
+import type { Post, CalendarEntry } from '@/types';
 import CalendarPostCard from '@/components/calendar/calendar-post-card';
+import CalendarSocialCard from '@/components/calendar/calendar-social-card';
+
+const MAX_VISIBLE_ITEMS = 3;
 
 interface CalendarDndGridProps {
   year: number;
   month: number;
   posts: Post[];
+  calendarEntries: Record<string, CalendarEntry[]>;
   onDayClick: (date: Date) => void;
   onPostClick: (post: Post) => void;
 }
@@ -21,6 +25,7 @@ export default function CalendarDndGrid({
   year,
   month,
   posts,
+  calendarEntries,
   onDayClick,
   onPostClick,
 }: CalendarDndGridProps) {
@@ -31,6 +36,12 @@ export default function CalendarDndGrid({
       if (!post.scheduledDate) return false;
       return isSameDay(new Date(post.scheduledDate), date);
     });
+  };
+
+  const getSocialEntriesForDay = (date: Date): CalendarEntry[] => {
+    const dateKey = formatDateISO(date);
+    const entries = calendarEntries[dateKey] || [];
+    return entries.filter((e) => e.type === 'social');
   };
 
   return (
@@ -52,6 +63,7 @@ export default function CalendarDndGrid({
         {days.map((date, index) => {
           const isCurrentMonth = date.getMonth() === month;
           const dayPosts = getPostsForDay(date);
+          const socialEntries = getSocialEntriesForDay(date);
 
           return (
             <DroppableDay
@@ -59,6 +71,7 @@ export default function CalendarDndGrid({
               date={date}
               isCurrentMonth={isCurrentMonth}
               posts={dayPosts}
+              socialEntries={socialEntries}
               onDayClick={onDayClick}
               onPostClick={onPostClick}
             />
@@ -73,6 +86,7 @@ interface DroppableDayProps {
   date: Date;
   isCurrentMonth: boolean;
   posts: Post[];
+  socialEntries: CalendarEntry[];
   onDayClick: (date: Date) => void;
   onPostClick: (post: Post) => void;
 }
@@ -81,15 +95,28 @@ function DroppableDay({
   date,
   isCurrentMonth,
   posts,
+  socialEntries,
   onDayClick,
   onPostClick,
 }: DroppableDayProps) {
   const dateId = formatDateISO(date);
   const today = isToday(date);
+  const [expanded, setExpanded] = useState(false);
 
   const { setNodeRef, isOver } = useDroppable({
     id: dateId,
   });
+
+  const totalItems = posts.length + socialEntries.length;
+  const hasOverflow = totalItems > MAX_VISIBLE_ITEMS;
+
+  // Determine visible items: internal posts first, then social
+  const visiblePosts = expanded ? posts : posts.slice(0, MAX_VISIBLE_ITEMS);
+  const remainingSlots = expanded
+    ? socialEntries.length
+    : Math.max(0, MAX_VISIBLE_ITEMS - visiblePosts.length);
+  const visibleSocial = socialEntries.slice(0, remainingSlots);
+  const hiddenCount = expanded ? 0 : totalItems - visiblePosts.length - visibleSocial.length;
 
   return (
     <div
@@ -127,19 +154,43 @@ function DroppableDay({
         )}
       </div>
 
-      {/* Posts */}
+      {/* Posts & Social Entries */}
       <div className="space-y-1">
-        {posts.slice(0, 3).map((post) => (
+        {/* Internal posts (draggable) */}
+        {visiblePosts.map((post) => (
           <DraggablePost
             key={post.id}
             post={post}
             onPostClick={onPostClick}
           />
         ))}
-        {posts.length > 3 && (
-          <p className="text-[11px] text-text-tertiary px-1">
-            +{posts.length - 3} mais
-          </p>
+
+        {/* Social posts (read-only) */}
+        {visibleSocial.map((entry) => (
+          <CalendarSocialCard
+            key={entry.id}
+            entry={entry}
+          />
+        ))}
+
+        {/* Overflow indicator */}
+        {hasOverflow && (
+          <button
+            onClick={() => setExpanded(!expanded)}
+            className="flex items-center gap-0.5 text-[11px] text-text-tertiary hover:text-accent px-1 transition-colors"
+          >
+            {expanded ? (
+              <>
+                <ChevronUp size={10} />
+                Menos
+              </>
+            ) : (
+              <>
+                <ChevronDown size={10} />
+                +{hiddenCount} mais
+              </>
+            )}
+          </button>
         )}
       </div>
     </div>

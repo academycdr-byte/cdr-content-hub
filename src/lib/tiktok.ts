@@ -203,6 +203,6 @@ export async function fetchTikTokVideos(
     likes: v.like_count || 0,
     comments: v.comment_count || 0,
     shares: v.share_count || 0,
-    postedAt: new Date((v.create_time || 0) * 1000).toISOString().split('T')[0],
+    postedAt: new Date((v.create_time || 0) * 1000).toISOString(),
   }));
 }

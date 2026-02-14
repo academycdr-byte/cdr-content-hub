@@ -236,6 +236,121 @@ export interface CommissionStats {
   count: number;
 }
 
+// ===== Goal Types =====
+
+export const GoalStatus = {
+  ACTIVE: 'active',
+  ACHIEVED: 'achieved',
+  EXPIRED: 'expired',
+} as const;
+export type GoalStatus = (typeof GoalStatus)[keyof typeof GoalStatus];
+
+export const GoalPeriod = {
+  MONTHLY: 'monthly',
+  QUARTERLY: 'quarterly',
+  YEARLY: 'yearly',
+  CUSTOM: 'custom',
+} as const;
+export type GoalPeriod = (typeof GoalPeriod)[keyof typeof GoalPeriod];
+
+export const GOAL_PERIOD_LABELS: Record<GoalPeriod, string> = {
+  monthly: 'Mensal',
+  quarterly: 'Trimestral',
+  yearly: 'Anual',
+  custom: 'Personalizado',
+} as const;
+
+export const GOAL_STATUS_LABELS: Record<GoalStatus, string> = {
+  active: 'Ativo',
+  achieved: 'Atingido',
+  expired: 'Expirado',
+} as const;
+
+export interface Goal {
+  id: string;
+  socialAccountId: string;
+  metricType: string;
+  targetValue: number;
+  currentValue: number;
+  startValue: number;
+  period: GoalPeriod;
+  startDate: string;
+  endDate: string;
+  status: GoalStatus;
+  createdAt: string;
+  updatedAt: string;
+  socialAccount?: SocialAccount;
+  progress?: number;
+  daysRemaining?: number;
+}
+
+export interface FollowerSnapshot {
+  id: string;
+  socialAccountId: string;
+  followersCount: number;
+  snapshotDate: string;
+}
+
+export interface GoalWithProgress extends Goal {
+  progress: number;
+  daysRemaining: number;
+}
+
+// ===== Calendar Entry Types =====
+
+export const CalendarEntryType = {
+  INTERNAL: 'internal',
+  SOCIAL: 'social',
+} as const;
+export type CalendarEntryType = (typeof CalendarEntryType)[keyof typeof CalendarEntryType];
+
+export const SocialPlatform = {
+  INSTAGRAM: 'instagram',
+  TIKTOK: 'tiktok',
+} as const;
+export type SocialPlatform = (typeof SocialPlatform)[keyof typeof SocialPlatform];
+
+export interface CalendarEntry {
+  id: string;
+  type: CalendarEntryType;
+  title: string;
+  platform?: SocialPlatform;
+  accountName?: string;
+  accountId?: string;
+  thumbnailUrl?: string;
+  status: string;
+  format?: string;
+  metrics?: { views: number; likes: number; comments: number };
+  date: string;
+  postUrl?: string;
+  pillarColor?: string;
+  pillarName?: string;
+}
+
+export interface CalendarApiResponse {
+  entries: Record<string, CalendarEntry[]>;
+  accounts: Array<{ id: string; platform: SocialPlatform; username: string; displayName: string }>;
+}
+
+// ===== Sync Log Types =====
+
+export type SyncTrigger = 'cron' | 'webhook' | 'manual';
+
+export type SyncLogStatus = 'success' | 'error' | 'partial';
+
+export interface SyncLog {
+  id: string;
+  accountId: string;
+  platform: string;
+  trigger: SyncTrigger;
+  postsFound: number;
+  postsSynced: number;
+  status: SyncLogStatus;
+  errorMessage: string | null;
+  duration: number;
+  createdAt: string;
+}
+
 // ===== UI Types =====
 
 export interface CalendarDay {

@@ -1,4 +1,4 @@
-import { NextResponse } from 'next/server';
+import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 import { requireAuth } from '@/lib/auth';
 
@@ -35,6 +35,12 @@ interface MetricsSummary {
   posts: number;
 }
 
+interface DateRangeInfo {
+  startDate: string;
+  endDate: string;
+  label: string;
+}
+
 interface DashboardStats {
   postsThisMonth: number;
   monthlyGoal: number;
@@ -44,6 +50,7 @@ interface DashboardStats {
   upcomingPosts: UpcomingPostItem[];
   resultsWithoutPost: number;
   metricsSummary: MetricsSummary | null;
+  dateRange: DateRangeInfo;
 }
 
 const STATUS_COLORS: Record<string, string> = {
@@ -55,35 +62,67 @@ const STATUS_COLORS: Record<string, string> = {
   PUBLISHED: '#4A7A00',
 };
 
-export async function GET() {
+function parseDateRange(request: NextRequest): { start: Date; end: Date; label: string } {
+  const url = new URL(request.url);
+  const startParam = url.searchParams.get('startDate');
+  const endParam = url.searchParams.get('endDate');
+
+  const now = new Date();
+
+  if (startParam && endParam) {
+    const start = new Date(startParam);
+    const end = new Date(endParam);
+
+    if (!isNaN(start.getTime()) && !isNaN(end.getTime())) {
+      // Ensure start is beginning of day, end is end of day
+      start.setHours(0, 0, 0, 0);
+      end.setHours(23, 59, 59, 999);
+      return {
+        start,
+        end,
+        label: 'custom',
+      };
+    }
+  }
+
+  // Default: current month
+  const start = new Date(now.getFullYear(), now.getMonth(), 1, 0, 0, 0, 0);
+  const end = new Date(now.getFullYear(), now.getMonth() + 1, 0, 23, 59, 59, 999);
+  return { start, end, label: 'this_month' };
+}
+
+export async function GET(request: NextRequest) {
   try {
     const auth = await requireAuth();
     if (auth.error) return auth.error;
-    const now = new Date();
-    const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1);
-    const endOfMonth = new Date(now.getFullYear(), now.getMonth() + 1, 0, 23, 59, 59);
 
-    // Run all queries in parallel
-    // Last 30 days for metrics summary
-    const thirtyDaysAgo = new Date();
-    thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
+    const { start: rangeStart, end: rangeEnd, label: rangeLabel } = parseDateRange(request);
+    const now = new Date();
 
     const [
-      publishedThisMonth,
+      publishedInRange,
+      postsInRange,
       allPosts,
       pillars,
       upcomingPosts,
       totalResults,
       metricsAggregate,
     ] = await Promise.all([
-      // Posts published this month
+      // Posts published in the selected range
       prisma.post.count({
         where: {
           status: 'PUBLISHED',
-          updatedAt: { gte: startOfMonth, lte: endOfMonth },
+          updatedAt: { gte: rangeStart, lte: rangeEnd },
         },
       }),
-      // All posts for pipeline count
+      // Posts created in range (for content mix)
+      prisma.post.findMany({
+        where: {
+          createdAt: { gte: rangeStart, lte: rangeEnd },
+        },
+        select: { id: true, status: true, pillarId: true, scheduledDate: true, updatedAt: true },
+      }),
+      // All posts for pipeline count (pipeline is always global)
       prisma.post.findMany({
         select: { id: true, status: true, pillarId: true, scheduledDate: true, updatedAt: true },
       }),
@@ -92,7 +131,7 @@ export async function GET() {
         where: { isActive: true },
         orderBy: { order: 'asc' },
       }),
-      // Next 3 scheduled posts
+      // Next 3 scheduled posts (always future, not affected by filter)
       prisma.post.findMany({
         where: {
           scheduledDate: { gte: now },
@@ -104,10 +143,10 @@ export async function GET() {
       }),
       // Total results count
       prisma.clientResult.count(),
-      // Social metrics aggregate (last 30 days)
+      // Social metrics aggregate for the selected range
       prisma.postMetrics.aggregate({
         where: {
-          publishedAt: { gte: thirtyDaysAgo },
+          publishedAt: { gte: rangeStart, lte: rangeEnd },
         },
         _sum: {
           views: true,
@@ -119,10 +158,10 @@ export async function GET() {
       }),
     ]);
 
-    // Calculate consistency score (last 4 weeks)
-    const consistencyScore = calculateConsistencyScore(allPosts);
+    // Calculate consistency score for the selected period
+    const consistencyScore = calculateConsistencyScore(allPosts, rangeStart, rangeEnd);
 
-    // Pipeline counts by status
+    // Pipeline counts by status (global, not filtered)
     const statusCounts: Record<string, number> = {};
     for (const post of allPosts) {
       statusCounts[post.status] = (statusCounts[post.status] || 0) + 1;
@@ -136,10 +175,10 @@ export async function GET() {
       color: STATUS_COLORS[status] || '#6E6E73',
     }));
 
-    // Content mix by pillar
-    const totalPosts = allPosts.length;
+    // Content mix by pillar (filtered by range)
+    const totalPostsInRange = postsInRange.length;
     const pillarCounts: Record<string, number> = {};
-    for (const post of allPosts) {
+    for (const post of postsInRange) {
       pillarCounts[post.pillarId] = (pillarCounts[post.pillarId] || 0) + 1;
     }
 
@@ -150,8 +189,8 @@ export async function GET() {
       color: pillar.color,
       targetPercentage: pillar.targetPercentage,
       count: pillarCounts[pillar.id] || 0,
-      percentage: totalPosts > 0
-        ? Math.round(((pillarCounts[pillar.id] || 0) / totalPosts) * 100)
+      percentage: totalPostsInRange > 0
+        ? Math.round(((pillarCounts[pillar.id] || 0) / totalPostsInRange) * 100)
         : 0,
     }));
 
@@ -165,8 +204,7 @@ export async function GET() {
       format: post.format,
     }));
 
-    // Results without post (simple heuristic - total results count)
-    // A more sophisticated approach would track which results have been transformed
+    // Results without post
     const resultsWithoutPost = totalResults;
 
     // Build metrics summary
@@ -182,7 +220,7 @@ export async function GET() {
         : null;
 
     const stats: DashboardStats = {
-      postsThisMonth: publishedThisMonth,
+      postsThisMonth: publishedInRange,
       monthlyGoal: 16,
       consistencyScore,
       pipeline,
@@ -190,6 +228,11 @@ export async function GET() {
       upcomingPosts: upcoming,
       resultsWithoutPost,
       metricsSummary,
+      dateRange: {
+        startDate: rangeStart.toISOString(),
+        endDate: rangeEnd.toISOString(),
+        label: rangeLabel,
+      },
     };
 
     return NextResponse.json(stats);
@@ -203,23 +246,36 @@ export async function GET() {
 }
 
 function calculateConsistencyScore(
-  posts: Array<{ status: string; scheduledDate: Date | null; updatedAt: Date }>
+  posts: Array<{ status: string; scheduledDate: Date | null; updatedAt: Date }>,
+  rangeStart: Date,
+  rangeEnd: Date
 ): number {
   const publishedPosts = posts.filter((p) => p.status === 'PUBLISHED');
   if (publishedPosts.length === 0) return 0;
 
-  const now = new Date();
+  // Calculate number of weeks in the range
+  const rangeMs = rangeEnd.getTime() - rangeStart.getTime();
+  const rangeDays = Math.ceil(rangeMs / (1000 * 60 * 60 * 24));
+  const numWeeks = Math.max(Math.ceil(rangeDays / 7), 1);
+  // Cap at 12 weeks for reasonable computation
+  const weeksToCalculate = Math.min(numWeeks, 12);
+
   const weekScores: number[] = [];
 
-  // Calculate score for last 4 weeks
-  for (let weekOffset = 0; weekOffset < 4; weekOffset++) {
-    const weekEnd = new Date(now);
-    weekEnd.setDate(now.getDate() - weekOffset * 7);
+  for (let weekOffset = 0; weekOffset < weeksToCalculate; weekOffset++) {
+    const weekStart = new Date(rangeStart);
+    weekStart.setDate(rangeStart.getDate() + weekOffset * 7);
+    weekStart.setHours(0, 0, 0, 0);
+
+    const weekEnd = new Date(weekStart);
+    weekEnd.setDate(weekStart.getDate() + 6);
     weekEnd.setHours(23, 59, 59, 999);
 
-    const weekStart = new Date(weekEnd);
-    weekStart.setDate(weekEnd.getDate() - 6);
-    weekStart.setHours(0, 0, 0, 0);
+    // Don't exceed rangeEnd
+    if (weekStart > rangeEnd) break;
+    if (weekEnd > rangeEnd) {
+      weekEnd.setTime(rangeEnd.getTime());
+    }
 
     // Count unique days with published posts in this week
     const daysWithPosts = new Set<string>();
@@ -235,6 +291,8 @@ function calculateConsistencyScore(
     const weekScore = Math.min((daysWithPosts.size / 4) * 100, 100);
     weekScores.push(weekScore);
   }
+
+  if (weekScores.length === 0) return 0;
 
   // Average of week scores
   const totalScore = weekScores.reduce((sum, s) => sum + s, 0);

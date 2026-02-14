@@ -19,13 +19,21 @@ interface MetricsState {
   setDateRange: (from: string, to: string) => void;
 }
 
+/** Format date as YYYY-MM-DD in user's local timezone */
+function toLocalDateString(date: Date): string {
+  const year = date.getFullYear();
+  const month = String(date.getMonth() + 1).padStart(2, '0');
+  const day = String(date.getDate()).padStart(2, '0');
+  return `${year}-${month}-${day}`;
+}
+
 function getDefaultDateRange(): { from: string; to: string } {
   const to = new Date();
   const from = new Date();
   from.setDate(from.getDate() - 30);
   return {
-    from: from.toISOString().split('T')[0],
-    to: to.toISOString().split('T')[0],
+    from: toLocalDateString(from),
+    to: toLocalDateString(to),
   };
 }
 

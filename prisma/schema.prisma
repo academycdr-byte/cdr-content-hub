@@ -219,12 +219,68 @@ model SocialAccount {
   isActive          Boolean       @default(true) @map("is_active")
   createdAt         DateTime      @default(now()) @map("created_at")
   updatedAt         DateTime      @default(now()) @map("updated_at")
-  postMetrics       PostMetrics[]
-  user              User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+  postMetrics        PostMetrics[]
+  syncLogs           SyncLog[]
+  goals              Goal[]
+  followerSnapshots  FollowerSnapshot[]
+  user               User          @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@unique([platform, username])
   @@index([userId])
   @@map("social_accounts")
+}
+
+model Goal {
+  id              String        @id @default(cuid())
+  socialAccountId String        @map("social_account_id")
+  metricType      String        @map("metric_type")
+  targetValue     Int           @map("target_value")
+  currentValue    Int           @default(0) @map("current_value")
+  startValue      Int           @default(0) @map("start_value")
+  period          String
+  startDate       DateTime      @default(now()) @map("start_date")
+  endDate         DateTime      @map("end_date")
+  status          String        @default("active")
+  createdAt       DateTime      @default(now()) @map("created_at")
+  updatedAt       DateTime      @updatedAt @map("updated_at")
+
+  socialAccount   SocialAccount @relation(fields: [socialAccountId], references: [id], onDelete: Cascade)
+
+  @@index([socialAccountId])
+  @@index([status])
+  @@map("goals")
+}
+
+model FollowerSnapshot {
+  id              String        @id @default(cuid())
+  socialAccountId String        @map("social_account_id")
+  followersCount  Int           @map("followers_count")
+  snapshotDate    DateTime      @default(now()) @map("snapshot_date")
+
+  socialAccount   SocialAccount @relation(fields: [socialAccountId], references: [id], onDelete: Cascade)
+
+  @@unique([socialAccountId, snapshotDate])
+  @@index([socialAccountId])
+  @@map("follower_snapshots")
+}
+
+model SyncLog {
+  id           String        @id
+  accountId    String        @map("account_id")
+  platform     String
+  trigger      String
+  postsFound   Int           @default(0) @map("posts_found")
+  postsSynced  Int           @default(0) @map("posts_synced")
+  status       String
+  errorMessage String?       @map("error_message")
+  duration     Int           @default(0)
+  createdAt    DateTime      @default(now()) @map("created_at")
+  account      SocialAccount @relation(fields: [accountId], references: [id], onDelete: Cascade)
+
+  @@index([accountId])
+  @@index([platform])
+  @@index([createdAt])
+  @@map("sync_logs")
 }
 
 model User {

@@ -11,18 +11,22 @@ import {
   type DragEndEvent,
 } from '@dnd-kit/core';
 import { usePostsStore } from '@/stores/posts-store';
+import { useCalendarStore } from '@/stores/calendar-store';
 import { useToastStore } from '@/stores/toast-store';
 import CalendarHeader from '@/components/calendar/calendar-header';
+import CalendarFilters from '@/components/calendar/calendar-filters';
 import CalendarDndGrid from '@/components/calendar/calendar-dnd-grid';
 import CalendarPostCard from '@/components/calendar/calendar-post-card';
+import CalendarSocialCard from '@/components/calendar/calendar-social-card';
 import CreatePostModal, { type CreatePostData } from '@/components/posts/create-post-modal';
-import type { Post } from '@/types';
+import { formatDateISO } from '@/lib/utils';
+import type { Post, CalendarEntry } from '@/types';
 
 export default function CalendarPage() {
   const {
     posts,
     pillars,
-    loading,
+    loading: postsLoading,
     currentMonth,
     currentYear,
     setMonth,
@@ -31,11 +35,24 @@ export default function CalendarPage() {
     updatePost,
   } = usePostsStore();
 
+  const {
+    calendarEntries,
+    accounts,
+    selectedPlatform,
+    selectedAccountId,
+    loading: calendarLoading,
+    fetchCalendarData,
+    setPlatformFilter,
+    setAccountFilter,
+  } = useCalendarStore();
+
   const { addToast } = useToastStore();
 
   const [showCreateModal, setShowCreateModal] = useState(false);
   const [selectedDate, setSelectedDate] = useState<Date | null>(null);
   const [activePost, setActivePost] = useState<Post | null>(null);
+
+  const loading = postsLoading || calendarLoading;
 
   const sensors = useSensors(
     useSensor(PointerSensor, {
@@ -45,10 +62,17 @@ export default function CalendarPage() {
     })
   );
 
+  // Fetch internal posts + calendar social data
   useEffect(() => {
     fetchPillars();
     fetchPosts(currentYear, currentMonth);
-  }, [fetchPillars, fetchPosts, currentYear, currentMonth]);
+    fetchCalendarData(currentYear, currentMonth);
+  }, [fetchPillars, fetchPosts, fetchCalendarData, currentYear, currentMonth]);
+
+  // Re-fetch calendar data when filters change
+  useEffect(() => {
+    fetchCalendarData(currentYear, currentMonth);
+  }, [fetchCalendarData, currentYear, currentMonth, selectedPlatform, selectedAccountId]);
 
   const handlePrevMonth = useCallback(() => {
     const newMonth = currentMonth === 0 ? 11 : currentMonth - 1;
@@ -154,11 +178,20 @@ export default function CalendarPage() {
         onNewPost={handleNewPost}
       />
 
-      <div className="mt-6">
+      {/* Filters */}
+      <div className="mt-4">
+        <CalendarFilters
+          selectedPlatform={selectedPlatform}
+          selectedAccountId={selectedAccountId}
+          accounts={accounts}
+          onPlatformChange={setPlatformFilter}
+          onAccountChange={setAccountFilter}
+        />
+      </div>
+
+      <div className="mt-4">
         {loading ? (
-          <div className="card p-20 flex items-center justify-center">
-            <div className="skeleton h-4 w-32" />
-          </div>
+          <CalendarSkeleton />
         ) : (
           <DndContext
             sensors={sensors}
@@ -168,7 +201,8 @@ export default function CalendarPage() {
             <CalendarDndGrid
               year={currentYear}
               month={currentMonth}
-              posts={posts}
+              posts={selectedPlatform ? [] : posts}
+              calendarEntries={calendarEntries}
               onDayClick={handleDayClick}
               onPostClick={handlePostClick}
             />
@@ -188,9 +222,9 @@ export default function CalendarPage() {
         )}
       </div>
 
-      {/* Mobile: Weekly List */}
+      {/* Mobile: Weekly List with social posts */}
       <div className="mt-6 md:hidden">
-        <MobileWeeklyList posts={posts} />
+        <MobileWeeklyList posts={posts} calendarEntries={calendarEntries} />
       </div>
 
       {/* Create Post Modal */}
@@ -205,8 +239,37 @@ export default function CalendarPage() {
   );
 }
 
-// Mobile weekly view
-function MobileWeeklyList({ posts }: { posts: Post[] }) {
+function CalendarSkeleton() {
+  return (
+    <div className="card overflow-hidden">
+      <div className="grid grid-cols-7 border-b border-border-default">
+        {['Dom', 'Seg', 'Ter', 'Qua', 'Qui', 'Sex', 'Sab'].map((day) => (
+          <div key={day} className="px-3 py-3 text-center text-label text-text-tertiary">
+            {day}
+          </div>
+        ))}
+      </div>
+      <div className="grid grid-cols-7">
+        {Array.from({ length: 35 }, (_, i) => (
+          <div key={i} className="min-h-[120px] border-b border-r border-border-default p-2">
+            <div className="skeleton h-4 w-6 mb-2" />
+            {i % 4 === 0 && <div className="skeleton h-5 w-full mb-1" />}
+            {i % 3 === 0 && <div className="skeleton h-5 w-3/4" />}
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+// Mobile weekly view with social posts
+function MobileWeeklyList({
+  posts,
+  calendarEntries,
+}: {
+  posts: Post[];
+  calendarEntries: Record<string, CalendarEntry[]>;
+}) {
   const now = new Date();
   const startOfWeek = new Date(now);
   startOfWeek.setDate(now.getDate() - now.getDay());
@@ -232,18 +295,33 @@ function MobileWeeklyList({ posts }: { posts: Post[] }) {
           );
         });
 
+        const dateKey = formatDateISO(date);
+        const socialEntries = (calendarEntries[dateKey] || []).filter(
+          (e) => e.type === 'social'
+        );
+
+        const hasContent = dayPosts.length > 0 || socialEntries.length > 0;
+
         return (
           <div key={i} className="card p-4">
             <div className="flex items-center gap-2 mb-2">
               <span className="text-label text-text-tertiary">{dayNames[i]}</span>
               <span className="text-sm font-medium text-text-primary">{date.getDate()}</span>
+              {hasContent && (
+                <span className="text-[10px] text-text-tertiary ml-auto">
+                  {dayPosts.length + socialEntries.length} post{dayPosts.length + socialEntries.length !== 1 ? 's' : ''}
+                </span>
+              )}
             </div>
-            {dayPosts.length === 0 ? (
+            {!hasContent ? (
               <p className="text-xs text-text-tertiary">Nenhum post</p>
             ) : (
               <div className="space-y-1">
                 {dayPosts.map((post) => (
                   <CalendarPostCard key={post.id} post={post} onClick={() => {}} />
+                ))}
+                {socialEntries.map((entry) => (
+                  <CalendarSocialCard key={entry.id} entry={entry} compact />
                 ))}
               </div>
             )}
