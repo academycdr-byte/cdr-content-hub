@@ -10,6 +10,7 @@ import {
   TrendingUp,
   AlertCircle,
   Trash2,
+  Camera,
 } from 'lucide-react';
 import {
   LineChart,
@@ -467,6 +468,25 @@ export default function GoalsPage() {
   const [chartDays, setChartDays] = useState(90);
   const [selectedChartAccount, setSelectedChartAccount] = useState('');
   const [confirmDelete, setConfirmDelete] = useState<string | null>(null);
+  const [snapshotLoading, setSnapshotLoading] = useState(false);
+
+  // Manual snapshot trigger
+  const handleSnapshot = useCallback(async () => {
+    setSnapshotLoading(true);
+    try {
+      const res = await fetch('/api/goals/snapshot', { method: 'POST' });
+      if (!res.ok) throw new Error('Failed');
+      addToast('Snapshot registrado com sucesso', 'success');
+      // Refresh chart data
+      if (selectedChartAccount) {
+        fetchProgress(selectedChartAccount, chartDays);
+      }
+    } catch {
+      addToast('Erro ao registrar snapshot', 'error');
+    } finally {
+      setSnapshotLoading(false);
+    }
+  }, [addToast, selectedChartAccount, chartDays, fetchProgress]);
 
   // Load accounts + goals on mount
   useEffect(() => {
@@ -725,6 +745,16 @@ export default function GoalsPage() {
                   </button>
                 ))}
               </div>
+              {/* Manual snapshot button */}
+              <button
+                onClick={handleSnapshot}
+                disabled={snapshotLoading}
+                className="flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-xs font-medium transition-colors bg-bg-hover text-text-secondary hover:text-text-primary hover:bg-accent-surface"
+                title="Registrar snapshot de seguidores agora"
+              >
+                <Camera size={12} />
+                {snapshotLoading ? 'Salvando...' : 'Snapshot'}
+              </button>
             </div>
           </div>
 
@@ -806,9 +836,17 @@ export default function GoalsPage() {
             <div className="flex flex-col items-center justify-center py-12 text-text-tertiary">
               <TrendingUp size={32} className="mb-3 opacity-40" />
               <p className="text-sm font-medium">Sem dados historicos</p>
-              <p className="text-xs mt-1">
-                Os snapshots diarios vao aparecer aqui conforme forem registrados.
+              <p className="text-xs mt-1 mb-4">
+                Registre o primeiro snapshot para comecar a acompanhar a evolucao.
               </p>
+              <button
+                onClick={handleSnapshot}
+                disabled={snapshotLoading}
+                className="btn-accent inline-flex items-center gap-2 text-sm"
+              >
+                <Camera size={14} />
+                {snapshotLoading ? 'Registrando...' : 'Registrar Snapshot Agora'}
+              </button>
             </div>
           )}
         </div>

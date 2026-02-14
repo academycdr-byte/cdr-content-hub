@@ -47,6 +47,22 @@ export async function GET(request: NextRequest) {
       },
     });
 
+    // If no snapshots exist, include current follower count as today's data point
+    if (snapshots.length === 0) {
+      const accountData = await prisma.socialAccount.findUnique({
+        where: { id: accountId },
+        select: { followersCount: true },
+      });
+      if (accountData && accountData.followersCount > 0) {
+        const today = new Date();
+        today.setHours(0, 0, 0, 0);
+        snapshots.push({
+          followersCount: accountData.followersCount,
+          snapshotDate: today,
+        });
+      }
+    }
+
     // Fetch active goals for this account to include target line
     const goals = await prisma.goal.findMany({
       where: {
