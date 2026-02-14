@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, type FormEvent } from 'react';
+import { useState, useEffect, type FormEvent } from 'react';
 import { X, Loader2 } from 'lucide-react';
 import { cn, formatDateISO } from '@/lib/utils';
 import type { ContentPillar, PostFormat } from '@/types';
@@ -39,6 +39,21 @@ export default function CreatePostModal({
   );
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
+
+  // Sync scheduledDate when modal opens with a new defaultDate
+  useEffect(() => {
+    if (isOpen) {
+      setScheduledDate(defaultDate ? formatDateISO(defaultDate) : '');
+      setError('');
+    }
+  }, [isOpen, defaultDate]);
+
+  // Sync pillarId when pillars load
+  useEffect(() => {
+    if (pillars.length > 0 && !pillarId) {
+      setPillarId(pillars[0].id);
+    }
+  }, [pillars, pillarId]);
 
   if (!isOpen) return null;
 
