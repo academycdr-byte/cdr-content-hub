@@ -109,7 +109,7 @@ export async function GET() {
     // Weekly score: (posts published this week / 4) * 100, capped at 100
     const startOfWeek = new Date(now);
     startOfWeek.setDate(now.getDate() - now.getDay());
-    startOfWeek.setHours(0, 0, 0, 0);
+    startOfWeek.setUTCHours(0, 0, 0, 0);
 
     let postsThisWeek = 0;
     for (const post of publishedPosts) {
@@ -125,11 +125,11 @@ export async function GET() {
     for (let weekOffset = 0; weekOffset < 4; weekOffset++) {
       const weekEnd = new Date(now);
       weekEnd.setDate(now.getDate() - weekOffset * 7);
-      weekEnd.setHours(23, 59, 59, 999);
+      weekEnd.setUTCHours(23, 59, 59, 999);
 
       const weekStart = new Date(weekEnd);
       weekStart.setDate(weekEnd.getDate() - 6);
-      weekStart.setHours(0, 0, 0, 0);
+      weekStart.setUTCHours(0, 0, 0, 0);
 
       let weekPostCount = 0;
       for (const post of publishedPosts) {

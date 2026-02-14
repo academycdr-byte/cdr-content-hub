@@ -14,6 +14,8 @@ export async function GET(request: NextRequest) {
     const { searchParams } = new URL(request.url);
     const from = searchParams.get('from');
     const to = searchParams.get('to');
+    const platform = searchParams.get('platform');
+    const accountId = searchParams.get('accountId');
 
     // Build date filter (YYYY-MM-DD strings are parsed as UTC by Date constructor)
     const dateFilter: Record<string, Date> = {};
@@ -31,6 +33,12 @@ export async function GET(request: NextRequest) {
     };
     if (Object.keys(dateFilter).length > 0) {
       where.publishedAt = dateFilter;
+    }
+    if (platform) {
+      where.platform = platform;
+    }
+    if (accountId) {
+      where.socialAccountId = accountId;
     }
 
     // Run all aggregations in parallel

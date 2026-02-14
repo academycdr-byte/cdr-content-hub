@@ -267,11 +267,11 @@ function calculateConsistencyScore(
   for (let weekOffset = 0; weekOffset < weeksToCalculate; weekOffset++) {
     const weekStart = new Date(rangeStart);
     weekStart.setDate(rangeStart.getDate() + weekOffset * 7);
-    weekStart.setHours(0, 0, 0, 0);
+    weekStart.setUTCHours(0, 0, 0, 0);
 
     const weekEnd = new Date(weekStart);
     weekEnd.setDate(weekStart.getDate() + 6);
-    weekEnd.setHours(23, 59, 59, 999);
+    weekEnd.setUTCHours(23, 59, 59, 999);
 
     // Don't exceed rangeEnd
     if (weekStart > rangeEnd) break;

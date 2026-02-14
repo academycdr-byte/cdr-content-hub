@@ -77,7 +77,10 @@ function getEndDateForPeriod(period: string): string {
     default:
       now.setMonth(now.getMonth() + 1);
   }
-  return now.toISOString().split('T')[0];
+  const y = now.getFullYear();
+  const m = String(now.getMonth() + 1).padStart(2, '0');
+  const d = String(now.getDate()).padStart(2, '0');
+  return `${y}-${m}-${d}`;
 }
 
 // ===== Period Selector for chart =====
@@ -397,7 +400,7 @@ function CreateGoalModal({
               value={endDate}
               onChange={(e) => setEndDate(e.target.value)}
               className="input"
-              min={new Date().toISOString().split('T')[0]}
+              min={(() => { const d = new Date(); return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`; })()}
               required
             />
           </div>

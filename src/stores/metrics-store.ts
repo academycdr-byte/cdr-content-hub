@@ -1,6 +1,11 @@
 import { create } from 'zustand';
 import type { PostMetrics, AggregatedMetrics } from '@/types';
 
+interface MetricsFilters {
+  platform?: string;
+  accountId?: string;
+}
+
 interface MetricsState {
   metrics: PostMetrics[];
   aggregated: AggregatedMetrics | null;
@@ -8,6 +13,7 @@ interface MetricsState {
   loadingAggregated: boolean;
   total: number;
   dateRange: { from: string; to: string };
+  filters: MetricsFilters;
 
   fetchMetrics: (params?: {
     platform?: string;
@@ -15,8 +21,14 @@ interface MetricsState {
     limit?: number;
     offset?: number;
   }) => Promise<void>;
-  fetchAggregated: (from?: string, to?: string) => Promise<void>;
+  fetchAggregated: (params?: {
+    from?: string;
+    to?: string;
+    platform?: string;
+    accountId?: string;
+  }) => Promise<void>;
   setDateRange: (from: string, to: string) => void;
+  setFilters: (filters: MetricsFilters) => void;
 }
 
 /** Format date as YYYY-MM-DD in user's local timezone */
@@ -44,16 +56,20 @@ export const useMetricsStore = create<MetricsState>((set, get) => ({
   loadingAggregated: false,
   total: 0,
   dateRange: getDefaultDateRange(),
+  filters: {},
 
   fetchMetrics: async (params) => {
     set({ loading: true });
     try {
-      const { dateRange } = get();
+      const { dateRange, filters } = get();
       const query = new URLSearchParams();
       query.set('from', dateRange.from);
       query.set('to', dateRange.to);
-      if (params?.platform) query.set('platform', params.platform);
-      if (params?.accountId) query.set('accountId', params.accountId);
+
+      const platform = params?.platform ?? filters.platform;
+      const accountId = params?.accountId ?? filters.accountId;
+      if (platform) query.set('platform', platform);
+      if (accountId) query.set('accountId', accountId);
       if (params?.limit) query.set('limit', String(params.limit));
       if (params?.offset) query.set('offset', String(params.offset));
 
@@ -74,16 +90,21 @@ export const useMetricsStore = create<MetricsState>((set, get) => ({
     }
   },
 
-  fetchAggregated: async (from?: string, to?: string) => {
+  fetchAggregated: async (params) => {
     set({ loadingAggregated: true });
     try {
-      const { dateRange } = get();
-      const queryFrom = from || dateRange.from;
-      const queryTo = to || dateRange.to;
+      const { dateRange, filters } = get();
+      const queryFrom = params?.from || dateRange.from;
+      const queryTo = params?.to || dateRange.to;
 
       const query = new URLSearchParams();
       query.set('from', queryFrom);
       query.set('to', queryTo);
+
+      const platform = params?.platform ?? filters.platform;
+      const accountId = params?.accountId ?? filters.accountId;
+      if (platform) query.set('platform', platform);
+      if (accountId) query.set('accountId', accountId);
 
       const res = await fetch(`/api/metrics/aggregate?${query.toString()}`);
       if (!res.ok) throw new Error('Failed to fetch aggregated metrics');
@@ -101,5 +122,9 @@ export const useMetricsStore = create<MetricsState>((set, get) => ({
 
   setDateRange: (from: string, to: string) => {
     set({ dateRange: { from, to } });
+  },
+
+  setFilters: (filters: MetricsFilters) => {
+    set({ filters });
   },
 }));

@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useCallback, useRef, useState, useMemo } from 'react';
+import { useEffect, useCallback, useRef, useState } from 'react';
 import { BarChart3, Share2, RefreshCw, Download } from 'lucide-react';
 import Link from 'next/link';
 import { useMetricsStore } from '@/stores/metrics-store';
@@ -47,6 +47,7 @@ export default function MetricsPage() {
     fetchMetrics,
     fetchAggregated,
     setDateRange,
+    setFilters,
   } = useMetricsStore();
 
   // Auto-refresh expiring Instagram tokens silently
@@ -58,6 +59,42 @@ export default function MetricsPage() {
   const [filterPlatform, setFilterPlatform] = useState('');
   const [filterAccount, setFilterAccount] = useState('');
   const { addToast } = useToastStore();
+
+  // Re-fetch all data when platform/account filters change
+  const handleFilterPlatform = useCallback(
+    (platform: string) => {
+      setFilterPlatform(platform);
+      setFilterAccount('');
+      setFilters({ platform: platform || undefined, accountId: undefined });
+      setTimeout(() => {
+        fetchMetrics();
+        fetchAggregated();
+      }, 0);
+    },
+    [setFilters, fetchMetrics, fetchAggregated]
+  );
+
+  const handleFilterAccount = useCallback(
+    (accountId: string) => {
+      setFilterAccount(accountId);
+      setFilters({ platform: filterPlatform || undefined, accountId: accountId || undefined });
+      setTimeout(() => {
+        fetchMetrics();
+        fetchAggregated();
+      }, 0);
+    },
+    [setFilters, filterPlatform, fetchMetrics, fetchAggregated]
+  );
+
+  const handleClearFilters = useCallback(() => {
+    setFilterPlatform('');
+    setFilterAccount('');
+    setFilters({});
+    setTimeout(() => {
+      fetchMetrics();
+      fetchAggregated();
+    }, 0);
+  }, [setFilters, fetchMetrics, fetchAggregated]);
 
   // Auto-sync social accounts on first mount
   useEffect(() => {
@@ -209,15 +246,7 @@ export default function MetricsPage() {
     document.body.removeChild(link);
   }, [dateRange]);
 
-  // Filter top posts by platform and account
-  const filteredTopPosts = useMemo(() => {
-    if (!aggregated?.topPosts) return [];
-    return aggregated.topPosts.filter((post) => {
-      if (filterPlatform && post.platform !== filterPlatform) return false;
-      if (filterAccount && post.socialAccountId !== filterAccount) return false;
-      return true;
-    });
-  }, [aggregated?.topPosts, filterPlatform, filterAccount]);
+  const filteredTopPosts = aggregated?.topPosts || [];
 
   const hasData = aggregated && aggregated.totals.posts > 0;
   const isLoading = loading || loadingAggregated;
@@ -293,7 +322,7 @@ export default function MetricsPage() {
             <p className="text-xs font-medium text-text-secondary">Filtrar:</p>
             <select
               value={filterPlatform}
-              onChange={(e) => { setFilterPlatform(e.target.value); setFilterAccount(''); }}
+              onChange={(e) => handleFilterPlatform(e.target.value)}
               className={cn(
                 'input py-1.5 px-3 text-xs w-auto min-w-[140px]',
                 filterPlatform && 'border-accent'
@@ -305,7 +334,7 @@ export default function MetricsPage() {
             </select>
             <select
               value={filterAccount}
-              onChange={(e) => setFilterAccount(e.target.value)}
+              onChange={(e) => handleFilterAccount(e.target.value)}
               className={cn(
                 'input py-1.5 px-3 text-xs w-auto min-w-[160px]',
                 filterAccount && 'border-accent'
@@ -322,7 +351,7 @@ export default function MetricsPage() {
             </select>
             {(filterPlatform || filterAccount) && (
               <button
-                onClick={() => { setFilterPlatform(''); setFilterAccount(''); }}
+                onClick={handleClearFilters}
                 className="text-xs text-accent hover:text-accent-hover font-medium transition-colors"
               >
                 Limpar filtros
