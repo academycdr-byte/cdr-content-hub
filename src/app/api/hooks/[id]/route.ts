@@ -1,0 +1,54 @@
+import { NextResponse } from 'next/server';
+import { prisma } from '@/lib/prisma';
+
+interface RouteContext {
+  params: Promise<{ id: string }>;
+}
+
+export async function PATCH(request: Request, context: RouteContext) {
+  try {
+    const { id } = await context.params;
+    const body = await request.json() as {
+      text?: string;
+      pillarId?: string | null;
+      format?: string;
+      category?: string;
+      usageCount?: number;
+      incrementUsage?: boolean;
+    };
+
+    const updateData: Record<string, unknown> = {};
+
+    if (body.text !== undefined) {
+      updateData.text = body.text;
+    }
+    if (body.pillarId !== undefined) {
+      updateData.pillarId = body.pillarId;
+    }
+    if (body.format !== undefined) {
+      updateData.format = body.format;
+    }
+    if (body.category !== undefined) {
+      updateData.category = body.category;
+    }
+    if (body.incrementUsage) {
+      updateData.usageCount = { increment: 1 };
+    } else if (body.usageCount !== undefined) {
+      updateData.usageCount = body.usageCount;
+    }
+
+    const hook = await prisma.hook.update({
+      where: { id },
+      data: updateData,
+      include: { pillar: true },
+    });
+
+    return NextResponse.json(hook);
+  } catch (error) {
+    console.error('Failed to update hook:', error instanceof Error ? error.message : 'Unknown');
+    return NextResponse.json(
+      { error: 'Failed to update hook' },
+      { status: 500 }
+    );
+  }
+}
