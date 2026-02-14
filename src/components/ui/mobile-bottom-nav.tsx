@@ -28,7 +28,7 @@ const MAIN_ITEMS: NavItem[] = [
   { label: 'Home', href: '/', icon: <LayoutDashboard size={20} /> },
   { label: 'Calendario', href: '/calendar', icon: <Calendar size={20} /> },
   { label: 'Pipeline', href: '/pipeline', icon: <Kanban size={20} /> },
-  { label: 'Hooks', href: '/hooks', icon: <Lightbulb size={20} /> },
+  { label: 'Ideias', href: '/hooks', icon: <Lightbulb size={20} /> },
 ];
 
 const MORE_ITEMS: NavItem[] = [

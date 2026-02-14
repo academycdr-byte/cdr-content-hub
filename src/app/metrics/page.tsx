@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useCallback, useRef, useState } from 'react';
+import { useEffect, useCallback, useRef, useState, useMemo } from 'react';
 import { BarChart3, Share2, RefreshCw, Download } from 'lucide-react';
 import Link from 'next/link';
 import { useMetricsStore } from '@/stores/metrics-store';
@@ -45,6 +45,9 @@ export default function MetricsPage() {
 
   const hasSyncedRef = useRef(false);
   const [syncing, setSyncing] = useState(false);
+  const [accounts, setAccounts] = useState<SocialAccount[]>([]);
+  const [filterPlatform, setFilterPlatform] = useState('');
+  const [filterAccount, setFilterAccount] = useState('');
 
   // Auto-sync social accounts on first mount
   useEffect(() => {
@@ -56,8 +59,9 @@ export default function MetricsPage() {
         const accountsRes = await fetch('/api/social/accounts');
         if (!accountsRes.ok) return;
 
-        const accounts = (await accountsRes.json()) as SocialAccount[];
-        const syncable = accounts.filter(
+        const fetchedAccounts = (await accountsRes.json()) as SocialAccount[];
+        setAccounts(fetchedAccounts);
+        const syncable = fetchedAccounts.filter(
           (a) => a.platform === 'instagram' || a.platform === 'tiktok'
         );
 
@@ -161,6 +165,16 @@ export default function MetricsPage() {
     document.body.removeChild(link);
   }, [dateRange]);
 
+  // Filter top posts by platform and account
+  const filteredTopPosts = useMemo(() => {
+    if (!aggregated?.topPosts) return [];
+    return aggregated.topPosts.filter((post) => {
+      if (filterPlatform && post.platform !== filterPlatform) return false;
+      if (filterAccount && post.socialAccountId !== filterAccount) return false;
+      return true;
+    });
+  }, [aggregated?.topPosts, filterPlatform, filterAccount]);
+
   const hasData = aggregated && aggregated.totals.posts > 0;
   const isLoading = loading || loadingAggregated;
 
@@ -194,8 +208,8 @@ export default function MetricsPage() {
         )}
       </div>
 
-      {/* Date Range Filter */}
-      <div className="card p-4 mb-6">
+      {/* Filters */}
+      <div className="card p-4 mb-6 space-y-3">
         <div className="flex flex-col sm:flex-row items-start sm:items-center gap-3">
           <p className="text-xs font-medium text-text-secondary">Periodo:</p>
           <div className="flex items-center gap-2">
@@ -230,6 +244,48 @@ export default function MetricsPage() {
             />
           </div>
         </div>
+        {accounts.length > 0 && (
+          <div className="flex items-center gap-3 flex-wrap">
+            <p className="text-xs font-medium text-text-secondary">Filtrar:</p>
+            <select
+              value={filterPlatform}
+              onChange={(e) => { setFilterPlatform(e.target.value); setFilterAccount(''); }}
+              className={cn(
+                'input py-1.5 px-3 text-xs w-auto min-w-[140px]',
+                filterPlatform && 'border-accent'
+              )}
+            >
+              <option value="">Todas as plataformas</option>
+              <option value="instagram">Instagram</option>
+              <option value="tiktok">TikTok</option>
+            </select>
+            <select
+              value={filterAccount}
+              onChange={(e) => setFilterAccount(e.target.value)}
+              className={cn(
+                'input py-1.5 px-3 text-xs w-auto min-w-[160px]',
+                filterAccount && 'border-accent'
+              )}
+            >
+              <option value="">Todos os perfis</option>
+              {accounts
+                .filter((a) => !filterPlatform || a.platform === filterPlatform)
+                .map((a) => (
+                  <option key={a.id} value={a.id}>
+                    @{a.username} ({a.platform})
+                  </option>
+                ))}
+            </select>
+            {(filterPlatform || filterAccount) && (
+              <button
+                onClick={() => { setFilterPlatform(''); setFilterAccount(''); }}
+                className="text-xs text-accent hover:text-accent-hover font-medium transition-colors"
+              >
+                Limpar filtros
+              </button>
+            )}
+          </div>
+        )}
       </div>
 
       {/* Content */}
@@ -259,7 +315,7 @@ export default function MetricsPage() {
           <MetricsOverview data={aggregated} loading={loadingAggregated} />
           <MetricsChart metrics={metrics} loading={loading} />
           <TopPostsTable
-            posts={aggregated?.topPosts || []}
+            posts={filteredTopPosts}
             loading={loadingAggregated}
           />
         </div>

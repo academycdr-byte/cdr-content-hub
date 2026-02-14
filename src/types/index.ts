@@ -263,15 +263,14 @@ export const FORMAT_LABELS: Record<PostFormat, string> = {
 export const STATUS_LABELS: Record<PostStatus, string> = {
   IDEA: 'Ideia',
   SCRIPT: 'Script',
-  PRODUCTION: 'Producao',
-  REVIEW: 'Revisao',
+  PRODUCTION: 'Gravacao',
+  REVIEW: 'Edicao',
   SCHEDULED: 'Agendado',
   PUBLISHED: 'Publicado',
 } as const;
 
 export const STATUS_ORDER: PostStatus[] = [
   'IDEA',
-  'SCRIPT',
   'PRODUCTION',
   'REVIEW',
   'SCHEDULED',

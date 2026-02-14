@@ -5,7 +5,7 @@ import { ExternalLink, Instagram, Music2, ChevronDown } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import type { PostMetrics } from '@/types';
 
-type SortColumn = 'views' | 'likes' | 'comments' | 'shares';
+type SortColumn = 'views' | 'likes' | 'comments' | 'shares' | 'engagement';
 
 interface TopPostsTableProps {
   posts: PostMetrics[];
@@ -26,10 +26,13 @@ function formatNumber(value: number): string {
   return new Intl.NumberFormat('pt-BR').format(value);
 }
 
+function getEngagementValue(post: PostMetrics): number {
+  if (!post.views || post.views === 0) return 0;
+  return ((post.likes + post.comments) / post.views) * 100;
+}
+
 function getEngagementRate(post: PostMetrics): string {
-  if (!post.views || post.views === 0) return '0%';
-  const rate = ((post.likes + post.comments) / post.views) * 100;
-  return rate.toFixed(1) + '%';
+  return getEngagementValue(post).toFixed(1) + '%';
 }
 
 function PlatformBadge({ platform }: { platform: string }) {
@@ -54,13 +57,19 @@ const SORT_COLUMNS: { key: SortColumn; label: string }[] = [
   { key: 'likes', label: 'Likes' },
   { key: 'comments', label: 'Comentarios' },
   { key: 'shares', label: 'Shares' },
+  { key: 'engagement', label: 'Engajamento' },
 ] as const;
 
 export default function TopPostsTable({ posts, loading }: TopPostsTableProps) {
   const [sortBy, setSortBy] = useState<SortColumn>('views');
 
   const sortedPosts = useMemo(() => {
-    return [...posts].sort((a, b) => b[sortBy] - a[sortBy]);
+    return [...posts].sort((a, b) => {
+      if (sortBy === 'engagement') {
+        return getEngagementValue(b) - getEngagementValue(a);
+      }
+      return b[sortBy] - a[sortBy];
+    });
   }, [posts, sortBy]);
 
   if (loading) {
@@ -127,9 +136,6 @@ export default function TopPostsTable({ posts, loading }: TopPostsTableProps) {
                   </span>
                 </th>
               ))}
-              <th className="text-right text-[11px] font-semibold uppercase tracking-wider text-text-tertiary px-3 py-3 w-24">
-                Engajamento
-              </th>
               <th className="text-center text-[11px] font-semibold uppercase tracking-wider text-text-tertiary px-3 py-3 w-12">
                 Link
               </th>
@@ -181,15 +187,12 @@ export default function TopPostsTable({ posts, loading }: TopPostsTableProps) {
                           : 'text-text-secondary'
                       )}
                     >
-                      {formatNumber(post[col.key])}
+                      {col.key === 'engagement'
+                        ? getEngagementRate(post)
+                        : formatNumber(post[col.key])}
                     </span>
                   </td>
                 ))}
-                <td className="px-3 py-3 text-right">
-                  <span className="text-sm font-medium text-accent">
-                    {getEngagementRate(post)}
-                  </span>
-                </td>
                 <td className="px-3 py-3 text-center">
                   {post.postUrl && (
                     <a
@@ -265,7 +268,9 @@ export default function TopPostsTable({ posts, loading }: TopPostsTableProps) {
                 {sortBy !== 'views' && (
                   <div className="mt-1">
                     <span className="text-xs font-medium text-accent">
-                      {formatNumber(post[sortBy])} {SORT_COLUMNS.find(c => c.key === sortBy)?.label.toLowerCase()}
+                      {sortBy === 'engagement'
+                        ? getEngagementRate(post)
+                        : `${formatNumber(post[sortBy])} ${SORT_COLUMNS.find(c => c.key === sortBy)?.label.toLowerCase()}`}
                     </span>
                   </div>
                 )}

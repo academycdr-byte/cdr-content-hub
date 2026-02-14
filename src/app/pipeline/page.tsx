@@ -147,25 +147,23 @@ export default function PipelinePage() {
     });
   }, [posts, filterPillar, filterAssigned, filterFormat]);
 
-  // Group posts by status
+  // Group posts by status (SCRIPT posts go into IDEA)
   const postsByStatus = useMemo(() => {
-    const grouped: Record<PostStatus, Post[]> = {
-      IDEA: [],
-      SCRIPT: [],
-      PRODUCTION: [],
-      REVIEW: [],
-      SCHEDULED: [],
-      PUBLISHED: [],
-    };
+    const grouped: Record<string, Post[]> = {};
+    for (const s of STATUS_ORDER) {
+      grouped[s] = [];
+    }
 
     filteredPosts.forEach((post) => {
       const status = post.status as PostStatus;
-      if (grouped[status]) {
+      if (status === 'SCRIPT') {
+        grouped['IDEA'].push(post);
+      } else if (grouped[status]) {
         grouped[status].push(post);
       }
     });
 
-    return grouped;
+    return grouped as Record<PostStatus, Post[]>;
   }, [filteredPosts]);
 
   const handlePostClick = useCallback((post: Post) => {
@@ -500,12 +498,12 @@ export default function PipelinePage() {
             onDragStart={handleDragStart}
             onDragEnd={handleDragEnd}
           >
-            <div className="flex gap-4 overflow-x-auto pb-4">
+            <div className="grid gap-3 pb-4" style={{ gridTemplateColumns: `repeat(${STATUS_ORDER.length}, minmax(0, 1fr))` }}>
               {STATUS_ORDER.map((status) => (
                 <PipelineColumn
                   key={status}
                   status={status}
-                  posts={postsByStatus[status]}
+                  posts={postsByStatus[status] || []}
                   onPostClick={handlePostClick}
                 />
               ))}
