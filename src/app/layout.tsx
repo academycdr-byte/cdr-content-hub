@@ -17,6 +17,9 @@ export const metadata: Metadata = {
     template: '%s | CDR Content Hub',
   },
   description: 'Sistema de producao de conteudo Instagram da CDR Group',
+  other: {
+    'tiktok-developers-site-verification': 'xnQg1imhq1YuzGVCD9lq1pyIjM7K7PEo',
+  },
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
