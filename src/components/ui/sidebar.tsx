@@ -9,7 +9,6 @@ import {
   Lightbulb,
   BarChart3,
   DollarSign,
-  Layers,
   Share2,
   Settings,
   LogOut,
@@ -34,7 +33,6 @@ const NAV_ITEMS: NavItem[] = [
   { label: 'Ideias', href: '/hooks', icon: <Lightbulb size={20} /> },
   { label: 'Metricas', href: '/metrics', icon: <BarChart3 size={20} /> },
   { label: 'Comissoes', href: '/commissions', icon: <DollarSign size={20} /> },
-  { label: 'Batch', href: '/batch', icon: <Layers size={20} /> },
   { label: 'Social', href: '/social', icon: <Share2 size={20} /> },
   { label: 'Configuracoes', href: '/settings/pillars', icon: <Settings size={20} /> },
 ];
