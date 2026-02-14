@@ -10,24 +10,14 @@ import {
   type DragStartEvent,
   type DragEndEvent,
 } from '@dnd-kit/core';
-import { Filter, Kanban, List, Film, LayoutGrid, Image, MessageCircle } from 'lucide-react';
+import { Filter, Kanban } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { cn } from '@/lib/utils';
 import { useToastStore } from '@/stores/toast-store';
 import PipelineColumn from '@/components/pipeline/pipeline-column';
 import PipelineCard from '@/components/pipeline/pipeline-card';
-import type { Post, PostStatus, PostFormat, ContentPillar } from '@/types';
-import { STATUS_ORDER, STATUS_LABELS, FORMAT_LABELS } from '@/types';
-
-type EditingStatus = 'Pendente' | 'Em edicao' | 'Pronto';
-
-const EDITING_OPTIONS: EditingStatus[] = ['Pendente', 'Em edicao', 'Pronto'];
-
-const EDITING_COLORS: Record<EditingStatus, { bg: string; text: string }> = {
-  'Pendente': { bg: 'bg-[rgba(110,110,115,0.1)]', text: 'text-text-tertiary' },
-  'Em edicao': { bg: 'bg-[rgba(217,119,6,0.1)]', text: 'text-[#D97706]' },
-  'Pronto': { bg: 'bg-[rgba(22,163,106,0.1)]', text: 'text-[#16A34A]' },
-};
+import type { Post, PostStatus, ContentPillar } from '@/types';
+import { STATUS_ORDER, STATUS_LABELS } from '@/types';
 
 const STATUS_COLORS: Record<PostStatus, string> = {
   IDEA: '#6E6E73',
@@ -38,40 +28,11 @@ const STATUS_COLORS: Record<PostStatus, string> = {
   PUBLISHED: '#4A7A00',
 };
 
-const FORMAT_ICONS: Record<PostFormat, React.ReactNode> = {
-  REEL: <Film size={14} />,
-  CAROUSEL: <LayoutGrid size={14} />,
-  STATIC: <Image size={14} />,
-  STORY: <MessageCircle size={14} />,
-};
-
-function getEditingStatuses(): Record<string, EditingStatus> {
-  if (typeof window === 'undefined') return {};
-  try {
-    const stored = localStorage.getItem('pipeline-editing-statuses');
-    if (stored) return JSON.parse(stored) as Record<string, EditingStatus>;
-  } catch {
-    // ignore parse errors
-  }
-  return {};
-}
-
-function saveEditingStatuses(statuses: Record<string, EditingStatus>) {
-  if (typeof window === 'undefined') return;
-  try {
-    localStorage.setItem('pipeline-editing-statuses', JSON.stringify(statuses));
-  } catch {
-    // ignore storage errors
-  }
-}
-
 export default function PipelinePage() {
   const [posts, setPosts] = useState<Post[]>([]);
   const [pillars, setPillars] = useState<ContentPillar[]>([]);
   const [loading, setLoading] = useState(true);
   const [activePost, setActivePost] = useState<Post | null>(null);
-  const [viewMode, setViewMode] = useState<'kanban' | 'table'>('table');
-  const [editingStatuses, setEditingStatuses] = useState<Record<string, EditingStatus>>({});
 
   // Filters
   const [filterPillar, setFilterPillar] = useState<string>('');
@@ -86,19 +47,6 @@ export default function PipelinePage() {
       activationConstraint: { distance: 8 },
     })
   );
-
-  // Load editing statuses from localStorage on mount
-  useEffect(() => {
-    setEditingStatuses(getEditingStatuses());
-  }, []);
-
-  const handleEditingChange = useCallback((postId: string, status: EditingStatus) => {
-    setEditingStatuses((prev) => {
-      const next = { ...prev, [postId]: status };
-      saveEditingStatuses(next);
-      return next;
-    });
-  }, []);
 
   const fetchData = useCallback(async () => {
     setLoading(true);
@@ -261,32 +209,9 @@ export default function PipelinePage() {
           </p>
         </div>
 
-        {/* View toggle - desktop only */}
-        <div className="hidden md:flex items-center gap-1 bg-bg-secondary rounded-lg p-1">
-          <button
-            onClick={() => setViewMode('table')}
-            className={cn(
-              'flex items-center gap-1.5 px-3 py-1.5 rounded-md text-xs font-medium transition-colors',
-              viewMode === 'table'
-                ? 'bg-bg-card text-text-primary shadow-sm'
-                : 'text-text-tertiary hover:text-text-secondary'
-            )}
-          >
-            <List size={14} />
-            Tabela
-          </button>
-          <button
-            onClick={() => setViewMode('kanban')}
-            className={cn(
-              'flex items-center gap-1.5 px-3 py-1.5 rounded-md text-xs font-medium transition-colors',
-              viewMode === 'kanban'
-                ? 'bg-bg-card text-text-primary shadow-sm'
-                : 'text-text-tertiary hover:text-text-secondary'
-            )}
-          >
-            <Kanban size={14} />
-            Kanban
-          </button>
+        <div className="hidden md:flex items-center gap-1.5 text-text-tertiary">
+          <Kanban size={16} />
+          <span className="text-xs font-medium">Kanban</span>
         </div>
       </div>
 
@@ -358,141 +283,8 @@ export default function PipelinePage() {
         )}
       </div>
 
-      {/* Desktop Table View */}
-      {viewMode === 'table' && (
-        <div className="hidden md:block">
-          <div className="card overflow-hidden">
-            <div className="overflow-x-auto">
-              <table className="w-full">
-                <thead>
-                  <tr className="border-b border-border-default bg-bg-secondary">
-                    <th className="text-left text-[11px] font-semibold uppercase tracking-wider text-text-tertiary px-4 py-3">
-                      Titulo
-                    </th>
-                    <th className="text-left text-[11px] font-semibold uppercase tracking-wider text-text-tertiary px-3 py-3 w-[100px]">
-                      Formato
-                    </th>
-                    <th className="text-left text-[11px] font-semibold uppercase tracking-wider text-text-tertiary px-3 py-3 w-[130px]">
-                      Pilar
-                    </th>
-                    <th className="text-left text-[11px] font-semibold uppercase tracking-wider text-text-tertiary px-3 py-3 w-[120px]">
-                      Status
-                    </th>
-                    <th className="text-left text-[11px] font-semibold uppercase tracking-wider text-text-tertiary px-3 py-3 w-[140px]">
-                      Edicao
-                    </th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {filteredPosts.map((post) => {
-                    const pillarColor = post.pillar?.color || '#6E6E73';
-                    const statusColor = STATUS_COLORS[post.status as PostStatus] || '#6E6E73';
-                    const editStatus = editingStatuses[post.id] || 'Pendente';
-                    const editColors = EDITING_COLORS[editStatus];
-
-                    return (
-                      <tr
-                        key={post.id}
-                        className="border-b border-border-default last:border-0 hover:bg-bg-hover transition-colors group"
-                      >
-                        {/* Title */}
-                        <td className="px-4 py-3">
-                          <button
-                            onClick={() => handlePostClick(post)}
-                            className="text-left w-full"
-                          >
-                            <p className="text-sm font-medium text-text-primary truncate max-w-[400px] group-hover:text-accent transition-colors">
-                              {post.title}
-                            </p>
-                            {(post.assignedTo || post.scheduledDate) && (
-                              <p className="text-[11px] text-text-tertiary mt-0.5">
-                                {post.assignedTo && <span>{post.assignedTo}</span>}
-                                {post.assignedTo && post.scheduledDate && <span> - </span>}
-                                {post.scheduledDate && (
-                                  <span>
-                                    {new Date(post.scheduledDate).toLocaleDateString('pt-BR', {
-                                      day: '2-digit',
-                                      month: 'short',
-                                    })}
-                                  </span>
-                                )}
-                              </p>
-                            )}
-                          </button>
-                        </td>
-
-                        {/* Format */}
-                        <td className="px-3 py-3">
-                          <span className="inline-flex items-center gap-1.5 text-xs text-text-secondary">
-                            {FORMAT_ICONS[post.format as PostFormat]}
-                            {FORMAT_LABELS[post.format as PostFormat] || post.format}
-                          </span>
-                        </td>
-
-                        {/* Pillar */}
-                        <td className="px-3 py-3">
-                          <span
-                            className="badge text-[11px] px-2 py-0.5"
-                            style={{
-                              backgroundColor: `${pillarColor}15`,
-                              color: pillarColor,
-                            }}
-                          >
-                            {post.pillar?.name || 'Sem pilar'}
-                          </span>
-                        </td>
-
-                        {/* Status */}
-                        <td className="px-3 py-3">
-                          <span
-                            className="badge text-[11px] px-2 py-0.5 font-medium"
-                            style={{
-                              backgroundColor: `${statusColor}15`,
-                              color: statusColor,
-                            }}
-                          >
-                            {STATUS_LABELS[post.status as PostStatus] || post.status}
-                          </span>
-                        </td>
-
-                        {/* Editing Status */}
-                        <td className="px-3 py-3">
-                          <select
-                            value={editStatus}
-                            onChange={(e) => handleEditingChange(post.id, e.target.value as EditingStatus)}
-                            className={cn(
-                              'text-[11px] font-medium px-2 py-1 rounded-md border-0 cursor-pointer transition-colors',
-                              editColors.bg,
-                              editColors.text
-                            )}
-                          >
-                            {EDITING_OPTIONS.map((opt) => (
-                              <option key={opt} value={opt}>
-                                {opt}
-                              </option>
-                            ))}
-                          </select>
-                        </td>
-                      </tr>
-                    );
-                  })}
-                  {filteredPosts.length === 0 && (
-                    <tr>
-                      <td colSpan={5} className="text-center py-12 text-sm text-text-tertiary">
-                        Nenhum post encontrado
-                      </td>
-                    </tr>
-                  )}
-                </tbody>
-              </table>
-            </div>
-          </div>
-        </div>
-      )}
-
       {/* Desktop Kanban View */}
-      {viewMode === 'kanban' && (
-        <div className="hidden md:block">
+      <div className="hidden md:block">
           <DndContext
             sensors={sensors}
             onDragStart={handleDragStart}
@@ -523,7 +315,6 @@ export default function PipelinePage() {
             </DragOverlay>
           </DndContext>
         </div>
-      )}
 
       {/* Mobile Card View */}
       <div className="md:hidden space-y-3">
@@ -557,8 +348,6 @@ export default function PipelinePage() {
               <div className="space-y-2">
                 {statusPosts.map((post) => {
                   const pillarColor = post.pillar?.color || '#6E6E73';
-                  const editStatus = editingStatuses[post.id] || 'Pendente';
-                  const editColors = EDITING_COLORS[editStatus];
 
                   return (
                     <button
@@ -580,19 +369,11 @@ export default function PipelinePage() {
                         >
                           {post.pillar?.name || 'Sem pilar'}
                         </span>
-                        <span className="flex items-center gap-1 text-[10px] text-text-tertiary">
-                          {FORMAT_ICONS[post.format as PostFormat]}
-                          {FORMAT_LABELS[post.format as PostFormat]}
-                        </span>
-                        <span
-                          className={cn(
-                            'badge text-[10px] px-1.5 py-0.5',
-                            editColors.bg,
-                            editColors.text
-                          )}
-                        >
-                          {editStatus}
-                        </span>
+                        {post.assignedTo && (
+                          <span className="text-[10px] text-text-tertiary">
+                            {post.assignedTo}
+                          </span>
+                        )}
                       </div>
                     </button>
                   );
