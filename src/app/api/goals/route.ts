@@ -6,6 +6,7 @@ export async function GET(request: NextRequest) {
   try {
     const auth = await requireAuth();
     if (auth.error) return auth.error;
+    const userId = auth.session!.user.id;
 
     const { searchParams } = new URL(request.url);
     const platform = searchParams.get('platform');
@@ -20,9 +21,11 @@ export async function GET(request: NextRequest) {
     if (status) {
       where.status = status;
     }
-    if (platform) {
-      where.socialAccount = { platform };
-    }
+    // Always filter by user's social accounts
+    where.socialAccount = {
+      userId,
+      ...(platform ? { platform } : {}),
+    };
 
     const goals = await prisma.goal.findMany({
       where,
@@ -76,6 +79,7 @@ export async function POST(request: Request) {
   try {
     const auth = await requireAuth();
     if (auth.error) return auth.error;
+    const userId = auth.session!.user.id;
 
     const body = await request.json() as {
       socialAccountId: string;
@@ -95,13 +99,20 @@ export async function POST(request: Request) {
     // Get current followers count for startValue
     const account = await prisma.socialAccount.findUnique({
       where: { id: body.socialAccountId },
-      select: { followersCount: true },
+      select: { followersCount: true, userId: true },
     });
 
     if (!account) {
       return NextResponse.json(
         { error: 'Conta social nao encontrada' },
         { status: 404 }
+      );
+    }
+
+    if (account.userId !== userId) {
+      return NextResponse.json(
+        { error: 'Conta social nao pertence ao usuario' },
+        { status: 403 }
       );
     }
 

@@ -386,6 +386,7 @@ export const STATUS_LABELS: Record<PostStatus, string> = {
 
 export const STATUS_ORDER: PostStatus[] = [
   'IDEA',
+  'SCRIPT',
   'PRODUCTION',
   'REVIEW',
   'SCHEDULED',

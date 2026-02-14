@@ -95,7 +95,7 @@ export default function PipelinePage() {
     });
   }, [posts, filterPillar, filterAssigned, filterFormat]);
 
-  // Group posts by status (SCRIPT posts go into IDEA)
+  // Group posts by status
   const postsByStatus = useMemo(() => {
     const grouped: Record<string, Post[]> = {};
     for (const s of STATUS_ORDER) {
@@ -104,9 +104,7 @@ export default function PipelinePage() {
 
     filteredPosts.forEach((post) => {
       const status = post.status as PostStatus;
-      if (status === 'SCRIPT') {
-        grouped['IDEA'].push(post);
-      } else if (grouped[status]) {
+      if (grouped[status]) {
         grouped[status].push(post);
       }
     });
@@ -290,7 +288,7 @@ export default function PipelinePage() {
             onDragStart={handleDragStart}
             onDragEnd={handleDragEnd}
           >
-            <div className="grid gap-3 pb-4" style={{ gridTemplateColumns: `repeat(${STATUS_ORDER.length}, minmax(0, 1fr))` }}>
+            <div className="flex gap-3 pb-4 overflow-x-auto">
               {STATUS_ORDER.map((status) => (
                 <PipelineColumn
                   key={status}

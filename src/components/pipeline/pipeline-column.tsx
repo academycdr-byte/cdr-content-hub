@@ -50,7 +50,7 @@ export default function PipelineColumn({ status, posts, onPostClick }: PipelineC
     <div
       ref={setNodeRef}
       className={cn(
-        'flex flex-col min-w-[260px] w-[260px] rounded-xl bg-bg-secondary transition-colors',
+        'flex flex-col min-w-[200px] flex-1 rounded-xl bg-bg-secondary transition-colors',
         isOver && 'bg-accent-surface ring-2 ring-accent'
       )}
     >

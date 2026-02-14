@@ -79,41 +79,48 @@ export async function calculateCommissions(
     },
   });
 
-  // 5. Delete existing commissions for this month (recalculate)
-  await prisma.commission.deleteMany({
-    where: { monthReference: month },
-  });
-
-  // 6. Create new commissions
+  // 5 & 6. Delete + recreate in transaction to prevent race condition
   let created = 0;
   let total = 0;
 
+  const commissionData: Array<{
+    id: string;
+    userId: string;
+    metricId: string;
+    amount: number;
+    monthReference: string;
+    isPaid: boolean;
+  }> = [];
+
   for (const metric of metrics) {
-    // Determine format: from linked Post or from mediaType
     const format = metric.post?.format || mapMediaTypeToFormat(metric.mediaType);
     const cpmValue = cpmMap[format] || cpmMap['STATIC'] || 2.5;
-
-    // Formula: (views / 1000) * cpm
     const amount = (metric.views / 1000) * cpmValue;
     if (amount <= 0) continue;
 
-    // User: from linked Post's assignedTo, or from SocialAccount owner
     const userId = metric.post?.assignedTo || metric.socialAccount.userId;
 
-    await prisma.commission.create({
-      data: {
-        id: generateId(),
-        userId,
-        metricId: metric.id,
-        amount: Math.round(amount * 100) / 100,
-        monthReference: month,
-        isPaid: false,
-      },
+    commissionData.push({
+      id: generateId(),
+      userId,
+      metricId: metric.id,
+      amount: Math.round(amount * 100) / 100,
+      monthReference: month,
+      isPaid: false,
     });
 
     created++;
     total += amount;
   }
+
+  await prisma.$transaction([
+    prisma.commission.deleteMany({
+      where: { monthReference: month },
+    }),
+    prisma.commission.createMany({
+      data: commissionData,
+    }),
+  ]);
 
   return { created, total: Math.round(total * 100) / 100 };
 }

@@ -11,15 +11,17 @@ export async function GET(request: NextRequest) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
+    const currentUserId = (session.user as Record<string, unknown>).id as string;
+
     const { searchParams } = new URL(request.url);
     const month = searchParams.get('month');
-    const userId = searchParams.get('userId');
     const isPaidParam = searchParams.get('isPaid');
 
     // Build where clause
     const where: Record<string, unknown> = {};
     if (month) where.monthReference = month;
-    if (userId) where.userId = userId;
+    // Always scope to current user
+    where.userId = currentUserId;
     if (isPaidParam === 'true') where.isPaid = true;
     if (isPaidParam === 'false') where.isPaid = false;
 

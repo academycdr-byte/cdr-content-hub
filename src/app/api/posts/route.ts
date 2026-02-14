@@ -53,6 +53,7 @@ export async function POST(request: Request) {
   try {
     const auth = await requireAuth();
     if (auth.error) return auth.error;
+    const userId = auth.session!.user.id;
     const body = await request.json() as {
       title: string;
       format: string;
@@ -77,6 +78,7 @@ export async function POST(request: Request) {
         title: body.title,
         format: body.format,
         pillarId: body.pillarId,
+        createdById: userId,
         status: body.status || 'IDEA',
         scheduledDate: body.scheduledDate ? new Date(body.scheduledDate) : null,
         assignedTo: body.assignedTo || null,

@@ -10,8 +10,23 @@ export async function PATCH(request: Request, context: RouteContext) {
   try {
     const auth = await requireAuth();
     if (auth.error) return auth.error;
+    const userId = auth.session!.user.id;
 
     const { id } = await context.params;
+
+    // Verify ownership
+    const existingGoal = await prisma.goal.findUnique({
+      where: { id },
+      include: { socialAccount: { select: { userId: true } } },
+    });
+
+    if (!existingGoal) {
+      return NextResponse.json({ error: 'Meta nao encontrada' }, { status: 404 });
+    }
+    if (existingGoal.socialAccount.userId !== userId) {
+      return NextResponse.json({ error: 'Sem permissao' }, { status: 403 });
+    }
+
     const body = await request.json() as {
       targetValue?: number;
       period?: string;
@@ -57,8 +72,22 @@ export async function DELETE(_request: Request, context: RouteContext) {
   try {
     const auth = await requireAuth();
     if (auth.error) return auth.error;
+    const userId = auth.session!.user.id;
 
     const { id } = await context.params;
+
+    const existingGoal = await prisma.goal.findUnique({
+      where: { id },
+      include: { socialAccount: { select: { userId: true } } },
+    });
+
+    if (!existingGoal) {
+      return NextResponse.json({ error: 'Meta nao encontrada' }, { status: 404 });
+    }
+    if (existingGoal.socialAccount.userId !== userId) {
+      return NextResponse.json({ error: 'Sem permissao' }, { status: 403 });
+    }
+
     await prisma.goal.delete({ where: { id } });
 
     return NextResponse.json({ success: true });

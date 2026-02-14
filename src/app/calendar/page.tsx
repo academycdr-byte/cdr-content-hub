@@ -10,6 +10,7 @@ import {
   type DragStartEvent,
   type DragEndEvent,
 } from '@dnd-kit/core';
+import { useRouter } from 'next/navigation';
 import { usePostsStore } from '@/stores/posts-store';
 import { useCalendarStore } from '@/stores/calendar-store';
 import { useToastStore } from '@/stores/toast-store';
@@ -47,6 +48,7 @@ export default function CalendarPage() {
   } = useCalendarStore();
 
   const { addToast } = useToastStore();
+  const router = useRouter();
 
   const [showCreateModal, setShowCreateModal] = useState(false);
   const [selectedDate, setSelectedDate] = useState<Date | null>(null);
@@ -101,9 +103,9 @@ export default function CalendarPage() {
     setShowCreateModal(true);
   }, []);
 
-  const handlePostClick = useCallback((_post: Post) => {
-    // Future: Open post detail/edit drawer
-  }, []);
+  const handlePostClick = useCallback((post: Post) => {
+    router.push(`/posts/${post.id}`);
+  }, [router]);
 
   const handleCreatePost = useCallback(async (data: CreatePostData) => {
     const res = await fetch('/api/posts', {
@@ -224,7 +226,7 @@ export default function CalendarPage() {
 
       {/* Mobile: Weekly List with social posts */}
       <div className="mt-6 md:hidden">
-        <MobileWeeklyList posts={posts} calendarEntries={calendarEntries} />
+        <MobileWeeklyList posts={posts} calendarEntries={calendarEntries} onPostClick={handlePostClick} />
       </div>
 
       {/* Create Post Modal */}
@@ -266,9 +268,11 @@ function CalendarSkeleton() {
 function MobileWeeklyList({
   posts,
   calendarEntries,
+  onPostClick,
 }: {
   posts: Post[];
   calendarEntries: Record<string, CalendarEntry[]>;
+  onPostClick: (post: Post) => void;
 }) {
   const now = new Date();
   const startOfWeek = new Date(now);
@@ -318,7 +322,7 @@ function MobileWeeklyList({
             ) : (
               <div className="space-y-1">
                 {dayPosts.map((post) => (
-                  <CalendarPostCard key={post.id} post={post} onClick={() => {}} />
+                  <CalendarPostCard key={post.id} post={post} onClick={() => onPostClick(post)} />
                 ))}
                 {socialEntries.map((entry) => (
                   <CalendarSocialCard key={entry.id} entry={entry} compact />

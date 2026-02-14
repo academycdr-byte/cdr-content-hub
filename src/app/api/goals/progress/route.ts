@@ -6,6 +6,7 @@ export async function GET(request: NextRequest) {
   try {
     const auth = await requireAuth();
     if (auth.error) return auth.error;
+    const userId = auth.session!.user.id;
 
     const { searchParams } = new URL(request.url);
     const accountId = searchParams.get('accountId');
@@ -15,6 +16,18 @@ export async function GET(request: NextRequest) {
       return NextResponse.json(
         { error: 'accountId e obrigatorio' },
         { status: 400 }
+      );
+    }
+
+    // Verify account belongs to user
+    const account = await prisma.socialAccount.findUnique({
+      where: { id: accountId },
+      select: { userId: true },
+    });
+    if (!account || account.userId !== userId) {
+      return NextResponse.json(
+        { error: 'Conta nao encontrada' },
+        { status: 404 }
       );
     }
 

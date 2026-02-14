@@ -15,6 +15,7 @@ export async function GET() {
   try {
     const auth = await requireAuth();
     if (auth.error) return auth.error;
+    const userId = auth.session!.user.id;
 
     const now = new Date();
     const notifications: GeneratedNotification[] = [];
@@ -23,6 +24,7 @@ export async function GET() {
     const sevenDaysFromNow = new Date(now.getTime() + 7 * 24 * 60 * 60 * 1000);
     const expiringAccounts = await prisma.socialAccount.findMany({
       where: {
+        userId,
         isActive: true,
         OR: [
           {
@@ -73,6 +75,7 @@ export async function GET() {
     // Check for already expired tokens
     const expiredAccounts = await prisma.socialAccount.findMany({
       where: {
+        userId,
         isActive: true,
         OR: [
           {
