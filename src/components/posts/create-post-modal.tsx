@@ -19,7 +19,6 @@ export interface CreatePostData {
   format: PostFormat;
   pillarId: string;
   scheduledDate: string | null;
-  assignedTo: string | null;
 }
 
 const FORMATS: PostFormat[] = ['REEL', 'CAROUSEL', 'STATIC', 'STORY'];
@@ -77,7 +76,6 @@ export default function CreatePostModal({
         format,
         pillarId,
         scheduledDate: scheduledDate || null,
-        assignedTo: null,
       });
       // Reset form
       setTitle('');

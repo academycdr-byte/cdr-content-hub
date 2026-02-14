@@ -59,7 +59,6 @@ export async function POST(request: Request) {
       format: string;
       pillarId: string;
       scheduledDate?: string;
-      assignedTo?: string;
       hook?: string;
       status?: string;
       body?: string;
@@ -81,7 +80,6 @@ export async function POST(request: Request) {
         createdById: userId,
         status: body.status || 'IDEA',
         scheduledDate: body.scheduledDate ? new Date(body.scheduledDate) : null,
-        assignedTo: body.assignedTo || null,
         hook: body.hook || null,
         body: body.body || null,
       },

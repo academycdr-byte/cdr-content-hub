@@ -67,7 +67,6 @@ export interface Post {
   pillarId: string;
   status: PostStatus;
   scheduledDate: string | null;
-  assignedTo: string | null;
   createdAt: string;
   updatedAt: string;
   pillar?: ContentPillar;
@@ -205,35 +204,6 @@ export interface AggregatedMetrics {
     posts: number;
   }[];
   topPosts: PostMetrics[];
-}
-
-// ===== Commission Types =====
-
-export interface CommissionConfig {
-  id: string;
-  format: string;
-  cpmValue: number;
-  updatedAt: string;
-}
-
-export interface Commission {
-  id: string;
-  userId: string;
-  metricId: string;
-  amount: number;
-  monthReference: string;
-  isPaid: boolean;
-  paidAt: string | null;
-  createdAt: string;
-  user?: { id: string; name: string; email: string };
-  metric?: PostMetrics;
-}
-
-export interface CommissionStats {
-  total: number;
-  paid: number;
-  pending: number;
-  count: number;
 }
 
 // ===== Goal Types =====

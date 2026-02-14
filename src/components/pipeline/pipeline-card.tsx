@@ -61,12 +61,6 @@ export default function PipelineCard({ post, daysInColumn, onClick, isDragging }
           {FORMAT_ICONS[post.format as PostFormat]}
         </span>
 
-        {/* Assigned to */}
-        {post.assignedTo && (
-          <span className="text-[10px] text-text-tertiary truncate max-w-[80px]">
-            {post.assignedTo}
-          </span>
-        )}
       </div>
 
       {/* Bottom row: scheduled date + days in column */}

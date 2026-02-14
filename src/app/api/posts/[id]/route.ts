@@ -42,7 +42,6 @@ export async function PUT(request: Request, context: RouteContext) {
       pillarId?: string;
       status?: string;
       scheduledDate?: string | null;
-      assignedTo?: string | null;
     };
 
     const post = await prisma.post.update({
@@ -59,7 +58,6 @@ export async function PUT(request: Request, context: RouteContext) {
         ...(body.scheduledDate !== undefined && {
           scheduledDate: body.scheduledDate ? new Date(body.scheduledDate) : null,
         }),
-        ...(body.assignedTo !== undefined && { assignedTo: body.assignedTo }),
       },
       include: { contentPillar: true },
     });

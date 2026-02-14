@@ -1,6 +1,6 @@
 'use client';
 
-import { Calendar, User, Tag, Layers, Clock } from 'lucide-react';
+import { Calendar, Tag, Layers, Clock } from 'lucide-react';
 import type { Post, ContentPillar } from '@/types';
 import { STATUS_LABELS, FORMAT_LABELS, type PostFormat, type PostStatus } from '@/types';
 
@@ -81,19 +81,6 @@ export default function PostSidebar({ post, pillar }: PostSidebarProps) {
           <p className="text-[10px] font-semibold text-text-tertiary uppercase tracking-wider">Formato</p>
           <p className="text-sm text-text-primary mt-0.5">
             {FORMAT_LABELS[post.format as PostFormat] || post.format}
-          </p>
-        </div>
-      </div>
-
-      {/* Assigned To */}
-      <div className="flex items-center gap-3">
-        <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-bg-secondary">
-          <User size={14} className="text-text-tertiary" />
-        </div>
-        <div>
-          <p className="text-[10px] font-semibold text-text-tertiary uppercase tracking-wider">Responsavel</p>
-          <p className="text-sm text-text-primary mt-0.5">
-            {post.assignedTo || 'Nao atribuido'}
           </p>
         </div>
       </div>

@@ -11,7 +11,6 @@ import {
   MoreHorizontal,
   BarChart3,
   Target,
-  DollarSign,
   Trophy,
   Share2,
   Settings,
@@ -35,7 +34,6 @@ const MAIN_ITEMS: NavItem[] = [
 const MORE_ITEMS: NavItem[] = [
   { label: 'Metricas', href: '/metrics', icon: <BarChart3 size={20} /> },
   { label: 'Metas', href: '/goals', icon: <Target size={20} /> },
-  { label: 'Comissoes', href: '/commissions', icon: <DollarSign size={20} /> },
   { label: 'Resultados', href: '/results', icon: <Trophy size={20} /> },
   { label: 'Social', href: '/social', icon: <Share2 size={20} /> },
   { label: 'Configuracoes', href: '/settings/pillars', icon: <Settings size={20} /> },

@@ -36,7 +36,6 @@ export default function PipelinePage() {
 
   // Filters
   const [filterPillar, setFilterPillar] = useState<string>('');
-  const [filterAssigned, setFilterAssigned] = useState<string>('');
   const [filterFormat, setFilterFormat] = useState<string>('');
 
   const { addToast } = useToastStore();
@@ -76,24 +75,14 @@ export default function PipelinePage() {
     fetchData();
   }, [fetchData]);
 
-  // Get unique assignees from posts
-  const assignees = useMemo(() => {
-    const set = new Set<string>();
-    posts.forEach((p) => {
-      if (p.assignedTo) set.add(p.assignedTo);
-    });
-    return Array.from(set).sort();
-  }, [posts]);
-
   // Filter posts
   const filteredPosts = useMemo(() => {
     return posts.filter((post) => {
       if (filterPillar && post.pillarId !== filterPillar) return false;
-      if (filterAssigned && post.assignedTo !== filterAssigned) return false;
       if (filterFormat && post.format !== filterFormat) return false;
       return true;
     });
-  }, [posts, filterPillar, filterAssigned, filterFormat]);
+  }, [posts, filterPillar, filterFormat]);
 
   // Group posts by status
   const postsByStatus = useMemo(() => {
@@ -180,7 +169,7 @@ export default function PipelinePage() {
     }
   }, [posts, addToast]);
 
-  const hasActiveFilters = filterPillar || filterAssigned || filterFormat;
+  const hasActiveFilters = filterPillar || filterFormat;
 
   if (loading) {
     return (
@@ -234,23 +223,6 @@ export default function PipelinePage() {
           ))}
         </select>
 
-        {/* Assignee filter */}
-        <select
-          value={filterAssigned}
-          onChange={(e) => setFilterAssigned(e.target.value)}
-          className={cn(
-            'input py-1.5 px-3 text-xs w-auto min-w-[140px]',
-            filterAssigned && 'border-accent'
-          )}
-        >
-          <option value="">Todos os responsaveis</option>
-          {assignees.map((a) => (
-            <option key={a} value={a}>
-              {a}
-            </option>
-          ))}
-        </select>
-
         {/* Format filter */}
         <select
           value={filterFormat}
@@ -271,7 +243,6 @@ export default function PipelinePage() {
           <button
             onClick={() => {
               setFilterPillar('');
-              setFilterAssigned('');
               setFilterFormat('');
             }}
             className="text-xs text-accent hover:text-accent-hover font-medium transition-colors"
@@ -280,6 +251,7 @@ export default function PipelinePage() {
           </button>
         )}
       </div>
+
 
       {/* Desktop Kanban View */}
       <div className="hidden md:block">
@@ -367,11 +339,6 @@ export default function PipelinePage() {
                         >
                           {post.pillar?.name || 'Sem pilar'}
                         </span>
-                        {post.assignedTo && (
-                          <span className="text-[10px] text-text-tertiary">
-                            {post.assignedTo}
-                          </span>
-                        )}
                       </div>
                     </button>
                   );
