@@ -78,17 +78,26 @@ export default function MetricsPage() {
                 ? '/api/social/instagram/sync'
                 : '/api/social/tiktok/sync';
 
-            const res = await fetch(endpoint, {
-              method: 'POST',
-              headers: { 'Content-Type': 'application/json' },
-              body: JSON.stringify({ accountId: account.id }),
-            });
+            // Timeout after 25s to avoid hanging spinner (Vercel hobby: 10s limit)
+            const controller = new AbortController();
+            const timeout = setTimeout(() => controller.abort(), 25000);
 
-            if (!res.ok) {
-              const data = await res.json().catch(() => ({})) as { error?: string };
-              throw new Error(data.error || `Erro ${res.status}`);
+            try {
+              const res = await fetch(endpoint, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ accountId: account.id }),
+                signal: controller.signal,
+              });
+
+              if (!res.ok) {
+                const data = await res.json().catch(() => ({})) as { error?: string };
+                throw new Error(data.error || `Erro ${res.status}`);
+              }
+              return res.json() as Promise<{ synced: number }>;
+            } finally {
+              clearTimeout(timeout);
             }
-            return res.json() as Promise<{ synced: number }>;
           })
         );
 

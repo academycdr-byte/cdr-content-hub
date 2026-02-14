@@ -160,7 +160,8 @@ export async function fetchInstagramMedia(
 ): Promise<SyncedPost[]> {
   const mediaFields =
     'id,caption,media_type,media_url,permalink,thumbnail_url,timestamp,like_count,comments_count';
-  const url = `${FB_API}/${API_VERSION}/${igUserId}/media?fields=${mediaFields}&limit=50&access_token=${accessToken}`;
+  // Limit to 25 posts to stay within Vercel serverless function timeout (10s hobby / 60s pro)
+  const url = `${FB_API}/${API_VERSION}/${igUserId}/media?fields=${mediaFields}&limit=25&access_token=${accessToken}`;
 
   const res = await fetch(url);
   if (!res.ok) {
@@ -171,71 +172,85 @@ export async function fetchInstagramMedia(
 
   if (!data.data) return [];
 
+  // Fetch insights for all posts in parallel (batches of 5 to avoid rate limits)
+  const mediaList = data.data;
   const posts: SyncedPost[] = [];
 
-  for (const media of data.data) {
-    const insights: IGInsights = {};
+  // Process in batches of 5 concurrent requests
+  const BATCH_SIZE = 5;
+  for (let i = 0; i < mediaList.length; i += BATCH_SIZE) {
+    const batch = mediaList.slice(i, i + BATCH_SIZE);
+    const batchResults = await Promise.allSettled(
+      batch.map(async (media) => {
+        const insights = await fetchMediaInsights(media.id, media.media_type, accessToken);
+        return { media, insights };
+      })
+    );
 
-    // Since April 2025, Meta unified 'impressions' and 'plays' into 'views'.
-    // Try: views, reach, shares, saves (works for all media types in v22.0+)
-    const metricsToTry: string[][] = [
-      ['views', 'reach', 'shares', 'saves'],
-      ['views', 'reach', 'shares'],
-      ['views', 'reach'],
-      ['views'],
-      ['reach'],
-    ];
+    for (const result of batchResults) {
+      if (result.status === 'rejected') continue;
+      const { media, insights } = result.value;
+      const views = insights.views || insights.reach || 0;
 
-    let gotInsights = false;
-    for (const metrics of metricsToTry) {
-      if (gotInsights) break;
-      try {
-        const insightsRes = await fetch(
-          `${FB_API}/${API_VERSION}/${media.id}/insights?metric=${metrics.join(',')}&access_token=${accessToken}`
-        );
-        if (insightsRes.ok) {
-          const insightsData = (await insightsRes.json()) as {
-            data?: Array<{ name: string; values?: Array<{ value?: number }> }>;
-          };
-          if (insightsData.data && insightsData.data.length > 0) {
-            for (const metric of insightsData.data) {
-              const val = metric.values?.[0]?.value || 0;
-              if (metric.name === 'views') {
-                insights.views = val;
-              } else if (metric.name === 'reach') {
-                insights.reach = val;
-              } else if (metric.name === 'shares') {
-                insights.shares = val;
-              } else if (metric.name === 'saves') {
-                insights.saves = val;
-              }
-            }
-            gotInsights = true;
-          }
-        } else {
-          const errText = await insightsRes.text();
-          console.log(`[IG Sync] Insights [${metrics.join(',')}] for ${media.id} (${media.media_type}): ${insightsRes.status} - ${errText.slice(0, 200)}`);
-        }
-      } catch (err) {
-        console.log(`[IG Sync] Insights error for ${media.id}: ${err instanceof Error ? err.message : 'unknown'}`);
-      }
+      posts.push({
+        externalId: media.id,
+        title: (media.caption || '').slice(0, 200) || `Post ${media.media_type}`,
+        url: media.permalink || '',
+        thumbnailUrl: media.thumbnail_url || media.media_url || '',
+        mediaType: media.media_type,
+        views,
+        likes: media.like_count || 0,
+        comments: media.comments_count || 0,
+        shares: insights.shares || 0,
+        postedAt: media.timestamp.split('T')[0],
+      });
     }
-
-    const views = insights.views || insights.reach || 0;
-
-    posts.push({
-      externalId: media.id,
-      title: (media.caption || '').slice(0, 200) || `Post ${media.media_type}`,
-      url: media.permalink || '',
-      thumbnailUrl: media.thumbnail_url || media.media_url || '',
-      mediaType: media.media_type,
-      views,
-      likes: media.like_count || 0,
-      comments: media.comments_count || 0,
-      shares: insights.shares || 0,
-      postedAt: media.timestamp.split('T')[0],
-    });
   }
 
   return posts;
+}
+
+/** Fetch insights for a single media item. Tries 'views,reach,shares' first, then 'views' only. */
+async function fetchMediaInsights(
+  mediaId: string,
+  mediaType: string,
+  accessToken: string
+): Promise<IGInsights> {
+  const insights: IGInsights = {};
+
+  // Since April 2025, Meta unified 'impressions' and 'plays' into 'views'.
+  // Try the full set first, then just views as fallback.
+  const metricsToTry: string[][] = [
+    ['views', 'reach', 'shares'],
+    ['views'],
+  ];
+
+  for (const metrics of metricsToTry) {
+    try {
+      const insightsRes = await fetch(
+        `${FB_API}/${API_VERSION}/${mediaId}/insights?metric=${metrics.join(',')}&access_token=${accessToken}`
+      );
+      if (insightsRes.ok) {
+        const insightsData = (await insightsRes.json()) as {
+          data?: Array<{ name: string; values?: Array<{ value?: number }> }>;
+        };
+        if (insightsData.data && insightsData.data.length > 0) {
+          for (const metric of insightsData.data) {
+            const val = metric.values?.[0]?.value || 0;
+            if (metric.name === 'views') insights.views = val;
+            else if (metric.name === 'reach') insights.reach = val;
+            else if (metric.name === 'shares') insights.shares = val;
+          }
+          return insights;
+        }
+      } else {
+        const errText = await insightsRes.text();
+        console.log(`[IG Sync] Insights [${metrics.join(',')}] for ${mediaId} (${mediaType}): ${insightsRes.status} - ${errText.slice(0, 100)}`);
+      }
+    } catch (err) {
+      console.log(`[IG Sync] Insights error for ${mediaId}: ${err instanceof Error ? err.message : 'unknown'}`);
+    }
+  }
+
+  return insights;
 }
