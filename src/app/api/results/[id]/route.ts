@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
+import { requireAuth } from '@/lib/auth';
 
 interface RouteContext {
   params: Promise<{ id: string }>;
@@ -7,6 +8,8 @@ interface RouteContext {
 
 export async function GET(_request: Request, context: RouteContext) {
   try {
+    const auth = await requireAuth();
+    if (auth.error) return auth.error;
     const { id } = await context.params;
     const result = await prisma.clientResult.findUnique({
       where: { id },
@@ -26,6 +29,8 @@ export async function GET(_request: Request, context: RouteContext) {
 
 export async function PUT(request: Request, context: RouteContext) {
   try {
+    const auth = await requireAuth();
+    if (auth.error) return auth.error;
     const { id } = await context.params;
     const body = await request.json() as {
       clientName?: string;
@@ -80,6 +85,8 @@ export async function PUT(request: Request, context: RouteContext) {
 
 export async function DELETE(_request: Request, context: RouteContext) {
   try {
+    const auth = await requireAuth();
+    if (auth.error) return auth.error;
     const { id } = await context.params;
     await prisma.clientResult.delete({ where: { id } });
     return NextResponse.json({ success: true });

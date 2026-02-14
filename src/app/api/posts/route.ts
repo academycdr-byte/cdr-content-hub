@@ -1,12 +1,23 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
+import { requireAuth } from '@/lib/auth';
 
 export async function GET(request: NextRequest) {
   try {
+    const auth = await requireAuth();
+    if (auth.error) return auth.error;
     const { searchParams } = new URL(request.url);
     const month = searchParams.get('month'); // Format: YYYY-MM
 
+    const search = searchParams.get('search');
     const where: Record<string, unknown> = {};
+
+    if (search) {
+      where.title = {
+        contains: search,
+        mode: 'insensitive',
+      };
+    }
 
     if (month) {
       const [year, m] = month.split('-').map(Number);
@@ -23,7 +34,8 @@ export async function GET(request: NextRequest) {
       include: {
         pillar: true,
       },
-      orderBy: { scheduledDate: 'asc' },
+      orderBy: search ? { updatedAt: 'desc' } : { scheduledDate: 'asc' },
+      ...(search ? { take: 20 } : {}),
     });
 
     return NextResponse.json(posts);
@@ -38,6 +50,8 @@ export async function GET(request: NextRequest) {
 
 export async function POST(request: Request) {
   try {
+    const auth = await requireAuth();
+    if (auth.error) return auth.error;
     const body = await request.json() as {
       title: string;
       format: string;

@@ -1,8 +1,11 @@
 import { NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
+import { requireAuth } from '@/lib/auth';
 
 export async function GET() {
   try {
+    const auth = await requireAuth();
+    if (auth.error) return auth.error;
     const templates = await prisma.checklistTemplate.findMany({
       orderBy: { stage: 'asc' },
     });
@@ -26,6 +29,8 @@ export async function GET() {
 
 export async function PUT(request: Request) {
   try {
+    const auth = await requireAuth();
+    if (auth.error) return auth.error;
     const body = await request.json() as Array<{
       id: string;
       stage: string;

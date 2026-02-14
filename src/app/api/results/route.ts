@@ -1,8 +1,11 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
+import { requireAuth } from '@/lib/auth';
 
 export async function GET(request: NextRequest) {
   try {
+    const auth = await requireAuth();
+    if (auth.error) return auth.error;
     const { searchParams } = new URL(request.url);
     const clientName = searchParams.get('clientName');
     const metricType = searchParams.get('metricType');
@@ -50,6 +53,8 @@ export async function GET(request: NextRequest) {
 
 export async function POST(request: Request) {
   try {
+    const auth = await requireAuth();
+    if (auth.error) return auth.error;
     const body = await request.json() as {
       clientName: string;
       clientNiche: string;

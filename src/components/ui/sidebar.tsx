@@ -13,10 +13,13 @@ import {
   Share2,
   Settings,
   LogOut,
+  Search,
 } from 'lucide-react';
 import { signOut } from 'next-auth/react';
 import { cn } from '@/lib/utils';
 import ThemeToggle from '@/components/ui/theme-toggle';
+import NotificationBell from '@/components/ui/notification-bell';
+import { useSearchStore } from '@/stores/search-store';
 
 interface NavItem {
   label: string;
@@ -38,6 +41,7 @@ const NAV_ITEMS: NavItem[] = [
 
 export default function Sidebar() {
   const pathname = usePathname();
+  const { open: openSearch } = useSearchStore();
 
   const isActive = (href: string): boolean => {
     if (href === '/') return pathname === '/';
@@ -46,18 +50,38 @@ export default function Sidebar() {
 
   return (
     <aside className="fixed left-0 top-0 z-40 flex h-screen w-[240px] flex-col bg-sidebar-bg border-r border-sidebar-border">
-      {/* Logo */}
-      <div className="flex h-16 items-center gap-3 px-6 border-b border-sidebar-border">
-        <div
-          className="flex h-8 w-8 items-center justify-center rounded-lg font-bold text-sm"
-          style={{ backgroundColor: '#B8FF00', color: '#1D1D1F' }}
+      {/* Logo + Actions */}
+      <div className="flex h-16 items-center justify-between px-6 border-b border-sidebar-border">
+        <div className="flex items-center gap-3">
+          <div
+            className="flex h-8 w-8 items-center justify-center rounded-lg font-bold text-sm"
+            style={{ backgroundColor: '#B8FF00', color: '#1D1D1F' }}
+          >
+            CH
+          </div>
+          <div>
+            <p className="text-sm font-semibold text-sidebar-text-active">Content Hub</p>
+            <p className="text-[11px] text-sidebar-text">CDR Group</p>
+          </div>
+        </div>
+        <NotificationBell />
+      </div>
+
+      {/* Search */}
+      <div className="px-3 pt-3">
+        <button
+          onClick={openSearch}
+          className="flex w-full items-center gap-2.5 rounded-lg px-3 py-2 text-[13px] text-sidebar-text transition-colors hover:bg-sidebar-hover hover:text-sidebar-text-active"
+          style={{
+            border: '1px solid rgba(255, 255, 255, 0.08)',
+          }}
         >
-          CH
-        </div>
-        <div>
-          <p className="text-sm font-semibold text-sidebar-text-active">Content Hub</p>
-          <p className="text-[11px] text-sidebar-text">CDR Group</p>
-        </div>
+          <Search size={15} />
+          <span className="flex-1 text-left">Buscar...</span>
+          <kbd className="text-[10px] font-medium px-1.5 py-0.5 rounded bg-sidebar-hover border border-sidebar-border">
+            Ctrl+K
+          </kbd>
+        </button>
       </div>
 
       {/* Navigation */}

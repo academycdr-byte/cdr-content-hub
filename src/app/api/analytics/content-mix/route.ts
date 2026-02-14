@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
+import { requireAuth } from '@/lib/auth';
 
 interface ContentMixPillar {
   id: string;
@@ -21,6 +22,8 @@ interface ContentMixResponse {
 
 export async function GET() {
   try {
+    const auth = await requireAuth();
+    if (auth.error) return auth.error;
     const [pillars, posts] = await Promise.all([
       prisma.contentPillar.findMany({
         where: { isActive: true },

@@ -6,8 +6,10 @@ import { usePathname, useRouter } from 'next/navigation';
 import { redirect } from 'next/navigation';
 import Sidebar from '@/components/ui/sidebar';
 import MobileBottomNav from '@/components/ui/mobile-bottom-nav';
+import SearchCommand from '@/components/ui/search-command';
 import CreatePostModal, { type CreatePostData } from '@/components/posts/create-post-modal';
 import { useToastStore } from '@/stores/toast-store';
+import { useSearchStore } from '@/stores/search-store';
 import type { ContentPillar } from '@/types';
 
 interface AppShellProps {
@@ -19,6 +21,7 @@ export default function AppShell({ children }: AppShellProps) {
   const pathname = usePathname();
   const router = useRouter();
   const { addToast } = useToastStore();
+  const { open: openSearch } = useSearchStore();
 
   const [showCreatePost, setShowCreatePost] = useState(false);
   const [pillars, setPillars] = useState<ContentPillar[]>([]);
@@ -49,7 +52,14 @@ export default function AppShell({ children }: AppShellProps) {
     if (!isAuthenticated || isLoginPage) return;
 
     function handleKeyDown(e: KeyboardEvent) {
-      // Don't trigger shortcuts when typing in inputs
+      // Ctrl+K / Cmd+K: Search command palette (works even in inputs)
+      if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'k') {
+        e.preventDefault();
+        openSearch();
+        return;
+      }
+
+      // Don't trigger other shortcuts when typing in inputs
       const target = e.target as HTMLElement;
       if (
         target.tagName === 'INPUT' ||
@@ -81,7 +91,7 @@ export default function AppShell({ children }: AppShellProps) {
 
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [isAuthenticated, isLoginPage, router, pillars.length, fetchPillars]);
+  }, [isAuthenticated, isLoginPage, router, pillars.length, fetchPillars, openSearch]);
 
   const handleCreatePost = useCallback(async (data: CreatePostData) => {
     const res = await fetch('/api/posts', {
@@ -136,6 +146,9 @@ export default function AppShell({ children }: AppShellProps) {
       <div className="block md:hidden">
         <MobileBottomNav />
       </div>
+
+      {/* Global Search Command Palette (Ctrl+K) */}
+      <SearchCommand />
 
       {/* Global Create Post Modal (triggered by keyboard shortcut) */}
       <CreatePostModal

@@ -9,16 +9,24 @@ const DEFAULT_CONFIGS = [
 
 /**
  * Ensure default CPM configs exist in database.
- * Only seeds if table is empty.
+ * Uses upsert to guarantee all 4 formats exist,
+ * without overwriting user-customized values.
  */
 export async function ensureDefaultConfigs() {
-  const count = await prisma.commissionConfig.count();
-  if (count === 0) {
+  const existing = await prisma.commissionConfig.findMany({
+    select: { format: true },
+  });
+  const existingFormats = new Set(existing.map((c) => c.format));
+
+  const missing = DEFAULT_CONFIGS.filter((c) => !existingFormats.has(c.format));
+
+  if (missing.length > 0) {
     await prisma.commissionConfig.createMany({
-      data: DEFAULT_CONFIGS.map((c) => ({
+      data: missing.map((c) => ({
         format: c.format,
         cpmValue: c.cpmValue,
       })),
+      skipDuplicates: true,
     });
   }
 }

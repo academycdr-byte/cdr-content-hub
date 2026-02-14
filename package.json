@@ -38,6 +38,9 @@
     "typescript": "^5.8.3",
     "zustand": "^5.0.5"
   },
+  "prisma": {
+    "seed": "npx tsx prisma/seed.ts"
+  },
   "devDependencies": {
     "@eslint/eslintrc": "^3.3.3",
     "eslint": "^9.39.2",

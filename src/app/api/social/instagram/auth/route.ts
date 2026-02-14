@@ -1,8 +1,11 @@
 import { NextResponse } from 'next/server';
 import { randomBytes } from 'crypto';
 import { getOAuthUrl } from '@/lib/instagram';
+import { requireAuth } from '@/lib/auth';
 
 export async function GET() {
+  const auth = await requireAuth();
+  if (auth.error) return auth.error;
   if (!process.env.META_APP_ID || !process.env.META_APP_SECRET) {
     return NextResponse.json(
       {

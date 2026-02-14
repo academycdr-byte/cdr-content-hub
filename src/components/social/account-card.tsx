@@ -1,6 +1,6 @@
 'use client';
 
-import { Instagram, Music2, Users, RefreshCw, Unlink } from 'lucide-react';
+import { Instagram, Music2, Users, RefreshCw, Unlink, LinkIcon } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import type { SocialAccount } from '@/types';
 
@@ -140,18 +140,44 @@ export default function AccountCard({
         </p>
       )}
 
+      {/* Token expiry warning */}
+      {health === 'expiring' && (
+        <div className="mt-3 px-3 py-2 rounded-lg bg-warning-surface text-warning text-xs font-medium">
+          Token expira em breve. Sera renovado automaticamente.
+        </div>
+      )}
+      {health === 'expired' && (
+        <div className="mt-3 px-3 py-2 rounded-lg bg-error-surface text-error text-xs font-medium">
+          Token expirado. Reconecte a conta para continuar sincronizando.
+        </div>
+      )}
+
       {/* Actions */}
       <div className="mt-4 pt-3 border-t border-border-default flex items-center gap-2">
-        <button
-          onClick={() => onSync(account.id)}
-          disabled={syncing || health === 'expired'}
-          className="flex-1 flex items-center justify-center gap-1.5 px-3 py-2 text-sm font-medium rounded-xl transition-all bg-accent-surface text-accent hover:bg-accent-surface-hover disabled:opacity-50 disabled:cursor-not-allowed"
-        >
-          <RefreshCw
-            className={cn('w-3.5 h-3.5', syncing && 'animate-spin')}
-          />
-          {syncing ? 'Sincronizando...' : 'Sincronizar'}
-        </button>
+        {health === 'expired' ? (
+          <a
+            href={
+              isInstagram
+                ? '/api/social/instagram/auth'
+                : '/api/social/tiktok/auth'
+            }
+            className="flex-1 flex items-center justify-center gap-1.5 px-3 py-2 text-sm font-medium rounded-xl transition-all bg-accent text-text-inverted hover:opacity-90"
+          >
+            <LinkIcon className="w-3.5 h-3.5" />
+            Reconectar
+          </a>
+        ) : (
+          <button
+            onClick={() => onSync(account.id)}
+            disabled={syncing}
+            className="flex-1 flex items-center justify-center gap-1.5 px-3 py-2 text-sm font-medium rounded-xl transition-all bg-accent-surface text-accent hover:bg-accent-surface-hover disabled:opacity-50 disabled:cursor-not-allowed"
+          >
+            <RefreshCw
+              className={cn('w-3.5 h-3.5', syncing && 'animate-spin')}
+            />
+            {syncing ? 'Sincronizando...' : 'Sincronizar'}
+          </button>
+        )}
         <button
           onClick={() => onDisconnect(account.id)}
           className="flex items-center justify-center gap-1.5 px-3 py-2 text-sm font-medium rounded-xl transition-colors text-error hover:bg-error-surface"

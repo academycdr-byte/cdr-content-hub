@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
+import { requireAuth } from '@/lib/auth';
 
 interface PillarMixItem {
   id: string;
@@ -26,6 +27,14 @@ interface UpcomingPostItem {
   format: string;
 }
 
+interface MetricsSummary {
+  views: number;
+  likes: number;
+  comments: number;
+  shares: number;
+  posts: number;
+}
+
 interface DashboardStats {
   postsThisMonth: number;
   monthlyGoal: number;
@@ -34,6 +43,7 @@ interface DashboardStats {
   contentMix: PillarMixItem[];
   upcomingPosts: UpcomingPostItem[];
   resultsWithoutPost: number;
+  metricsSummary: MetricsSummary | null;
 }
 
 const STATUS_COLORS: Record<string, string> = {
@@ -47,17 +57,24 @@ const STATUS_COLORS: Record<string, string> = {
 
 export async function GET() {
   try {
+    const auth = await requireAuth();
+    if (auth.error) return auth.error;
     const now = new Date();
     const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1);
     const endOfMonth = new Date(now.getFullYear(), now.getMonth() + 1, 0, 23, 59, 59);
 
     // Run all queries in parallel
+    // Last 30 days for metrics summary
+    const thirtyDaysAgo = new Date();
+    thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
+
     const [
       publishedThisMonth,
       allPosts,
       pillars,
       upcomingPosts,
       totalResults,
+      metricsAggregate,
     ] = await Promise.all([
       // Posts published this month
       prisma.post.count({
@@ -87,6 +104,19 @@ export async function GET() {
       }),
       // Total results count
       prisma.clientResult.count(),
+      // Social metrics aggregate (last 30 days)
+      prisma.postMetrics.aggregate({
+        where: {
+          publishedAt: { gte: thirtyDaysAgo },
+        },
+        _sum: {
+          views: true,
+          likes: true,
+          comments: true,
+          shares: true,
+        },
+        _count: true,
+      }),
     ]);
 
     // Calculate consistency score (last 4 weeks)
@@ -139,6 +169,18 @@ export async function GET() {
     // A more sophisticated approach would track which results have been transformed
     const resultsWithoutPost = totalResults;
 
+    // Build metrics summary
+    const metricsSummary: MetricsSummary | null =
+      metricsAggregate._count > 0
+        ? {
+            views: metricsAggregate._sum.views || 0,
+            likes: metricsAggregate._sum.likes || 0,
+            comments: metricsAggregate._sum.comments || 0,
+            shares: metricsAggregate._sum.shares || 0,
+            posts: metricsAggregate._count,
+          }
+        : null;
+
     const stats: DashboardStats = {
       postsThisMonth: publishedThisMonth,
       monthlyGoal: 16,
@@ -147,6 +189,7 @@ export async function GET() {
       contentMix,
       upcomingPosts: upcoming,
       resultsWithoutPost,
+      metricsSummary,
     };
 
     return NextResponse.json(stats);

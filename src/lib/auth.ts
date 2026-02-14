@@ -1,7 +1,43 @@
-import type { NextAuthOptions } from 'next-auth';
+import type { NextAuthOptions, Session } from 'next-auth';
+import { getServerSession } from 'next-auth';
+import { NextResponse } from 'next/server';
 import CredentialsProvider from 'next-auth/providers/credentials';
 import bcrypt from 'bcryptjs';
 import { prisma } from '@/lib/prisma';
+
+/**
+ * Requires authenticated session for API routes.
+ * Returns the session if authenticated, or a 401 NextResponse.
+ */
+export async function requireAuth(): Promise<
+  | { session: Session & { user: { id: string; name?: string | null; email?: string | null } }; error: null }
+  | { session: null; error: NextResponse }
+> {
+  const session = await getServerSession(authOptions);
+
+  if (!session?.user) {
+    return {
+      session: null,
+      error: NextResponse.json(
+        { error: 'Unauthorized' },
+        { status: 401 }
+      ),
+    };
+  }
+
+  const userId = (session.user as Record<string, unknown>).id as string;
+
+  return {
+    session: {
+      ...session,
+      user: {
+        ...session.user,
+        id: userId,
+      },
+    },
+    error: null,
+  };
+}
 
 export const authOptions: NextAuthOptions = {
   providers: [

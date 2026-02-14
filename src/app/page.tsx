@@ -10,6 +10,10 @@ import {
   TrendingUp,
   Clock,
   Flame,
+  Eye,
+  Heart,
+  MessageCircle,
+  Share2,
 } from 'lucide-react';
 import { formatDate } from '@/lib/utils';
 import { STATUS_LABELS } from '@/types';
@@ -41,6 +45,14 @@ interface UpcomingPostItem {
   format: string;
 }
 
+interface MetricsSummary {
+  views: number;
+  likes: number;
+  comments: number;
+  shares: number;
+  posts: number;
+}
+
 interface DashboardStats {
   postsThisMonth: number;
   monthlyGoal: number;
@@ -49,6 +61,17 @@ interface DashboardStats {
   contentMix: PillarMixItem[];
   upcomingPosts: UpcomingPostItem[];
   resultsWithoutPost: number;
+  metricsSummary: MetricsSummary | null;
+}
+
+function formatMetricNumber(value: number): string {
+  if (value >= 1_000_000) {
+    return `${(value / 1_000_000).toFixed(1)}M`;
+  }
+  if (value >= 1_000) {
+    return `${(value / 1_000).toFixed(1)}K`;
+  }
+  return String(value);
 }
 
 export default function DashboardPage() {
@@ -213,6 +236,56 @@ export default function DashboardPage() {
           </div>
         </div>
       </div>
+
+      {/* Social Metrics Row */}
+      {stats.metricsSummary && stats.metricsSummary.posts > 0 && (
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-4">
+          <div className="card p-5">
+            <div className="flex items-center justify-between mb-3">
+              <p className="text-label text-text-tertiary">Views</p>
+              <div className="flex h-7 w-7 items-center justify-center rounded-lg bg-accent-surface">
+                <Eye size={14} className="text-accent" />
+              </div>
+            </div>
+            <p className="text-2xl font-bold text-text-primary">
+              {formatMetricNumber(stats.metricsSummary.views)}
+            </p>
+          </div>
+          <div className="card p-5">
+            <div className="flex items-center justify-between mb-3">
+              <p className="text-label text-text-tertiary">Likes</p>
+              <div className="flex h-7 w-7 items-center justify-center rounded-lg bg-accent-surface">
+                <Heart size={14} className="text-accent" />
+              </div>
+            </div>
+            <p className="text-2xl font-bold text-text-primary">
+              {formatMetricNumber(stats.metricsSummary.likes)}
+            </p>
+          </div>
+          <div className="card p-5">
+            <div className="flex items-center justify-between mb-3">
+              <p className="text-label text-text-tertiary">Comentarios</p>
+              <div className="flex h-7 w-7 items-center justify-center rounded-lg bg-accent-surface">
+                <MessageCircle size={14} className="text-accent" />
+              </div>
+            </div>
+            <p className="text-2xl font-bold text-text-primary">
+              {formatMetricNumber(stats.metricsSummary.comments)}
+            </p>
+          </div>
+          <div className="card p-5">
+            <div className="flex items-center justify-between mb-3">
+              <p className="text-label text-text-tertiary">Shares</p>
+              <div className="flex h-7 w-7 items-center justify-center rounded-lg bg-accent-surface">
+                <Share2 size={14} className="text-accent" />
+              </div>
+            </div>
+            <p className="text-2xl font-bold text-text-primary">
+              {formatMetricNumber(stats.metricsSummary.shares)}
+            </p>
+          </div>
+        </div>
+      )}
 
       {/* Bottom Row: 3 cards */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">

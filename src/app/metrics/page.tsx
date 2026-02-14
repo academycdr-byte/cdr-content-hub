@@ -1,9 +1,10 @@
 'use client';
 
 import { useEffect, useCallback, useRef, useState } from 'react';
-import { BarChart3, Share2, RefreshCw } from 'lucide-react';
+import { BarChart3, Share2, RefreshCw, Download } from 'lucide-react';
 import Link from 'next/link';
 import { useMetricsStore } from '@/stores/metrics-store';
+import { useTokenRefresh } from '@/hooks/use-token-refresh';
 import MetricsOverview from '@/components/metrics/metrics-overview';
 import MetricsChart from '@/components/metrics/metrics-chart';
 import TopPostsTable from '@/components/metrics/top-posts-table';
@@ -38,6 +39,9 @@ export default function MetricsPage() {
     fetchAggregated,
     setDateRange,
   } = useMetricsStore();
+
+  // Auto-refresh expiring Instagram tokens silently
+  useTokenRefresh();
 
   const hasSyncedRef = useRef(false);
   const [syncing, setSyncing] = useState(false);
@@ -143,6 +147,20 @@ export default function MetricsPage() {
     return DATE_PRESETS.find((p) => p.days === diffDays)?.days || 0;
   })();
 
+  const handleExportCSV = useCallback(() => {
+    const query = new URLSearchParams();
+    query.set('from', dateRange.from);
+    query.set('to', dateRange.to);
+
+    const url = `/api/metrics/export?${query.toString()}`;
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = `metricas-${dateRange.from}-${dateRange.to}.csv`;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  }, [dateRange]);
+
   const hasData = aggregated && aggregated.totals.posts > 0;
   const isLoading = loading || loadingAggregated;
 
@@ -165,6 +183,15 @@ export default function MetricsPage() {
             Acompanhe o desempenho dos seus posts no Instagram e TikTok.
           </p>
         </div>
+        {hasData && (
+          <button
+            onClick={handleExportCSV}
+            className="btn-ghost inline-flex items-center gap-2 text-sm"
+          >
+            <Download size={16} />
+            Exportar CSV
+          </button>
+        )}
       </div>
 
       {/* Date Range Filter */}

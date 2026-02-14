@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
+import { requireAuth } from '@/lib/auth';
 
 interface RouteContext {
   params: Promise<{ postId: string }>;
@@ -7,6 +8,8 @@ interface RouteContext {
 
 export async function GET(_request: Request, context: RouteContext) {
   try {
+    const auth = await requireAuth();
+    if (auth.error) return auth.error;
     const { postId } = await context.params;
 
     // Get the post to know its current status
@@ -67,6 +70,8 @@ export async function GET(_request: Request, context: RouteContext) {
 
 export async function PATCH(request: Request, context: RouteContext) {
   try {
+    const auth = await requireAuth();
+    if (auth.error) return auth.error;
     const { postId } = await context.params;
     const body = await request.json() as { completedItems: string[] };
 

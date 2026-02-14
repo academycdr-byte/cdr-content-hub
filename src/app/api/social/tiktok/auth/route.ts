@@ -1,8 +1,11 @@
 import { NextResponse } from 'next/server';
 import { randomBytes } from 'crypto';
 import { getTikTokOAuthUrl } from '@/lib/tiktok';
+import { requireAuth } from '@/lib/auth';
 
 export async function GET() {
+  const auth = await requireAuth();
+  if (auth.error) return auth.error;
   if (!process.env.TIKTOK_CLIENT_KEY || !process.env.TIKTOK_CLIENT_SECRET) {
     return NextResponse.json(
       {

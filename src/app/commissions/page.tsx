@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useCallback, useState } from 'react';
-import { DollarSign, Settings } from 'lucide-react';
+import { DollarSign, Settings, Download } from 'lucide-react';
 import { useCommissionsStore } from '@/stores/commissions-store';
 import CommissionSummary from '@/components/commissions/commission-summary';
 import CommissionByUser from '@/components/commissions/commission-by-user';
@@ -50,6 +50,19 @@ export default function CommissionsPage() {
     [setMonth, fetchCommissions]
   );
 
+  const handleExportCSV = useCallback(() => {
+    const query = new URLSearchParams();
+    query.set('month', month);
+
+    const url = `/api/commissions/export?${query.toString()}`;
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = `comissoes-${month}.csv`;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  }, [month]);
+
   const hasData = commissions.length > 0;
 
   return (
@@ -66,6 +79,15 @@ export default function CommissionsPage() {
               Gerencie as comissoes da equipe baseadas em CPM.
             </p>
           </div>
+          {hasData && (
+            <button
+              onClick={handleExportCSV}
+              className="btn-ghost inline-flex items-center gap-2 text-sm"
+            >
+              <Download size={16} />
+              Exportar CSV
+            </button>
+          )}
         </div>
 
         {/* Month selector & Calculate */}

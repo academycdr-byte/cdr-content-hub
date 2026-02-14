@@ -5,6 +5,7 @@ import { useSearchParams } from 'next/navigation';
 import { Share2, Instagram, Music2 } from 'lucide-react';
 import { useSocialStore } from '@/stores/social-store';
 import { useToastStore } from '@/stores/toast-store';
+import { useTokenRefresh } from '@/hooks/use-token-refresh';
 import ConnectButton from '@/components/social/connect-button';
 import AccountCard from '@/components/social/account-card';
 
@@ -18,6 +19,9 @@ export default function SocialPage() {
     syncAccount,
     disconnectAccount,
   } = useSocialStore();
+
+  // Auto-refresh expiring Instagram tokens silently
+  useTokenRefresh();
 
   const searchParams = useSearchParams();
 

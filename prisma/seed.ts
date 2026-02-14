@@ -11,7 +11,9 @@ async function main() {
 
   const ivan = await prisma.user.upsert({
     where: { email: 'ivan@cdrgroup.com.br' },
-    update: {},
+    update: {
+      password: hashedPassword,
+    },
     create: {
       name: 'Ivan Furtado',
       email: 'ivan@cdrgroup.com.br',
@@ -22,7 +24,9 @@ async function main() {
 
   await prisma.user.upsert({
     where: { email: 'social@cdrgroup.com.br' },
-    update: {},
+    update: {
+      password: hashedPassword,
+    },
     create: {
       name: 'Social Media',
       email: 'social@cdrgroup.com.br',

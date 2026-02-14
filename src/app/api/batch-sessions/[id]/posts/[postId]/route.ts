@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
+import { requireAuth } from '@/lib/auth';
 
 interface RouteContext {
   params: Promise<{ id: string; postId: string }>;
@@ -7,6 +8,8 @@ interface RouteContext {
 
 export async function DELETE(_request: Request, context: RouteContext) {
   try {
+    const auth = await requireAuth();
+    if (auth.error) return auth.error;
     const { id, postId } = await context.params;
 
     await prisma.batchSessionPost.deleteMany({
