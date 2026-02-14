@@ -29,7 +29,7 @@ function toLocalDateString(date: Date): string {
 
 function getDateFrom(days: number): string {
   const d = new Date();
-  d.setDate(d.getDate() - days);
+  d.setDate(d.getDate() - (days - 1));
   return toLocalDateString(d);
 }
 
@@ -187,12 +187,12 @@ export default function MetricsPage() {
     [setDateRange, dateRange.from, fetchMetrics, fetchAggregated]
   );
 
-  // Determine active preset
+  // Determine active preset (diffDays is gap between dates, +1 for inclusive count)
   const activeDays = (() => {
     const diffMs =
       new Date(dateRange.to).getTime() - new Date(dateRange.from).getTime();
     const diffDays = Math.round(diffMs / (1000 * 60 * 60 * 24));
-    return DATE_PRESETS.find((p) => p.days === diffDays)?.days || 0;
+    return DATE_PRESETS.find((p) => p.days === diffDays + 1)?.days || 0;
   })();
 
   const handleExportCSV = useCallback(() => {

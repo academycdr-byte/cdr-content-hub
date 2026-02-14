@@ -30,7 +30,7 @@ function toLocalDateString(date: Date): string {
 function getDefaultDateRange(): { from: string; to: string } {
   const to = new Date();
   const from = new Date();
-  from.setDate(from.getDate() - 30);
+  from.setDate(from.getDate() - 29);
   return {
     from: toLocalDateString(from),
     to: toLocalDateString(to),
