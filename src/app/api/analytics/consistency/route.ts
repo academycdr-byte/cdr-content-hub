@@ -30,25 +30,51 @@ export async function GET() {
   try {
     const auth = await requireAuth();
     if (auth.error) return auth.error;
-    const publishedPosts = await prisma.post.findMany({
-      where: { status: 'PUBLISHED' },
-      select: {
-        id: true,
-        scheduledDate: true,
-        updatedAt: true,
-      },
-      orderBy: { updatedAt: 'desc' },
-    });
+    const userId = auth.session!.user.id;
 
-    const totalPublished = publishedPosts.length;
+    // Fetch BOTH sources of published content
+    const [publishedPosts, postMetrics] = await Promise.all([
+      // Pipeline posts marked as PUBLISHED (filtered by user)
+      prisma.post.findMany({
+        where: { status: 'PUBLISHED', createdById: userId },
+        select: {
+          id: true,
+          scheduledDate: true,
+          updatedAt: true,
+        },
+        orderBy: { updatedAt: 'desc' },
+      }),
+      // Actual social media publications (PostMetrics)
+      prisma.postMetrics.findMany({
+        where: {
+          socialAccount: { userId },
+        },
+        select: {
+          publishedAt: true,
+        },
+        orderBy: { publishedAt: 'desc' },
+      }),
+    ]);
 
-    // Build a map of dates with post counts
+    // Build a map of dates with post counts from BOTH sources
     const dateCountMap: Record<string, number> = {};
+
+    // From pipeline published posts
     for (const post of publishedPosts) {
       const date = post.scheduledDate || post.updatedAt;
       const dateKey = formatDateKey(date);
       dateCountMap[dateKey] = (dateCountMap[dateKey] || 0) + 1;
     }
+
+    // From actual social media metrics (real published content)
+    for (const metric of postMetrics) {
+      const dateKey = formatDateKey(metric.publishedAt);
+      dateCountMap[dateKey] = (dateCountMap[dateKey] || 0) + 1;
+    }
+
+    // Total published = unique metric entries (actual social media posts)
+    // plus pipeline posts not covered by metrics
+    const totalPublished = publishedPosts.length + postMetrics.length;
 
     // Generate heatmap data for last 90 days
     const now = new Date();
@@ -110,12 +136,12 @@ export async function GET() {
     const startOfWeek = new Date(now);
     startOfWeek.setDate(now.getDate() - now.getDay());
     startOfWeek.setUTCHours(0, 0, 0, 0);
+    const startOfWeekKey = formatDateKey(startOfWeek);
 
     let postsThisWeek = 0;
-    for (const post of publishedPosts) {
-      const postDate = post.scheduledDate || post.updatedAt;
-      if (postDate >= startOfWeek) {
-        postsThisWeek++;
+    for (const [dateKey, count] of Object.entries(dateCountMap)) {
+      if (dateKey >= startOfWeekKey) {
+        postsThisWeek += count;
       }
     }
     const weeklyScore = Math.min(Math.round((postsThisWeek / 4) * 100), 100);
@@ -125,17 +151,16 @@ export async function GET() {
     for (let weekOffset = 0; weekOffset < 4; weekOffset++) {
       const weekEnd = new Date(now);
       weekEnd.setDate(now.getDate() - weekOffset * 7);
-      weekEnd.setUTCHours(23, 59, 59, 999);
-
       const weekStart = new Date(weekEnd);
       weekStart.setDate(weekEnd.getDate() - 6);
-      weekStart.setUTCHours(0, 0, 0, 0);
+
+      const weekStartKey = formatDateKey(weekStart);
+      const weekEndKey = formatDateKey(weekEnd);
 
       let weekPostCount = 0;
-      for (const post of publishedPosts) {
-        const postDate = post.scheduledDate || post.updatedAt;
-        if (postDate >= weekStart && postDate <= weekEnd) {
-          weekPostCount++;
+      for (const [dateKey, count] of Object.entries(dateCountMap)) {
+        if (dateKey >= weekStartKey && dateKey <= weekEndKey) {
+          weekPostCount += count;
         }
       }
 
