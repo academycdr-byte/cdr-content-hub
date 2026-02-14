@@ -74,9 +74,9 @@ function parseDateRange(request: NextRequest): { start: Date; end: Date; label: 
     const end = new Date(endParam);
 
     if (!isNaN(start.getTime()) && !isNaN(end.getTime())) {
-      // Ensure start is beginning of day, end is end of day
-      start.setHours(0, 0, 0, 0);
-      end.setHours(23, 59, 59, 999);
+      // Use UTC to match how Date parses YYYY-MM-DD strings (UTC midnight)
+      start.setUTCHours(0, 0, 0, 0);
+      end.setUTCHours(23, 59, 59, 999);
       return {
         start,
         end,
@@ -96,6 +96,7 @@ export async function GET(request: NextRequest) {
     const auth = await requireAuth();
     if (auth.error) return auth.error;
 
+    const userId = auth.session!.user.id;
     const { start: rangeStart, end: rangeEnd, label: rangeLabel } = parseDateRange(request);
     const now = new Date();
 
@@ -143,10 +144,11 @@ export async function GET(request: NextRequest) {
       }),
       // Total results count
       prisma.clientResult.count(),
-      // Social metrics aggregate for the selected range
+      // Social metrics aggregate for the selected range (filtered by user)
       prisma.postMetrics.aggregate({
         where: {
           publishedAt: { gte: rangeStart, lte: rangeEnd },
+          socialAccount: { userId },
         },
         _sum: {
           views: true,
