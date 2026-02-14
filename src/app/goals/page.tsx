@@ -87,8 +87,9 @@ function getEndDateForPeriod(period: string): string {
 
 const CHART_PERIODS = [
   { label: '30d', days: 30 },
-  { label: '60d', days: 60 },
   { label: '90d', days: 90 },
+  { label: '180d', days: 180 },
+  { label: '1 ano', days: 365 },
 ] as const;
 
 // ===== GoalCard Component =====
@@ -498,13 +499,10 @@ export default function GoalsPage() {
 
   // Auto-select first account for chart if none selected
   useEffect(() => {
-    if (!selectedChartAccount && goals.length > 0) {
-      const firstAccountId = goals[0]?.socialAccount?.id;
-      if (firstAccountId) {
-        setSelectedChartAccount(firstAccountId);
-      }
+    if (!selectedChartAccount && accounts.length > 0) {
+      setSelectedChartAccount(accounts[0].id);
     }
-  }, [goals, selectedChartAccount]);
+  }, [accounts, selectedChartAccount]);
 
   // Filtered goals
   const filteredGoals = useMemo(() => {
@@ -689,29 +687,15 @@ export default function GoalsPage() {
         </div>
       )}
 
-      {/* Goal Cards Grid */}
-      {filteredGoals.length > 0 && (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mb-6 stagger-children">
-          {filteredGoals.map((goal) => (
-            <GoalCard
-              key={goal.id}
-              goal={goal}
-              onSelect={handleSelectAccount}
-              onDelete={(id) => setConfirmDelete(id)}
-            />
-          ))}
-        </div>
-      )}
-
-      {/* Evolution Chart */}
-      {goals.length > 0 && (
+      {/* Evolution Chart - always visible when accounts exist */}
+      {accounts.length > 0 && (
         <div className="card p-6 mb-6">
           <div className="flex items-center justify-between mb-4 flex-wrap gap-3">
             <div className="flex items-center gap-2">
               <TrendingUp size={18} className="text-accent" />
               <h2 className="text-heading-3 text-text-primary">Evolucao de Seguidores</h2>
             </div>
-            <div className="flex items-center gap-3">
+            <div className="flex items-center gap-3 flex-wrap">
               {/* Account selector for chart */}
               <select
                 value={selectedChartAccount}
@@ -827,6 +811,20 @@ export default function GoalsPage() {
               </p>
             </div>
           )}
+        </div>
+      )}
+
+      {/* Goal Cards Grid */}
+      {filteredGoals.length > 0 && (
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mb-6 stagger-children">
+          {filteredGoals.map((goal) => (
+            <GoalCard
+              key={goal.id}
+              goal={goal}
+              onSelect={handleSelectAccount}
+              onDelete={(id) => setConfirmDelete(id)}
+            />
+          ))}
         </div>
       )}
 
