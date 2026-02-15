@@ -58,6 +58,8 @@ export async function POST(request: Request) {
     if (auth.error) return auth.error;
     const body = await request.json() as {
       text: string;
+      scenes?: string | null;
+      conclusion?: string | null;
       pillarId?: string | null;
       format?: string;
       category?: string;
@@ -65,7 +67,7 @@ export async function POST(request: Request) {
 
     if (!body.text?.trim()) {
       return NextResponse.json(
-        { error: 'Texto do hook e obrigatorio' },
+        { error: 'Texto do gancho e obrigatorio' },
         { status: 400 }
       );
     }
@@ -74,6 +76,8 @@ export async function POST(request: Request) {
       data: {
         id: generateId(),
         text: body.text.trim(),
+        scenes: body.scenes?.trim() || null,
+        conclusion: body.conclusion?.trim() || null,
         pillarId: body.pillarId || null,
         format: body.format || 'ALL',
         category: body.category || 'QUESTION',

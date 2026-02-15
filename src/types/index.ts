@@ -75,6 +75,8 @@ export interface Post {
 export interface Hook {
   id: string;
   text: string;
+  scenes: string | null;
+  conclusion: string | null;
   pillarId: string | null;
   format: PostFormat | 'ALL';
   category: HookCategory;

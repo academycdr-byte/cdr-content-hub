@@ -191,6 +191,7 @@ export default function ResultsPage() {
   }
 
   return (
+    <>
     <div className="max-w-5xl mx-auto animate-fade-in">
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-6">
@@ -338,16 +339,18 @@ export default function ResultsPage() {
         </>
       )}
 
-      {/* Modal */}
-      <ResultFormModal
-        isOpen={showModal}
-        onClose={() => {
-          setShowModal(false);
-          setEditingResult(null);
-        }}
-        onSubmit={handleFormSubmit}
-        editingResult={editingResult}
-      />
     </div>
+
+    {/* Modal rendered outside animate-fade-in to prevent transform breaking fixed positioning */}
+    <ResultFormModal
+      isOpen={showModal}
+      onClose={() => {
+        setShowModal(false);
+        setEditingResult(null);
+      }}
+      onSubmit={handleFormSubmit}
+      editingResult={editingResult}
+    />
+    </>
   );
 }

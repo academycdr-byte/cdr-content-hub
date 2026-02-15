@@ -105,8 +105,11 @@ export default function HooksPage() {
 
   const handleCopy = useCallback(async (hook: Hook) => {
     try {
-      await navigator.clipboard.writeText(hook.text);
-      addToast('Hook copiado!', 'success');
+      const parts = [`Gancho: ${hook.text}`];
+      if (hook.scenes) parts.push(`\nCenas:\n${hook.scenes}`);
+      if (hook.conclusion) parts.push(`\nConclusao: ${hook.conclusion}`);
+      await navigator.clipboard.writeText(parts.join('\n'));
+      addToast('Roteiro copiado!', 'success');
 
       await fetch(`/api/hooks/${hook.id}`, {
         method: 'PATCH',
@@ -149,6 +152,8 @@ export default function HooksPage() {
 
   const handleCreateHook = useCallback(async (data: {
     text: string;
+    scenes?: string | null;
+    conclusion?: string | null;
     pillarId: string | null;
     format: string;
     category: string;
@@ -190,6 +195,7 @@ export default function HooksPage() {
   };
 
   return (
+    <>
     <div className="max-w-5xl mx-auto animate-fade-in">
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-6">
@@ -349,28 +355,29 @@ export default function HooksPage() {
         </div>
       )}
 
-      {/* Create Hook Modal */}
-      {showCreateForm && (
-        <CreateHookModal
-          pillars={pillars}
-          onSubmit={handleCreateHook}
-          onClose={() => setShowCreateForm(false)}
-        />
-      )}
-
-      {/* Hook Detail Modal */}
-      {selectedHook && (
-        <HookDetailModal
-          hook={selectedHook}
-          pillarColor={getPillarColor(selectedHook.pillarId)}
-          pillarName={getPillarName(selectedHook.pillarId)}
-          onClose={() => setSelectedHook(null)}
-          onCopy={handleCopy}
-          onUseInPost={handleUseInPost}
-          onDelete={handleDelete}
-        />
-      )}
     </div>
+
+    {/* Modals rendered outside animate-fade-in to prevent transform breaking fixed positioning */}
+    {showCreateForm && (
+      <CreateHookModal
+        pillars={pillars}
+        onSubmit={handleCreateHook}
+        onClose={() => setShowCreateForm(false)}
+      />
+    )}
+
+    {selectedHook && (
+      <HookDetailModal
+        hook={selectedHook}
+        pillarColor={getPillarColor(selectedHook.pillarId)}
+        pillarName={getPillarName(selectedHook.pillarId)}
+        onClose={() => setSelectedHook(null)}
+        onCopy={handleCopy}
+        onUseInPost={handleUseInPost}
+        onDelete={handleDelete}
+      />
+    )}
+    </>
   );
 }
 
@@ -470,8 +477,8 @@ function HookDetailModal({ hook, pillarColor, pillarName, onClose, onCopy, onUse
     setTimeout(() => setCopied(false), 2000);
   };
 
-  const textLines = hook.text.split('\n').filter((line) => line.trim());
-  const hasMultipleLines = textLines.length > 1;
+  const scenesLines = hook.scenes?.split('\n').filter((line) => line.trim()) || [];
+  const conclusionLines = hook.conclusion?.split('\n').filter((line) => line.trim()) || [];
 
   return (
     <div className="fixed inset-0 z-50 overflow-y-auto">
@@ -507,7 +514,7 @@ function HookDetailModal({ hook, pillarColor, pillarName, onClose, onCopy, onUse
                     </span>
                   </div>
                   <h2 className="text-base font-semibold text-text-primary leading-snug">
-                    {hasMultipleLines ? textLines[0] : 'Ideia de Conteudo'}
+                    Ideia de Conteudo
                   </h2>
                 </div>
                 <button
@@ -546,8 +553,9 @@ function HookDetailModal({ hook, pillarColor, pillarName, onClose, onCopy, onUse
               </div>
             </div>
 
-            {/* Content */}
+            {/* Content - Structured sections */}
             <div className="p-4 sm:p-5 space-y-4">
+              {/* Formato */}
               <div>
                 <p className="text-xs font-semibold text-text-secondary mb-2">Formato</p>
                 <div className="rounded-xl bg-bg-secondary p-3">
@@ -557,25 +565,50 @@ function HookDetailModal({ hook, pillarColor, pillarName, onClose, onCopy, onUse
                 </div>
               </div>
 
+              {/* Gancho */}
               <div>
-                <p className="text-xs font-semibold text-text-secondary mb-2">
-                  {hasMultipleLines ? 'Gancho' : 'Texto'}
-                </p>
+                <p className="text-xs font-semibold text-text-secondary mb-2">Gancho</p>
                 <div className="rounded-xl bg-bg-secondary p-4">
-                  {hasMultipleLines ? (
+                  <p className="text-sm text-text-primary leading-relaxed">{hook.text}</p>
+                </div>
+              </div>
+
+              {/* Cenas */}
+              <div>
+                <p className="text-xs font-semibold text-text-secondary mb-2">Cenas</p>
+                <div className="rounded-xl bg-bg-secondary p-4">
+                  {scenesLines.length > 0 ? (
                     <div className="space-y-2">
-                      {textLines.map((line, i) => (
-                        <p key={i} className="text-sm text-text-primary leading-relaxed">
-                          {line}
-                        </p>
+                      {scenesLines.map((line, i) => (
+                        <div key={i} className="flex items-start gap-2">
+                          <span className="text-xs font-bold text-accent mt-0.5 shrink-0">{i + 1}.</span>
+                          <p className="text-sm text-text-primary leading-relaxed">{line}</p>
+                        </div>
                       ))}
                     </div>
                   ) : (
-                    <p className="text-sm text-text-primary leading-relaxed">{hook.text}</p>
+                    <p className="text-sm text-text-tertiary italic">Nenhuma cena definida</p>
                   )}
                 </div>
               </div>
 
+              {/* Conclusao */}
+              <div>
+                <p className="text-xs font-semibold text-text-secondary mb-2">Conclusao</p>
+                <div className="rounded-xl bg-bg-secondary p-4">
+                  {conclusionLines.length > 0 ? (
+                    <div className="space-y-2">
+                      {conclusionLines.map((line, i) => (
+                        <p key={i} className="text-sm text-text-primary leading-relaxed">{line}</p>
+                      ))}
+                    </div>
+                  ) : (
+                    <p className="text-sm text-text-tertiary italic">Nenhuma conclusao definida</p>
+                  )}
+                </div>
+              </div>
+
+              {/* Metadata row */}
               <div className="grid grid-cols-2 gap-3">
                 <div>
                   <p className="text-xs font-semibold text-text-secondary mb-2">Categoria</p>
@@ -599,6 +632,7 @@ function HookDetailModal({ hook, pillarColor, pillarName, onClose, onCopy, onUse
                 </div>
               </div>
 
+              {/* Uso */}
               <div>
                 <p className="text-xs font-semibold text-text-secondary mb-2">Uso</p>
                 <div className="rounded-xl bg-bg-secondary p-3 flex items-center gap-3">
@@ -632,6 +666,8 @@ interface CreateHookModalProps {
   pillars: ContentPillar[];
   onSubmit: (data: {
     text: string;
+    scenes?: string | null;
+    conclusion?: string | null;
     pillarId: string | null;
     format: string;
     category: string;
@@ -641,6 +677,8 @@ interface CreateHookModalProps {
 
 function CreateHookModal({ pillars, onSubmit, onClose }: CreateHookModalProps) {
   const [text, setText] = useState('');
+  const [scenes, setScenes] = useState('');
+  const [conclusion, setConclusion] = useState('');
   const [pillarId, setPillarId] = useState<string | null>(null);
   const [format, setFormat] = useState('ALL');
   const [category, setCategory] = useState('QUESTION');
@@ -652,7 +690,14 @@ function CreateHookModal({ pillars, onSubmit, onClose }: CreateHookModalProps) {
 
     setSaving(true);
     try {
-      await onSubmit({ text: text.trim(), pillarId, format, category });
+      await onSubmit({
+        text: text.trim(),
+        scenes: scenes.trim() || null,
+        conclusion: conclusion.trim() || null,
+        pillarId,
+        format,
+        category,
+      });
     } finally {
       setSaving(false);
     }
@@ -667,8 +712,9 @@ function CreateHookModal({ pillars, onSubmit, onClose }: CreateHookModalProps) {
           style={{ boxShadow: 'var(--shadow-xl)' }}
           onClick={(e) => e.stopPropagation()}
         >
+          <div className="max-h-[85vh] overflow-y-auto rounded-2xl">
         {/* Header */}
-        <div className="flex items-center gap-3 border-b border-border-default p-4 sm:p-5">
+        <div className="sticky top-0 z-10 flex items-center gap-3 border-b border-border-default p-4 sm:p-5 bg-bg-card rounded-t-2xl">
           <div
             className="flex h-9 w-9 items-center justify-center rounded-xl shrink-0"
             style={{ backgroundColor: 'rgba(184, 255, 0, 0.12)' }}
@@ -677,7 +723,7 @@ function CreateHookModal({ pillars, onSubmit, onClose }: CreateHookModalProps) {
           </div>
           <div className="flex-1">
             <h2 className="text-base font-semibold text-text-primary">Nova Ideia</h2>
-            <p className="text-xs text-text-tertiary">Adicione um hook ou ideia ao banco</p>
+            <p className="text-xs text-text-tertiary">Estruture seu roteiro de conteudo</p>
           </div>
           <button
             onClick={onClose}
@@ -688,109 +734,140 @@ function CreateHookModal({ pillars, onSubmit, onClose }: CreateHookModalProps) {
         </div>
 
         {/* Form */}
-        <form onSubmit={handleSubmit} className="p-4 sm:p-5 space-y-4">
-          {/* Text */}
-          <div>
-            <label className="text-xs text-text-tertiary mb-1 block">
-              Texto da ideia *
-            </label>
-            <textarea
-              value={text}
-              onChange={(e) => setText(e.target.value)}
-              placeholder="Ex: Voce sabia que 80% dos e-commerces perdem dinheiro em trafego pago?"
-              className="input min-h-[100px] resize-y"
-              autoFocus
-            />
-          </div>
+        <form onSubmit={handleSubmit} className="p-4 sm:p-5 space-y-5">
+          {/* Section: Roteiro */}
+          <div className="space-y-3">
+            <p className="text-xs font-semibold text-text-secondary tracking-wide">Roteiro</p>
 
-          {/* Pillar */}
-          <div>
-            <label className="text-xs text-text-tertiary mb-1.5 block">Pilar</label>
-            <div className="flex flex-wrap gap-2">
-              <button
-                type="button"
-                onClick={() => setPillarId(null)}
-                className={cn(
-                  'badge transition-all cursor-pointer',
-                  !pillarId
-                    ? 'bg-accent-surface text-accent'
-                    : 'bg-bg-secondary text-text-secondary hover:bg-bg-hover'
-                )}
-              >
-                Universal
-              </button>
-              {pillars.map((p) => (
-                <button
-                  key={p.id}
-                  type="button"
-                  onClick={() => setPillarId(p.id)}
-                  className={cn(
-                    'badge transition-all cursor-pointer',
-                    pillarId === p.id
-                      ? 'text-white'
-                      : 'bg-bg-secondary text-text-secondary hover:bg-bg-hover'
-                  )}
-                  style={
-                    pillarId === p.id
-                      ? { backgroundColor: p.color }
-                      : undefined
-                  }
-                >
-                  {p.name}
-                </button>
-              ))}
+            {/* Gancho */}
+            <div>
+              <label className="text-xs text-text-tertiary mb-1 block">Gancho *</label>
+              <textarea
+                value={text}
+                onChange={(e) => setText(e.target.value)}
+                placeholder="A frase de abertura que prende a atencao. Ex: Voce sabia que 80% dos e-commerces perdem dinheiro em ads?"
+                className="input min-h-[72px] resize-y"
+                autoFocus
+              />
+            </div>
+
+            {/* Cenas */}
+            <div>
+              <label className="text-xs text-text-tertiary mb-1 block">Cenas</label>
+              <textarea
+                value={scenes}
+                onChange={(e) => setScenes(e.target.value)}
+                placeholder="Descreva cada cena em uma linha. Ex:&#10;Mostrar dashboard com metricas&#10;Explicar estrategia X&#10;Revelar resultado final"
+                className="input min-h-[90px] resize-y"
+              />
+              <p className="text-[11px] text-text-tertiary mt-1">Uma cena por linha</p>
+            </div>
+
+            {/* Conclusao */}
+            <div>
+              <label className="text-xs text-text-tertiary mb-1 block">Conclusao</label>
+              <textarea
+                value={conclusion}
+                onChange={(e) => setConclusion(e.target.value)}
+                placeholder="CTA ou fechamento. Ex: Comenta QUERO que eu te ensino como fazer"
+                className="input min-h-[56px] resize-y"
+              />
             </div>
           </div>
 
-          {/* Format */}
-          <div>
-            <label className="text-xs text-text-tertiary mb-1.5 block">Formato</label>
-            <div className="flex flex-wrap gap-2">
-              {FORMATS.map((f) => (
+          {/* Section: Classificacao */}
+          <div className="space-y-3">
+            <p className="text-xs font-semibold text-text-secondary tracking-wide">Classificacao</p>
+
+            {/* Format */}
+            <div>
+              <label className="text-xs text-text-tertiary mb-1.5 block">Formato</label>
+              <div className="flex flex-wrap gap-2">
+                {FORMATS.map((f) => (
+                  <button
+                    key={f}
+                    type="button"
+                    onClick={() => setFormat(f)}
+                    className={cn(
+                      'badge transition-all cursor-pointer',
+                      format === f
+                        ? 'bg-accent-surface text-accent'
+                        : 'bg-bg-secondary text-text-secondary hover:bg-bg-hover'
+                    )}
+                  >
+                    {FORMAT_FILTER_LABELS[f]}
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            {/* Pillar */}
+            <div>
+              <label className="text-xs text-text-tertiary mb-1.5 block">Pilar</label>
+              <div className="flex flex-wrap gap-2">
                 <button
-                  key={f}
                   type="button"
-                  onClick={() => setFormat(f)}
+                  onClick={() => setPillarId(null)}
                   className={cn(
                     'badge transition-all cursor-pointer',
-                    format === f
+                    !pillarId
                       ? 'bg-accent-surface text-accent'
                       : 'bg-bg-secondary text-text-secondary hover:bg-bg-hover'
                   )}
                 >
-                  {FORMAT_FILTER_LABELS[f]}
+                  Universal
                 </button>
-              ))}
-            </div>
-          </div>
-
-          {/* Category */}
-          <div>
-            <label className="text-xs text-text-tertiary mb-1.5 block">Categoria</label>
-            <div className="flex flex-wrap gap-2">
-              {CATEGORIES.filter((c) => c !== 'ALL').map((c) => {
-                const colors = CATEGORY_COLORS[c] || { bg: 'rgba(142, 142, 147, 0.12)', text: '#8E8E93' };
-                return (
+                {pillars.map((p) => (
                   <button
-                    key={c}
+                    key={p.id}
                     type="button"
-                    onClick={() => setCategory(c)}
+                    onClick={() => setPillarId(p.id)}
                     className={cn(
                       'badge transition-all cursor-pointer',
-                      category === c
-                        ? ''
+                      pillarId === p.id
+                        ? 'text-white'
                         : 'bg-bg-secondary text-text-secondary hover:bg-bg-hover'
                     )}
                     style={
-                      category === c
-                        ? { backgroundColor: colors.bg, color: colors.text }
+                      pillarId === p.id
+                        ? { backgroundColor: p.color }
                         : undefined
                     }
                   >
-                    {CATEGORY_LABELS[c]}
+                    {p.name}
                   </button>
-                );
-              })}
+                ))}
+              </div>
+            </div>
+
+            {/* Category */}
+            <div>
+              <label className="text-xs text-text-tertiary mb-1.5 block">Categoria</label>
+              <div className="flex flex-wrap gap-2">
+                {CATEGORIES.filter((c) => c !== 'ALL').map((c) => {
+                  const colors = CATEGORY_COLORS[c] || { bg: 'rgba(142, 142, 147, 0.12)', text: '#8E8E93' };
+                  return (
+                    <button
+                      key={c}
+                      type="button"
+                      onClick={() => setCategory(c)}
+                      className={cn(
+                        'badge transition-all cursor-pointer',
+                        category === c
+                          ? ''
+                          : 'bg-bg-secondary text-text-secondary hover:bg-bg-hover'
+                      )}
+                      style={
+                        category === c
+                          ? { backgroundColor: colors.bg, color: colors.text }
+                          : undefined
+                      }
+                    >
+                      {CATEGORY_LABELS[c]}
+                    </button>
+                  );
+                })}
+              </div>
             </div>
           </div>
 
@@ -818,6 +895,7 @@ function CreateHookModal({ pillars, onSubmit, onClose }: CreateHookModalProps) {
             </button>
           </div>
         </form>
+          </div>
         </div>
       </div>
     </div>

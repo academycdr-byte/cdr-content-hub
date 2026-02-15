@@ -31,6 +31,8 @@ export async function PATCH(request: Request, context: RouteContext) {
     const { id } = await context.params;
     const body = await request.json() as {
       text?: string;
+      scenes?: string | null;
+      conclusion?: string | null;
       pillarId?: string | null;
       format?: string;
       category?: string;
@@ -42,6 +44,12 @@ export async function PATCH(request: Request, context: RouteContext) {
 
     if (body.text !== undefined) {
       updateData.text = body.text;
+    }
+    if (body.scenes !== undefined) {
+      updateData.scenes = body.scenes;
+    }
+    if (body.conclusion !== undefined) {
+      updateData.conclusion = body.conclusion;
     }
     if (body.pillarId !== undefined) {
       updateData.pillarId = body.pillarId;

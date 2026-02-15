@@ -119,6 +119,8 @@ model ContentPillar {
 model Hook {
   id            String         @id
   text          String
+  scenes        String?
+  conclusion    String?
   pillarId      String?        @map("pillar_id")
   format        String         @default("ALL")
   category      String         @default("QUESTION")
