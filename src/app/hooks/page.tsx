@@ -470,177 +470,153 @@ function HookDetailModal({ hook, pillarColor, pillarName, onClose, onCopy, onUse
     setTimeout(() => setCopied(false), 2000);
   };
 
-  // Parse text into sections if it has line breaks
   const textLines = hook.text.split('\n').filter((line) => line.trim());
   const hasMultipleLines = textLines.length > 1;
 
   return (
-    <div className="fixed inset-0 z-50 flex items-start sm:items-center justify-center overflow-y-auto">
-      {/* Backdrop */}
-      <div
-        className="fixed inset-0 bg-black/50 animate-backdrop"
-        onClick={onClose}
-      />
-
-      {/* Modal */}
-      <div
-        className="relative bg-bg-card border border-border-default rounded-2xl w-full max-w-xl max-h-[95vh] overflow-y-auto animate-scale-in mx-3 my-4 sm:my-0"
-        style={{ boxShadow: 'var(--shadow-xl)' }}
-      >
-        {/* Header */}
-        <div className="sticky top-0 z-10 bg-bg-card rounded-t-2xl border-b border-border-default">
-          <div className="flex items-start gap-3 p-4 sm:p-5">
-            <div
-              className="flex h-10 w-10 items-center justify-center rounded-xl shrink-0 mt-0.5"
-              style={{ backgroundColor: catColors.bg, color: catColors.text }}
-            >
-              <Lightbulb size={20} />
-            </div>
-            <div className="flex-1 min-w-0">
-              <div className="flex items-center gap-2 flex-wrap mb-1">
-                <span
-                  className="badge text-[11px]"
+    <div className="fixed inset-0 z-50 overflow-y-auto">
+      <div className="fixed inset-0 bg-black/50 animate-backdrop" onClick={onClose} />
+      <div className="flex min-h-full items-center justify-center p-3 sm:p-4">
+        <div
+          className="relative bg-bg-card border border-border-default rounded-2xl w-full max-w-xl animate-scale-in"
+          style={{ boxShadow: 'var(--shadow-xl)' }}
+        >
+          <div className="max-h-[85vh] overflow-y-auto rounded-2xl">
+            {/* Header */}
+            <div className="sticky top-0 z-10 bg-bg-card rounded-t-2xl border-b border-border-default">
+              <div className="flex items-start gap-3 p-4 sm:p-5">
+                <div
+                  className="flex h-10 w-10 items-center justify-center rounded-xl shrink-0 mt-0.5"
                   style={{ backgroundColor: catColors.bg, color: catColors.text }}
                 >
-                  {CATEGORY_LABELS[hook.category] || hook.category}
-                </span>
-                <span
-                  className="badge text-[11px]"
-                  style={{
-                    backgroundColor: `${pillarColor}15`,
-                    color: pillarColor,
-                  }}
+                  <Lightbulb size={20} />
+                </div>
+                <div className="flex-1 min-w-0">
+                  <div className="flex items-center gap-2 flex-wrap mb-1">
+                    <span
+                      className="badge text-[11px]"
+                      style={{ backgroundColor: catColors.bg, color: catColors.text }}
+                    >
+                      {CATEGORY_LABELS[hook.category] || hook.category}
+                    </span>
+                    <span
+                      className="badge text-[11px]"
+                      style={{ backgroundColor: `${pillarColor}15`, color: pillarColor }}
+                    >
+                      {pillarName}
+                    </span>
+                  </div>
+                  <h2 className="text-base font-semibold text-text-primary leading-snug">
+                    {hasMultipleLines ? textLines[0] : 'Ideia de Conteudo'}
+                  </h2>
+                </div>
+                <button
+                  onClick={onClose}
+                  className="p-1.5 rounded-lg hover:bg-bg-hover transition-colors text-text-tertiary shrink-0"
                 >
-                  {pillarName}
-                </span>
+                  <X size={18} />
+                </button>
               </div>
-              <h2 className="text-base font-semibold text-text-primary leading-snug">
-                {hasMultipleLines ? textLines[0] : 'Ideia de Conteudo'}
-              </h2>
-            </div>
-            <button
-              onClick={onClose}
-              className="p-1.5 rounded-lg hover:bg-bg-hover transition-colors text-text-tertiary shrink-0"
-            >
-              <X size={18} />
-            </button>
-          </div>
-
-          {/* Action buttons */}
-          <div className="flex items-center gap-2 px-4 sm:px-5 pb-4">
-            <button
-              onClick={() => onUseInPost(hook)}
-              className="btn-accent flex items-center gap-2 text-sm"
-            >
-              <ArrowRight size={14} />
-              Usar em Post
-            </button>
-            <button
-              onClick={handleCopy}
-              className={cn(
-                'btn-ghost flex items-center gap-2 text-sm',
-                copied && 'text-success'
-              )}
-            >
-              {copied ? <Check size={14} /> : <Copy size={14} />}
-              {copied ? 'Copiado!' : 'Copiar'}
-            </button>
-            <div className="flex-1" />
-            <button
-              onClick={() => onDelete(hook.id)}
-              className="p-2 rounded-lg text-text-tertiary hover:bg-error-surface hover:text-error transition-colors"
-              title="Excluir"
-            >
-              <Trash2 size={15} />
-            </button>
-          </div>
-        </div>
-
-        {/* Content */}
-        <div className="p-4 sm:p-5 space-y-4">
-          {/* Format */}
-          <div>
-            <p className="text-xs font-semibold text-text-secondary mb-2">Formato</p>
-            <div className="rounded-xl bg-bg-secondary p-3">
-              <p className="text-sm text-accent font-medium">
-                {FORMAT_LABELS[hook.format as PostFormat] || 'Todos os formatos'}
-              </p>
-            </div>
-          </div>
-
-          {/* Hook text */}
-          <div>
-            <p className="text-xs font-semibold text-text-secondary mb-2">
-              {hasMultipleLines ? 'Gancho' : 'Texto'}
-            </p>
-            <div className="rounded-xl bg-bg-secondary p-4">
-              {hasMultipleLines ? (
-                <div className="space-y-2">
-                  {textLines.map((line, i) => (
-                    <p key={i} className="text-sm text-text-primary leading-relaxed">
-                      {line}
-                    </p>
-                  ))}
-                </div>
-              ) : (
-                <p className="text-sm text-text-primary leading-relaxed">
-                  {hook.text}
-                </p>
-              )}
-            </div>
-          </div>
-
-          {/* Metadata */}
-          <div className="grid grid-cols-2 gap-3">
-            <div>
-              <p className="text-xs font-semibold text-text-secondary mb-2">Categoria</p>
-              <div className="rounded-xl bg-bg-secondary p-3">
-                <div className="flex items-center gap-2">
-                  <span
-                    className="inline-block h-2.5 w-2.5 rounded-full"
-                    style={{ backgroundColor: catColors.text }}
-                  />
-                  <p className="text-sm text-text-primary font-medium">
-                    {CATEGORY_LABELS[hook.category] || hook.category}
-                  </p>
-                </div>
+              <div className="flex items-center gap-2 px-4 sm:px-5 pb-4">
+                <button
+                  onClick={() => onUseInPost(hook)}
+                  className="btn-accent flex items-center gap-2 text-sm"
+                >
+                  <ArrowRight size={14} />
+                  Usar em Post
+                </button>
+                <button
+                  onClick={handleCopy}
+                  className={cn(
+                    'btn-ghost flex items-center gap-2 text-sm',
+                    copied && 'text-success'
+                  )}
+                >
+                  {copied ? <Check size={14} /> : <Copy size={14} />}
+                  {copied ? 'Copiado!' : 'Copiar'}
+                </button>
+                <div className="flex-1" />
+                <button
+                  onClick={() => onDelete(hook.id)}
+                  className="p-2 rounded-lg text-text-tertiary hover:bg-error-surface hover:text-error transition-colors"
+                  title="Excluir"
+                >
+                  <Trash2 size={15} />
+                </button>
               </div>
             </div>
-            <div>
-              <p className="text-xs font-semibold text-text-secondary mb-2">Pilar</p>
-              <div className="rounded-xl bg-bg-secondary p-3">
-                <div className="flex items-center gap-2">
-                  <span
-                    className="inline-block h-2.5 w-2.5 rounded-full"
-                    style={{ backgroundColor: pillarColor }}
-                  />
-                  <p className="text-sm text-text-primary font-medium">
-                    {pillarName}
-                  </p>
-                </div>
-              </div>
-            </div>
-          </div>
 
-          {/* Usage stats */}
-          <div>
-            <p className="text-xs font-semibold text-text-secondary mb-2">Uso</p>
-            <div className="rounded-xl bg-bg-secondary p-3 flex items-center gap-3">
-              <div
-                className="flex h-8 w-8 items-center justify-center rounded-lg"
-                style={{ backgroundColor: 'rgba(184, 255, 0, 0.12)' }}
-              >
-                <Hash size={14} className="text-accent" />
-              </div>
+            {/* Content */}
+            <div className="p-4 sm:p-5 space-y-4">
               <div>
-                <p className="text-sm font-semibold text-text-primary">
-                  {hook.usageCount}x utilizado
+                <p className="text-xs font-semibold text-text-secondary mb-2">Formato</p>
+                <div className="rounded-xl bg-bg-secondary p-3">
+                  <p className="text-sm text-accent font-medium">
+                    {FORMAT_LABELS[hook.format as PostFormat] || 'Todos os formatos'}
+                  </p>
+                </div>
+              </div>
+
+              <div>
+                <p className="text-xs font-semibold text-text-secondary mb-2">
+                  {hasMultipleLines ? 'Gancho' : 'Texto'}
                 </p>
-                <p className="text-[11px] text-text-tertiary">
-                  {hook.usageCount === 0
-                    ? 'Ainda nao foi usado em nenhum post'
-                    : `Usado em ${hook.usageCount} post${hook.usageCount > 1 ? 's' : ''}`}
-                </p>
+                <div className="rounded-xl bg-bg-secondary p-4">
+                  {hasMultipleLines ? (
+                    <div className="space-y-2">
+                      {textLines.map((line, i) => (
+                        <p key={i} className="text-sm text-text-primary leading-relaxed">
+                          {line}
+                        </p>
+                      ))}
+                    </div>
+                  ) : (
+                    <p className="text-sm text-text-primary leading-relaxed">{hook.text}</p>
+                  )}
+                </div>
+              </div>
+
+              <div className="grid grid-cols-2 gap-3">
+                <div>
+                  <p className="text-xs font-semibold text-text-secondary mb-2">Categoria</p>
+                  <div className="rounded-xl bg-bg-secondary p-3">
+                    <div className="flex items-center gap-2">
+                      <span className="inline-block h-2.5 w-2.5 rounded-full" style={{ backgroundColor: catColors.text }} />
+                      <p className="text-sm text-text-primary font-medium">
+                        {CATEGORY_LABELS[hook.category] || hook.category}
+                      </p>
+                    </div>
+                  </div>
+                </div>
+                <div>
+                  <p className="text-xs font-semibold text-text-secondary mb-2">Pilar</p>
+                  <div className="rounded-xl bg-bg-secondary p-3">
+                    <div className="flex items-center gap-2">
+                      <span className="inline-block h-2.5 w-2.5 rounded-full" style={{ backgroundColor: pillarColor }} />
+                      <p className="text-sm text-text-primary font-medium">{pillarName}</p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div>
+                <p className="text-xs font-semibold text-text-secondary mb-2">Uso</p>
+                <div className="rounded-xl bg-bg-secondary p-3 flex items-center gap-3">
+                  <div
+                    className="flex h-8 w-8 items-center justify-center rounded-lg"
+                    style={{ backgroundColor: 'rgba(184, 255, 0, 0.12)' }}
+                  >
+                    <Hash size={14} className="text-accent" />
+                  </div>
+                  <div>
+                    <p className="text-sm font-semibold text-text-primary">{hook.usageCount}x utilizado</p>
+                    <p className="text-[11px] text-text-tertiary">
+                      {hook.usageCount === 0
+                        ? 'Ainda nao foi usado em nenhum post'
+                        : `Usado em ${hook.usageCount} post${hook.usageCount > 1 ? 's' : ''}`}
+                    </p>
+                  </div>
+                </div>
               </div>
             </div>
           </div>
@@ -683,13 +659,14 @@ function CreateHookModal({ pillars, onSubmit, onClose }: CreateHookModalProps) {
   }
 
   return (
-    <div className="fixed inset-0 z-50 flex items-start sm:items-center justify-center overflow-y-auto">
+    <div className="fixed inset-0 z-50 overflow-y-auto">
       <div className="fixed inset-0 bg-black/50 animate-backdrop" onClick={onClose} />
-      <div
-        className="relative w-full max-w-lg rounded-2xl bg-bg-card border border-border-default animate-scale-in mx-3 my-4 sm:my-0"
-        style={{ boxShadow: 'var(--shadow-xl)' }}
-        onClick={(e) => e.stopPropagation()}
-      >
+      <div className="flex min-h-full items-center justify-center p-3 sm:p-4">
+        <div
+          className="relative w-full max-w-lg rounded-2xl bg-bg-card border border-border-default animate-scale-in"
+          style={{ boxShadow: 'var(--shadow-xl)' }}
+          onClick={(e) => e.stopPropagation()}
+        >
         {/* Header */}
         <div className="flex items-center gap-3 border-b border-border-default p-4 sm:p-5">
           <div
@@ -841,6 +818,7 @@ function CreateHookModal({ pillars, onSubmit, onClose }: CreateHookModalProps) {
             </button>
           </div>
         </form>
+        </div>
       </div>
     </div>
   );

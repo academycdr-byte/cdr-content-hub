@@ -136,17 +136,20 @@ export default function ResultFormModal({ isOpen, onClose, onSubmit, editingResu
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 z-50 flex items-start sm:items-center justify-center overflow-y-auto">
+    <div className="fixed inset-0 z-50 overflow-y-auto">
       {/* Backdrop */}
       <div
         className="fixed inset-0 bg-black/50 animate-backdrop"
         onClick={onClose}
       />
 
-      {/* Modal */}
-      <div className="relative bg-bg-card border border-border-default rounded-2xl w-full max-w-lg max-h-[95vh] overflow-y-auto animate-scale-in mx-3 my-4 sm:my-0"
-        style={{ boxShadow: 'var(--shadow-xl)' }}
-      >
+      {/* Centering wrapper */}
+      <div className="flex min-h-full items-center justify-center p-3 sm:p-4">
+        {/* Modal */}
+        <div className="relative bg-bg-card border border-border-default rounded-2xl w-full max-w-lg animate-scale-in"
+          style={{ boxShadow: 'var(--shadow-xl)' }}
+        >
+          <div className="max-h-[85vh] overflow-y-auto rounded-2xl">
         {/* Header */}
         <div className="sticky top-0 z-10 flex items-center gap-3 p-4 sm:p-5 border-b border-border-default bg-bg-card rounded-t-2xl">
           <div
@@ -368,6 +371,8 @@ export default function ResultFormModal({ isOpen, onClose, onSubmit, editingResu
             </button>
           </div>
         </form>
+          </div>
+        </div>
       </div>
     </div>
   );
