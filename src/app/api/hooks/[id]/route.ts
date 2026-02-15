@@ -6,6 +6,24 @@ interface RouteContext {
   params: Promise<{ id: string }>;
 }
 
+export async function DELETE(_request: Request, context: RouteContext) {
+  try {
+    const auth = await requireAuth();
+    if (auth.error) return auth.error;
+    const { id } = await context.params;
+
+    await prisma.hook.delete({ where: { id } });
+
+    return NextResponse.json({ success: true });
+  } catch (error) {
+    console.error('Failed to delete hook:', error instanceof Error ? error.message : 'Unknown');
+    return NextResponse.json(
+      { error: 'Failed to delete hook' },
+      { status: 500 }
+    );
+  }
+}
+
 export async function PATCH(request: Request, context: RouteContext) {
   try {
     const auth = await requireAuth();
