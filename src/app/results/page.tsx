@@ -2,7 +2,7 @@
 
 import { useEffect, useState, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
-import { Trophy, Plus, Search, Filter, ChevronLeft, ChevronRight } from 'lucide-react';
+import { Trophy, Plus, Search, ChevronDown, ChevronLeft, ChevronRight, X } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useResultsStore } from '@/stores/results-store';
 import { useToastStore } from '@/stores/toast-store';
@@ -81,7 +81,6 @@ export default function ResultsPage() {
 
   const handleTransformToPost = useCallback(async (result: ClientResult) => {
     try {
-      // Fetch pillars to find "case-studies" pillar
       const pillarsRes = await fetch('/api/pillars');
       if (!pillarsRes.ok) throw new Error('Failed to fetch pillars');
 
@@ -100,7 +99,6 @@ export default function ResultsPage() {
         return;
       }
 
-      // Build carousel body
       const slides: Record<string, string> = {
         cover: `${result.metricValue}${result.metricUnit} de ${result.metricType} para ${result.clientName}`,
         slide1: `Contexto: ${result.clientName} - ${result.clientNiche}\n\nDesafio: ${result.description || 'Descreva o desafio enfrentado pelo cliente'}`,
@@ -171,6 +169,11 @@ export default function ResultsPage() {
 
   const hasActiveFilters = filters.clientName || filters.metricType || filters.clientNiche;
 
+  const handleClearFilters = useCallback(() => {
+    setSearchInput('');
+    setFilters({ clientName: '', metricType: '', clientNiche: '' });
+  }, [setFilters]);
+
   // Loading skeleton
   if (loading && results.length === 0) {
     return (
@@ -178,7 +181,7 @@ export default function ResultsPage() {
         <div className="skeleton h-8 w-48 mb-2" />
         <div className="skeleton h-4 w-64 mb-8" />
         <div className="skeleton h-12 w-full mb-6" />
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
           {Array.from({ length: 6 }).map((_, i) => (
             <div key={i} className="skeleton h-[240px]" />
           ))}
@@ -190,91 +193,94 @@ export default function ResultsPage() {
   return (
     <div className="max-w-5xl mx-auto animate-fade-in">
       {/* Header */}
-      <div className="flex items-start justify-between mb-6">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-6">
         <div>
-          <h1 className="text-heading-1 text-text-primary mb-1">Resultados</h1>
-          <p className="text-sm text-text-secondary">
-            {total} resultado{total !== 1 ? 's' : ''} cadastrado{total !== 1 ? 's' : ''}
+          <h1 className="text-display text-text-primary">Resultados</h1>
+          <p className="text-sm text-text-secondary mt-1">
+            {total} case{total !== 1 ? 's' : ''} de sucesso cadastrado{total !== 1 ? 's' : ''}
           </p>
         </div>
-        <button onClick={handleCreate} className="btn-accent flex items-center gap-2">
+        <button onClick={handleCreate} className="btn-accent flex items-center gap-2 shrink-0">
           <Plus size={16} />
           <span>Novo Resultado</span>
         </button>
       </div>
 
       {/* Filters */}
-      <div className="card p-3 mb-6 flex items-center gap-3 flex-wrap">
-        <Filter size={14} className="text-text-tertiary shrink-0" />
+      <div className="card p-3 mb-6">
+        <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2">
+          {/* Search */}
+          <div className="relative flex-1">
+            <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-text-tertiary" />
+            <input
+              type="text"
+              value={searchInput}
+              onChange={(e) => setSearchInput(e.target.value)}
+              onKeyDown={handleSearchKeyDown}
+              onBlur={handleSearch}
+              placeholder="Buscar por cliente..."
+              className="input py-2 pl-9 pr-3 text-sm"
+            />
+          </div>
 
-        {/* Search by client name */}
-        <div className="relative flex-1 min-w-[200px]">
-          <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-text-tertiary" />
+          {/* Metric type */}
+          <div className="relative w-full sm:w-auto">
+            <select
+              value={filters.metricType}
+              onChange={(e) => setFilters({ metricType: e.target.value })}
+              className={cn(
+                'input py-2 px-3 pr-8 text-sm appearance-none cursor-pointer w-full sm:min-w-[150px]',
+                filters.metricType && 'border-accent'
+              )}
+            >
+              {METRIC_OPTIONS.map((opt) => (
+                <option key={opt.value} value={opt.value}>
+                  {opt.label}
+                </option>
+              ))}
+            </select>
+            <ChevronDown size={14} className="absolute right-3 top-1/2 -translate-y-1/2 text-text-tertiary pointer-events-none" />
+          </div>
+
+          {/* Niche */}
           <input
             type="text"
-            value={searchInput}
-            onChange={(e) => setSearchInput(e.target.value)}
-            onKeyDown={handleSearchKeyDown}
-            onBlur={handleSearch}
-            placeholder="Buscar por cliente..."
-            className="input py-1.5 pl-9 pr-3 text-xs"
+            value={filters.clientNiche}
+            onChange={(e) => setFilters({ clientNiche: e.target.value })}
+            placeholder="Filtrar por nicho..."
+            className={cn(
+              'input py-2 px-3 text-sm w-full sm:w-auto sm:min-w-[150px]',
+              filters.clientNiche && 'border-accent'
+            )}
           />
+
+          {hasActiveFilters && (
+            <button
+              onClick={handleClearFilters}
+              className="flex items-center gap-1 text-xs text-accent hover:text-accent-hover font-medium transition-colors px-2 shrink-0"
+            >
+              <X size={12} />
+              Limpar
+            </button>
+          )}
         </div>
-
-        {/* Metric type filter */}
-        <select
-          value={filters.metricType}
-          onChange={(e) => setFilters({ metricType: e.target.value })}
-          className={cn(
-            'input py-1.5 px-3 text-xs w-auto min-w-[140px]',
-            filters.metricType && 'border-accent'
-          )}
-        >
-          {METRIC_OPTIONS.map((opt) => (
-            <option key={opt.value} value={opt.value}>
-              {opt.label}
-            </option>
-          ))}
-        </select>
-
-        {/* Niche filter */}
-        <input
-          type="text"
-          value={filters.clientNiche}
-          onChange={(e) => setFilters({ clientNiche: e.target.value })}
-          placeholder="Filtrar por nicho..."
-          className={cn(
-            'input py-1.5 px-3 text-xs w-auto min-w-[140px]',
-            filters.clientNiche && 'border-accent'
-          )}
-        />
-
-        {hasActiveFilters && (
-          <button
-            onClick={() => {
-              setSearchInput('');
-              setFilters({ clientName: '', metricType: '', clientNiche: '' });
-            }}
-            className="text-xs text-accent hover:text-accent-hover font-medium transition-colors"
-          >
-            Limpar filtros
-          </button>
-        )}
       </div>
 
       {/* Results Grid */}
       {results.length === 0 ? (
-        <div className="card p-16 flex flex-col items-center justify-center text-center">
-          <div className="flex h-16 w-16 items-center justify-center rounded-2xl bg-accent-surface mb-4">
+        <div className="card p-12 sm:p-16 flex flex-col items-center justify-center text-center">
+          <div className="flex h-16 w-16 items-center justify-center rounded-2xl mb-4"
+            style={{ backgroundColor: 'rgba(184, 255, 0, 0.12)' }}
+          >
             <Trophy size={28} className="text-accent" />
           </div>
-          <h2 className="text-heading-2 text-text-primary mb-2">
+          <h2 className="text-lg font-semibold text-text-primary mb-2">
             {hasActiveFilters ? 'Nenhum resultado encontrado' : 'Nenhum resultado cadastrado'}
           </h2>
-          <p className="text-sm text-text-secondary max-w-md mb-4">
+          <p className="text-sm text-text-secondary max-w-md mb-6">
             {hasActiveFilters
               ? 'Tente ajustar os filtros para encontrar o que procura.'
-              : 'Cadastre resultados de clientes para criar case studies incriveis.'}
+              : 'Cadastre os resultados dos seus clientes para construir um portfolio de cases de sucesso e transformar em conteudo.'}
           </p>
           {!hasActiveFilters && (
             <button onClick={handleCreate} className="btn-accent flex items-center gap-2">
@@ -285,7 +291,7 @@ export default function ResultsPage() {
         </div>
       ) : (
         <>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 stagger-children">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 stagger-children">
             {results.map((result) => (
               <ResultCard
                 key={result.id}
@@ -313,7 +319,7 @@ export default function ResultsPage() {
               </button>
 
               <span className="text-sm text-text-secondary">
-                Pagina {page} de {totalPages}
+                {page} de {totalPages}
               </span>
 
               <button

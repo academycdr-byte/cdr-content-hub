@@ -19,94 +19,112 @@ const METRIC_LABELS: Record<MetricType, string> = {
   OTHER: 'Outro',
 } as const;
 
-const METRIC_COLORS: Record<MetricType, string> = {
-  ROAS: 'text-success',
-  REVENUE: 'text-accent',
-  GROWTH: 'text-info',
-  CAC: 'text-warning',
-  OTHER: 'text-text-secondary',
+const METRIC_COLORS: Record<MetricType, { bg: string; text: string }> = {
+  ROAS: { bg: 'rgba(52, 199, 89, 0.12)', text: '#34C759' },
+  REVENUE: { bg: 'rgba(184, 255, 0, 0.12)', text: '#B8FF00' },
+  GROWTH: { bg: 'rgba(48, 176, 199, 0.12)', text: '#30B0C7' },
+  CAC: { bg: 'rgba(255, 159, 10, 0.12)', text: '#FF9F0A' },
+  OTHER: { bg: 'rgba(142, 142, 147, 0.12)', text: '#8E8E93' },
 } as const;
 
 export default function ResultCard({ result, onEdit, onDelete, onTransformToPost }: ResultCardProps) {
   const metricLabel = METRIC_LABELS[result.metricType as MetricType] || result.metricType;
-  const metricColor = METRIC_COLORS[result.metricType as MetricType] || 'text-text-secondary';
+  const colors = METRIC_COLORS[result.metricType as MetricType] || METRIC_COLORS.OTHER;
   const hasImages = result.images && result.images.length > 0;
 
   return (
-    <div className="card card-hover p-5 animate-fade-in">
-      {/* Header: Client name + niche badge */}
-      <div className="flex items-start justify-between mb-3">
-        <div className="flex-1 min-w-0">
-          <h3 className="text-heading-3 text-text-primary truncate">{result.clientName}</h3>
-          <span className="badge bg-accent-surface text-accent text-[10px] mt-1">
-            {result.clientNiche}
-          </span>
-        </div>
-        <div className="flex items-center gap-1 ml-2 shrink-0">
-          <button
-            onClick={() => onEdit(result)}
-            className="p-1.5 rounded-[var(--radius-sm)] hover:bg-bg-hover transition-colors text-text-tertiary hover:text-text-primary"
-            title="Editar"
+    <div className="card card-hover p-0 animate-fade-in overflow-hidden">
+      {/* Metric highlight banner */}
+      <div className="px-5 pt-5 pb-4">
+        <div className="flex items-start justify-between mb-3">
+          <div
+            className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-xs font-semibold"
+            style={{ backgroundColor: colors.bg, color: colors.text }}
           >
-            <Edit size={14} />
-          </button>
-          <button
-            onClick={() => onDelete(result.id)}
-            className="p-1.5 rounded-[var(--radius-sm)] hover:bg-error-surface transition-colors text-text-tertiary hover:text-error"
-            title="Excluir"
-          >
-            <Trash2 size={14} />
-          </button>
+            <TrendingUp size={12} />
+            {metricLabel}
+          </div>
+          <div className="flex items-center gap-0.5 shrink-0">
+            <button
+              onClick={() => onEdit(result)}
+              className="p-1.5 rounded-lg hover:bg-bg-hover transition-colors text-text-tertiary hover:text-text-primary"
+              title="Editar"
+            >
+              <Edit size={14} />
+            </button>
+            <button
+              onClick={() => onDelete(result.id)}
+              className="p-1.5 rounded-lg hover:bg-error-surface transition-colors text-text-tertiary hover:text-error"
+              title="Excluir"
+            >
+              <Trash2 size={14} />
+            </button>
+          </div>
         </div>
-      </div>
 
-      {/* Metric highlight */}
-      <div className="flex items-center gap-2 mb-3">
-        <TrendingUp size={16} className={metricColor} />
-        <span className={cn('text-xl font-bold', metricColor)}>
-          {result.metricValue}{result.metricUnit}
-        </span>
-        <span className="text-xs text-text-secondary">de {metricLabel}</span>
-      </div>
-
-      {/* Period */}
-      <p className="text-xs text-text-tertiary mb-2">
-        Periodo: {result.period}
-      </p>
-
-      {/* Description */}
-      {result.description && (
-        <p className="text-sm text-text-secondary line-clamp-2 mb-3">
-          {result.description}
-        </p>
-      )}
-
-      {/* Testimonial snippet */}
-      {result.testimonialText && (
-        <div className="flex items-start gap-2 bg-bg-secondary rounded-[var(--radius-sm)] p-3 mb-3">
-          <Quote size={12} className="text-text-tertiary shrink-0 mt-0.5" />
-          <p className="text-xs text-text-secondary italic line-clamp-2">
-            {result.testimonialText}
+        {/* Big metric number */}
+        <div className="mb-3">
+          <p className="text-2xl font-bold text-text-primary leading-tight">
+            {result.metricValue}
+            <span className="text-base font-semibold text-text-tertiary ml-0.5">
+              {result.metricUnit}
+            </span>
+          </p>
+          <p className="text-xs text-text-tertiary mt-0.5">
+            em {result.period}
           </p>
         </div>
-      )}
 
-      {/* Images indicator */}
-      {hasImages && (
-        <div className="flex items-center gap-1 text-xs text-text-tertiary mb-3">
-          <ImageIcon size={12} />
-          <span>{result.images!.length} imagem(ns)</span>
+        {/* Client info */}
+        <div className="flex items-center gap-2 mb-3">
+          <div
+            className="flex h-7 w-7 items-center justify-center rounded-lg text-[10px] font-bold shrink-0"
+            style={{ backgroundColor: colors.bg, color: colors.text }}
+          >
+            {result.clientName.substring(0, 2).toUpperCase()}
+          </div>
+          <div className="min-w-0">
+            <p className="text-sm font-semibold text-text-primary truncate">{result.clientName}</p>
+            <p className="text-[11px] text-text-tertiary">{result.clientNiche}</p>
+          </div>
         </div>
-      )}
+
+        {/* Description */}
+        {result.description && (
+          <p className="text-xs text-text-secondary line-clamp-2 mb-3">
+            {result.description}
+          </p>
+        )}
+
+        {/* Testimonial snippet */}
+        {result.testimonialText && (
+          <div className="flex items-start gap-2 bg-bg-secondary rounded-lg p-3 mb-3">
+            <Quote size={10} className="text-text-tertiary shrink-0 mt-0.5" />
+            <p className="text-[11px] text-text-secondary italic line-clamp-2">
+              {result.testimonialText}
+            </p>
+          </div>
+        )}
+
+        {/* Images indicator */}
+        {hasImages && (
+          <div className="flex items-center gap-1 text-[11px] text-text-tertiary mb-1">
+            <ImageIcon size={11} />
+            <span>{result.images!.length} evidencia(s)</span>
+          </div>
+        )}
+      </div>
 
       {/* Footer: Transform button */}
-      <button
-        onClick={() => onTransformToPost(result)}
-        className="btn-accent w-full flex items-center justify-center gap-2 text-xs py-2"
-      >
-        <span>Transformar em Post</span>
-        <ArrowRight size={14} />
-      </button>
+      <div className="px-5 py-3 border-t border-border-default">
+        <button
+          onClick={() => onTransformToPost(result)}
+          className="flex w-full items-center justify-center gap-2 text-xs font-medium text-accent hover:text-accent-hover transition-colors py-1"
+        >
+          <span>Transformar em Case Study</span>
+          <ArrowRight size={13} />
+        </button>
+      </div>
     </div>
   );
 }

@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect, useCallback } from 'react';
-import { X, Plus, Trash2 } from 'lucide-react';
+import { X, Plus, Trash2, Trophy, ChevronDown } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { MetricType } from '@/types';
 import type { ClientResult } from '@/types';
@@ -26,11 +26,11 @@ export interface ResultFormData {
 }
 
 const METRIC_OPTIONS = [
-  { value: MetricType.ROAS, label: 'ROAS' },
-  { value: MetricType.REVENUE, label: 'Faturamento' },
-  { value: MetricType.GROWTH, label: 'Crescimento' },
-  { value: MetricType.CAC, label: 'CAC' },
-  { value: MetricType.OTHER, label: 'Outro' },
+  { value: MetricType.ROAS, label: 'ROAS', unit: 'x' },
+  { value: MetricType.REVENUE, label: 'Faturamento', unit: 'R$' },
+  { value: MetricType.GROWTH, label: 'Crescimento', unit: '%' },
+  { value: MetricType.CAC, label: 'CAC', unit: 'R$' },
+  { value: MetricType.OTHER, label: 'Outro', unit: '' },
 ] as const;
 
 const NICHE_SUGGESTIONS = [
@@ -86,6 +86,16 @@ export default function ResultFormModal({ isOpen, onClose, onSubmit, editingResu
     setForm((prev) => ({ ...prev, [field]: value }));
   }, []);
 
+  // Auto-fill unit when metric type changes
+  const handleMetricTypeChange = useCallback((value: string) => {
+    const option = METRIC_OPTIONS.find((o) => o.value === value);
+    setForm((prev) => ({
+      ...prev,
+      metricType: value,
+      metricUnit: prev.metricUnit || (option?.unit ?? ''),
+    }));
+  }, []);
+
   const handleAddImage = useCallback(() => {
     setForm((prev) => ({
       ...prev,
@@ -126,225 +136,235 @@ export default function ResultFormModal({ isOpen, onClose, onSubmit, editingResu
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center">
+    <div className="fixed inset-0 z-50 flex items-start sm:items-center justify-center overflow-y-auto">
       {/* Backdrop */}
       <div
-        className="absolute inset-0 bg-black/40 animate-backdrop"
+        className="fixed inset-0 bg-black/50 animate-backdrop"
         onClick={onClose}
       />
 
       {/* Modal */}
-      <div className="relative bg-bg-card border border-border-default rounded-[var(--radius-xl)] shadow-[var(--shadow-xl)] w-full max-w-2xl max-h-[90vh] overflow-y-auto animate-scale-in mx-4">
+      <div className="relative bg-bg-card border border-border-default rounded-2xl w-full max-w-lg max-h-[95vh] overflow-y-auto animate-scale-in mx-3 my-4 sm:my-0"
+        style={{ boxShadow: 'var(--shadow-xl)' }}
+      >
         {/* Header */}
-        <div className="flex items-center justify-between p-5 border-b border-border-default">
-          <h2 className="text-heading-2 text-text-primary">
-            {editingResult ? 'Editar Resultado' : 'Novo Resultado'}
-          </h2>
+        <div className="sticky top-0 z-10 flex items-center gap-3 p-4 sm:p-5 border-b border-border-default bg-bg-card rounded-t-2xl">
+          <div
+            className="flex h-9 w-9 items-center justify-center rounded-xl shrink-0"
+            style={{ backgroundColor: 'rgba(184, 255, 0, 0.12)' }}
+          >
+            <Trophy size={18} className="text-accent" />
+          </div>
+          <div className="flex-1 min-w-0">
+            <h2 className="text-base font-semibold text-text-primary">
+              {editingResult ? 'Editar Resultado' : 'Novo Resultado'}
+            </h2>
+            <p className="text-xs text-text-tertiary">
+              Cadastre um case de sucesso do seu cliente
+            </p>
+          </div>
           <button
             onClick={onClose}
-            className="p-1.5 rounded-[var(--radius-sm)] hover:bg-bg-hover transition-colors text-text-tertiary"
+            className="p-1.5 rounded-lg hover:bg-bg-hover transition-colors text-text-tertiary"
           >
             <X size={18} />
           </button>
         </div>
 
         {/* Form */}
-        <form onSubmit={handleSubmit} className="p-5 space-y-4">
-          {/* Client Name */}
-          <div>
-            <label className="text-label text-text-secondary mb-1.5 block">
-              Nome do Cliente *
-            </label>
-            <input
-              type="text"
-              value={form.clientName}
-              onChange={(e) => handleChange('clientName', e.target.value)}
-              placeholder="Ex: Loja XYZ"
-              className="input"
-              required
-            />
-          </div>
-
-          {/* Client Niche */}
-          <div>
-            <label className="text-label text-text-secondary mb-1.5 block">
-              Nicho *
-            </label>
-            <input
-              type="text"
-              value={form.clientNiche}
-              onChange={(e) => handleChange('clientNiche', e.target.value)}
-              placeholder="Ex: E-commerce Moda"
-              className="input"
-              list="niche-suggestions"
-              required
-            />
-            <datalist id="niche-suggestions">
-              {NICHE_SUGGESTIONS.map((niche) => (
-                <option key={niche} value={niche} />
-              ))}
-            </datalist>
-          </div>
-
-          {/* Metric Type + Value + Unit row */}
-          <div className="grid grid-cols-3 gap-3">
-            <div>
-              <label className="text-label text-text-secondary mb-1.5 block">
-                Tipo de Metrica *
-              </label>
-              <select
-                value={form.metricType}
-                onChange={(e) => handleChange('metricType', e.target.value)}
-                className="input"
-                required
-              >
-                {METRIC_OPTIONS.map((opt) => (
-                  <option key={opt.value} value={opt.value}>
-                    {opt.label}
-                  </option>
-                ))}
-              </select>
+        <form onSubmit={handleSubmit} className="p-4 sm:p-5 space-y-5">
+          {/* Section: Cliente */}
+          <div className="space-y-3">
+            <p className="text-xs font-semibold text-text-secondary tracking-wide">Cliente</p>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              <div>
+                <label className="text-xs text-text-tertiary mb-1 block">Nome *</label>
+                <input
+                  type="text"
+                  value={form.clientName}
+                  onChange={(e) => handleChange('clientName', e.target.value)}
+                  placeholder="Ex: Loja XYZ"
+                  className="input"
+                  required
+                />
+              </div>
+              <div>
+                <label className="text-xs text-text-tertiary mb-1 block">Nicho *</label>
+                <input
+                  type="text"
+                  value={form.clientNiche}
+                  onChange={(e) => handleChange('clientNiche', e.target.value)}
+                  placeholder="Ex: E-commerce Moda"
+                  className="input"
+                  list="niche-suggestions"
+                  required
+                />
+                <datalist id="niche-suggestions">
+                  {NICHE_SUGGESTIONS.map((niche) => (
+                    <option key={niche} value={niche} />
+                  ))}
+                </datalist>
+              </div>
             </div>
+          </div>
+
+          {/* Section: Metrica */}
+          <div className="space-y-3">
+            <p className="text-xs font-semibold text-text-secondary tracking-wide">Metrica Principal</p>
+            <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+              <div className="col-span-2 sm:col-span-1">
+                <label className="text-xs text-text-tertiary mb-1 block">Tipo *</label>
+                <div className="relative">
+                  <select
+                    value={form.metricType}
+                    onChange={(e) => handleMetricTypeChange(e.target.value)}
+                    className="input pr-8 appearance-none cursor-pointer"
+                    required
+                  >
+                    {METRIC_OPTIONS.map((opt) => (
+                      <option key={opt.value} value={opt.value}>
+                        {opt.label}
+                      </option>
+                    ))}
+                  </select>
+                  <ChevronDown size={14} className="absolute right-3 top-1/2 -translate-y-1/2 text-text-tertiary pointer-events-none" />
+                </div>
+              </div>
+              <div>
+                <label className="text-xs text-text-tertiary mb-1 block">Valor *</label>
+                <input
+                  type="text"
+                  value={form.metricValue}
+                  onChange={(e) => handleChange('metricValue', e.target.value)}
+                  placeholder="8.5"
+                  className="input font-semibold"
+                  required
+                />
+              </div>
+              <div>
+                <label className="text-xs text-text-tertiary mb-1 block">Unidade</label>
+                <input
+                  type="text"
+                  value={form.metricUnit}
+                  onChange={(e) => handleChange('metricUnit', e.target.value)}
+                  placeholder="x, %, R$"
+                  className="input"
+                />
+              </div>
+              <div className="col-span-2 sm:col-span-1">
+                <label className="text-xs text-text-tertiary mb-1 block">Periodo *</label>
+                <input
+                  type="text"
+                  value={form.period}
+                  onChange={(e) => handleChange('period', e.target.value)}
+                  placeholder="3 meses"
+                  className="input"
+                  required
+                />
+              </div>
+            </div>
+          </div>
+
+          {/* Section: Detalhes */}
+          <div className="space-y-3">
+            <p className="text-xs font-semibold text-text-secondary tracking-wide">Detalhes (opcional)</p>
             <div>
-              <label className="text-label text-text-secondary mb-1.5 block">
-                Valor *
-              </label>
-              <input
-                type="text"
-                value={form.metricValue}
-                onChange={(e) => handleChange('metricValue', e.target.value)}
-                placeholder="Ex: 8.5"
-                className="input"
-                required
+              <label className="text-xs text-text-tertiary mb-1 block">Descricao</label>
+              <textarea
+                value={form.description}
+                onChange={(e) => handleChange('description', e.target.value)}
+                placeholder="Contexto, estrategia utilizada, desafios superados..."
+                className="input min-h-[72px] resize-y"
+                rows={2}
               />
             </div>
             <div>
-              <label className="text-label text-text-secondary mb-1.5 block">
-                Unidade
-              </label>
-              <input
-                type="text"
-                value={form.metricUnit}
-                onChange={(e) => handleChange('metricUnit', e.target.value)}
-                placeholder="Ex: x, %, R$"
-                className="input"
+              <label className="text-xs text-text-tertiary mb-1 block">Depoimento do cliente</label>
+              <textarea
+                value={form.testimonialText}
+                onChange={(e) => handleChange('testimonialText', e.target.value)}
+                placeholder="Feedback ou depoimento do cliente..."
+                className="input min-h-[72px] resize-y"
+                rows={2}
               />
             </div>
           </div>
 
-          {/* Period */}
-          <div>
-            <label className="text-label text-text-secondary mb-1.5 block">
-              Periodo *
-            </label>
-            <input
-              type="text"
-              value={form.period}
-              onChange={(e) => handleChange('period', e.target.value)}
-              placeholder="Ex: 3 meses, 90 dias, Q4 2025"
-              className="input"
-              required
-            />
-          </div>
-
-          {/* Description */}
-          <div>
-            <label className="text-label text-text-secondary mb-1.5 block">
-              Descricao
-            </label>
-            <textarea
-              value={form.description}
-              onChange={(e) => handleChange('description', e.target.value)}
-              placeholder="Contexto sobre o resultado, estrategia utilizada, desafios..."
-              className="input min-h-[80px] resize-y"
-              rows={3}
-            />
-          </div>
-
-          {/* Testimonial */}
-          <div>
-            <label className="text-label text-text-secondary mb-1.5 block">
-              Depoimento do Cliente
-            </label>
-            <textarea
-              value={form.testimonialText}
-              onChange={(e) => handleChange('testimonialText', e.target.value)}
-              placeholder="Depoimento ou feedback do cliente sobre os resultados..."
-              className="input min-h-[80px] resize-y"
-              rows={3}
-            />
-          </div>
-
-          {/* Image URLs */}
-          <div>
-            <div className="flex items-center justify-between mb-2">
-              <label className="text-label text-text-secondary">
-                Imagens (URLs)
-              </label>
+          {/* Section: Imagens */}
+          <div className="space-y-3">
+            <div className="flex items-center justify-between">
+              <p className="text-xs font-semibold text-text-secondary tracking-wide">Evidencias (opcional)</p>
               <button
                 type="button"
                 onClick={handleAddImage}
-                className={cn(
-                  'flex items-center gap-1 text-xs font-medium',
-                  'text-accent hover:text-accent-hover transition-colors'
-                )}
+                className="flex items-center gap-1 text-xs font-medium text-accent hover:text-accent-hover transition-colors"
               >
                 <Plus size={12} />
                 Adicionar URL
               </button>
             </div>
 
-            {form.imageUrls.length === 0 && (
-              <p className="text-xs text-text-tertiary italic">
-                Nenhuma imagem adicionada. Clique em &quot;Adicionar URL&quot; para incluir screenshots ou evidencias.
-              </p>
+            {form.imageUrls.length === 0 ? (
+              <div className="rounded-xl border border-dashed border-border-default p-4 text-center">
+                <p className="text-xs text-text-tertiary">
+                  Adicione screenshots ou evidencias dos resultados
+                </p>
+              </div>
+            ) : (
+              <div className="space-y-2">
+                {form.imageUrls.map((img, index) => (
+                  <div key={index} className="flex items-center gap-2">
+                    <input
+                      type="url"
+                      value={img.url}
+                      onChange={(e) => handleImageChange(index, 'url', e.target.value)}
+                      placeholder="https://..."
+                      className="input flex-1 text-xs"
+                    />
+                    <input
+                      type="text"
+                      value={img.altText}
+                      onChange={(e) => handleImageChange(index, 'altText', e.target.value)}
+                      placeholder="Descricao"
+                      className="input w-28 text-xs"
+                    />
+                    <button
+                      type="button"
+                      onClick={() => handleRemoveImage(index)}
+                      className="p-2 rounded-lg hover:bg-error-surface text-text-tertiary hover:text-error transition-colors shrink-0"
+                    >
+                      <Trash2 size={14} />
+                    </button>
+                  </div>
+                ))}
+              </div>
             )}
-
-            <div className="space-y-2">
-              {form.imageUrls.map((img, index) => (
-                <div key={index} className="flex items-center gap-2">
-                  <input
-                    type="url"
-                    value={img.url}
-                    onChange={(e) => handleImageChange(index, 'url', e.target.value)}
-                    placeholder="https://exemplo.com/imagem.png"
-                    className="input flex-1"
-                  />
-                  <input
-                    type="text"
-                    value={img.altText}
-                    onChange={(e) => handleImageChange(index, 'altText', e.target.value)}
-                    placeholder="Descricao"
-                    className="input w-32"
-                  />
-                  <button
-                    type="button"
-                    onClick={() => handleRemoveImage(index)}
-                    className="p-2 rounded-[var(--radius-sm)] hover:bg-error-surface text-text-tertiary hover:text-error transition-colors shrink-0"
-                  >
-                    <Trash2 size={14} />
-                  </button>
-                </div>
-              ))}
-            </div>
           </div>
 
           {/* Actions */}
-          <div className="flex items-center justify-end gap-3 pt-3 border-t border-border-default">
+          <div className="flex items-center justify-end gap-3 pt-4 border-t border-border-default">
             <button
               type="button"
               onClick={onClose}
-              className="btn-ghost"
+              className="btn-ghost text-sm"
               disabled={submitting}
             >
               Cancelar
             </button>
             <button
               type="submit"
-              className="btn-accent"
+              className={cn(
+                'btn-accent text-sm',
+                (!isValid || submitting) && 'opacity-50 cursor-not-allowed'
+              )}
               disabled={!isValid || submitting}
             >
-              {submitting ? 'Salvando...' : editingResult ? 'Atualizar' : 'Cadastrar'}
+              {submitting ? (
+                <span className="flex items-center gap-2">
+                  <span className="h-3.5 w-3.5 border-2 border-current border-t-transparent rounded-full animate-spin" />
+                  Salvando...
+                </span>
+              ) : editingResult ? 'Atualizar' : 'Cadastrar'}
             </button>
           </div>
         </form>
