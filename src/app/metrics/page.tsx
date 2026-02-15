@@ -306,14 +306,14 @@ export default function MetricsPage() {
               type="date"
               value={dateRange.from}
               onChange={(e) => handleCustomFrom(e.target.value)}
-              className="input !py-1.5 !px-2 !text-xs w-[130px]"
+              className="input py-1.5 px-2 text-xs w-[130px]"
             />
             <span className="text-xs text-text-tertiary">ate</span>
             <input
               type="date"
               value={dateRange.to}
               onChange={(e) => handleCustomTo(e.target.value)}
-              className="input !py-1.5 !px-2 !text-xs w-[130px]"
+              className="input py-1.5 px-2 text-xs w-[130px]"
             />
           </div>
         </div>

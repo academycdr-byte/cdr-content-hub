@@ -180,7 +180,7 @@ export default function CommissionsPage() {
                     Valor CPM (R$)
                   </label>
                   <div className="relative">
-                    <span className="absolute left-3 top-1/2 -translate-y-1/2 text-sm text-text-tertiary">R$</span>
+                    <span className="absolute left-3.5 top-1/2 -translate-y-1/2 text-sm font-medium text-text-tertiary">R$</span>
                     <input
                       type="number"
                       step="0.10"
@@ -189,7 +189,7 @@ export default function CommissionsPage() {
                       onChange={(e) =>
                         setEditValues((prev) => ({ ...prev, [config.format]: e.target.value }))
                       }
-                      className="input pl-10 text-lg font-bold !py-2"
+                      className="input pl-11 text-lg font-bold"
                     />
                   </div>
                 </div>

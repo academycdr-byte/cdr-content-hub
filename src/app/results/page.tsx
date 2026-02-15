@@ -217,7 +217,7 @@ export default function ResultsPage() {
             onKeyDown={handleSearchKeyDown}
             onBlur={handleSearch}
             placeholder="Buscar por cliente..."
-            className="input py-1.5 pl-8 pr-3 text-xs"
+            className="input py-1.5 pl-9 pr-3 text-xs"
           />
         </div>
 

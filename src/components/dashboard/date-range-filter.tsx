@@ -216,7 +216,7 @@ export default function DateRangeFilter({ value, onChange }: DateRangeFilterProp
             type="date"
             value={formatInputDate(value.start)}
             onChange={(e) => handleCustomStart(e.target.value)}
-            className="input !py-1.5 !px-2 !text-xs w-[130px]"
+            className="input py-1.5 px-2 text-xs w-[130px]"
             max={formatInputDate(value.end)}
           />
           <span className="text-xs text-text-tertiary">ate</span>
@@ -224,7 +224,7 @@ export default function DateRangeFilter({ value, onChange }: DateRangeFilterProp
             type="date"
             value={formatInputDate(value.end)}
             onChange={(e) => handleCustomEnd(e.target.value)}
-            className="input !py-1.5 !px-2 !text-xs w-[130px]"
+            className="input py-1.5 px-2 text-xs w-[130px]"
             min={formatInputDate(value.start)}
           />
         </div>

@@ -184,13 +184,13 @@ export default function HooksPage() {
 
       {/* Search */}
       <div className="relative mb-4">
-        <Search size={16} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-text-tertiary" />
+        <Search size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-text-tertiary" />
         <input
           type="text"
           value={searchQuery}
           onChange={(e) => setSearchQuery(e.target.value)}
           placeholder="Buscar hooks..."
-          className="input pl-10"
+          className="input pl-9"
         />
       </div>
 
