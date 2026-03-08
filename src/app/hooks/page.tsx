@@ -3,53 +3,21 @@
 import { useEffect, useState, useCallback } from 'react';
 import {
   Lightbulb,
-  Copy,
-  ArrowRight,
   Plus,
-  X,
-  Loader2,
   Search,
   Filter,
-  Hash,
-  Check,
-  Edit3,
-  Trash2,
-  ChevronDown,
+  TrendingUp,
 } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { cn } from '@/lib/utils';
 import { useToastStore } from '@/stores/toast-store';
-import type { Hook, ContentPillar, PostFormat, HookCategory } from '@/types';
-import { FORMAT_LABELS } from '@/types';
+import type { Hook, ContentPillar } from '@/types';
+import { FORMATS, FORMAT_FILTER_LABELS, CATEGORIES, CATEGORY_LABELS } from '@/components/hooks/constants';
+import { HookCard } from '@/components/hooks/hook-card';
+import dynamic from 'next/dynamic';
 
-const FORMATS: Array<PostFormat | 'ALL'> = ['ALL', 'REEL', 'CAROUSEL', 'STATIC', 'STORY'];
-
-const FORMAT_FILTER_LABELS: Record<string, string> = {
-  ALL: 'Todos',
-  REEL: 'Reel',
-  CAROUSEL: 'Carrossel',
-  STATIC: 'Post',
-  STORY: 'Story',
-};
-
-const CATEGORIES: Array<HookCategory | 'ALL'> = ['ALL', 'QUESTION', 'STATISTIC', 'CONTRARIAN', 'STORY_HOOK', 'CHALLENGE'];
-
-const CATEGORY_LABELS: Record<string, string> = {
-  ALL: 'Todas',
-  QUESTION: 'Pergunta',
-  STATISTIC: 'Estatistica',
-  CONTRARIAN: 'Contrario',
-  STORY_HOOK: 'Historia',
-  CHALLENGE: 'Desafio',
-};
-
-const CATEGORY_COLORS: Record<string, { bg: string; text: string }> = {
-  QUESTION: { bg: 'rgba(48, 176, 199, 0.12)', text: '#30B0C7' },
-  STATISTIC: { bg: 'rgba(52, 199, 89, 0.12)', text: '#34C759' },
-  CONTRARIAN: { bg: 'rgba(255, 69, 58, 0.12)', text: '#FF453A' },
-  STORY_HOOK: { bg: 'rgba(191, 90, 242, 0.12)', text: '#BF5AF2' },
-  CHALLENGE: { bg: 'rgba(255, 159, 10, 0.12)', text: '#FF9F0A' },
-};
+const HookDetailModal = dynamic(() => import('@/components/hooks/hook-detail-modal').then(m => ({ default: m.HookDetailModal })), { ssr: false });
+const CreateHookModal = dynamic(() => import('@/components/hooks/create-hook-modal').then(m => ({ default: m.CreateHookModal })), { ssr: false });
 
 export default function HooksPage() {
   const [hooks, setHooks] = useState<Hook[]>([]);
@@ -59,6 +27,7 @@ export default function HooksPage() {
   const [selectedFormat, setSelectedFormat] = useState<string>('ALL');
   const [selectedCategory, setSelectedCategory] = useState<string>('ALL');
   const [searchQuery, setSearchQuery] = useState('');
+  const [sortByPerformance, setSortByPerformance] = useState(false);
   const [showCreateForm, setShowCreateForm] = useState(false);
   const [selectedHook, setSelectedHook] = useState<Hook | null>(null);
   const { addToast } = useToastStore();
@@ -70,6 +39,7 @@ export default function HooksPage() {
       if (selectedPillar) params.set('pillarId', selectedPillar);
       if (selectedFormat !== 'ALL') params.set('format', selectedFormat);
       if (selectedCategory !== 'ALL') params.set('category', selectedCategory);
+      if (sortByPerformance) params.set('sortBy', 'performanceScore');
 
       const res = await fetch(`/api/hooks?${params.toString()}`);
       if (!res.ok) throw new Error('Failed to fetch hooks');
@@ -81,7 +51,7 @@ export default function HooksPage() {
     } finally {
       setLoading(false);
     }
-  }, [selectedPillar, selectedFormat, selectedCategory, addToast]);
+  }, [selectedPillar, selectedFormat, selectedCategory, sortByPerformance, addToast]);
 
   const fetchPillars = useCallback(async () => {
     try {
@@ -340,8 +310,51 @@ export default function HooksPage() {
               ))}
             </div>
           </div>
+
+          {/* Sort by performance */}
+          <div>
+            <label className="flex items-center gap-2 cursor-pointer">
+              <input
+                type="checkbox"
+                checked={sortByPerformance}
+                onChange={(e) => setSortByPerformance(e.target.checked)}
+                className="h-4 w-4 rounded accent-accent"
+              />
+              <span className="text-xs font-medium text-text-secondary">Ordenar por performance</span>
+            </label>
+          </div>
         </div>
       </div>
+
+      {/* Top Hooks Section */}
+      {!loading && !searchQuery && filteredHooks.some((h) => h.performanceScore > 0) && (
+        <div className="card p-4 mb-4">
+          <div className="flex items-center gap-2 mb-3">
+            <TrendingUp size={14} className="text-accent" />
+            <span className="text-xs font-semibold text-text-secondary">Top Hooks por Performance</span>
+          </div>
+          <div className="flex flex-wrap gap-2">
+            {filteredHooks
+              .filter((h) => h.performanceScore > 0)
+              .sort((a, b) => b.performanceScore - a.performanceScore)
+              .slice(0, 3)
+              .map((hook) => (
+                <button
+                  key={hook.id}
+                  onClick={() => setSelectedHook(hook)}
+                  className="flex items-center gap-2 rounded-lg border border-accent bg-accent-surface px-3 py-2 text-left transition-colors hover:bg-accent-surface-hover cursor-pointer"
+                >
+                  <span className="text-xs font-bold text-accent">
+                    {hook.performanceScore}
+                  </span>
+                  <span className="text-xs text-text-primary truncate max-w-[200px]">
+                    {hook.text}
+                  </span>
+                </button>
+              ))}
+          </div>
+        </div>
+      )}
 
       {/* Hook List */}
       {loading ? (
@@ -404,731 +417,5 @@ export default function HooksPage() {
       />
     )}
     </>
-  );
-}
-
-// ===== Hook Card Component =====
-
-interface HookCardProps {
-  hook: Hook;
-  index: number;
-  pillarColor: string;
-  pillarName: string;
-  onCopy: (hook: Hook) => void;
-  onClick: () => void;
-}
-
-function HookCard({ hook, index, pillarColor, pillarName, onCopy, onClick }: HookCardProps) {
-  const catColors = CATEGORY_COLORS[hook.category] || { bg: 'rgba(142, 142, 147, 0.12)', text: '#8E8E93' };
-
-  return (
-    <div
-      className="card card-hover p-4 flex items-start gap-4 animate-fade-in cursor-pointer"
-      style={{ borderLeft: `3px solid ${pillarColor}` }}
-      onClick={onClick}
-    >
-      {/* Number badge */}
-      <div
-        className="flex h-8 w-8 items-center justify-center rounded-lg text-xs font-bold shrink-0"
-        style={{ backgroundColor: catColors.bg, color: catColors.text }}
-      >
-        #{index}
-      </div>
-
-      <div className="flex-1 min-w-0">
-        <p className="text-sm font-medium text-text-primary leading-relaxed line-clamp-2">
-          {hook.text}
-        </p>
-        <div className="flex items-center gap-2 mt-2 flex-wrap">
-          <span
-            className="badge text-[11px]"
-            style={{
-              backgroundColor: `${pillarColor}15`,
-              color: pillarColor,
-            }}
-          >
-            {pillarName}
-          </span>
-          <span className="badge bg-bg-secondary text-text-secondary text-[11px]">
-            {FORMAT_LABELS[hook.format as PostFormat] || hook.format}
-          </span>
-          <span
-            className="badge text-[11px]"
-            style={{ backgroundColor: catColors.bg, color: catColors.text }}
-          >
-            {CATEGORY_LABELS[hook.category] || hook.category}
-          </span>
-          {hook.usageCount > 0 && (
-            <span className="flex items-center gap-1 text-[11px] text-text-tertiary">
-              <Hash size={10} />
-              {hook.usageCount}x
-            </span>
-          )}
-        </div>
-      </div>
-
-      <button
-        onClick={(e) => {
-          e.stopPropagation();
-          onCopy(hook);
-        }}
-        className="flex h-8 w-8 items-center justify-center rounded-lg text-text-tertiary hover:bg-bg-hover hover:text-text-primary transition-colors shrink-0"
-        title="Copiar"
-      >
-        <Copy size={15} />
-      </button>
-    </div>
-  );
-}
-
-// ===== Hook Detail Modal =====
-
-interface HookDetailModalProps {
-  hook: Hook;
-  pillars: ContentPillar[];
-  pillarColor: string;
-  pillarName: string;
-  onClose: () => void;
-  onCopy: (hook: Hook) => void;
-  onUseInPost: (hook: Hook) => void;
-  onDelete: (hookId: string) => void;
-  onUpdate: (hookId: string, data: {
-    text?: string;
-    scenes?: string | null;
-    conclusion?: string | null;
-    pillarId?: string | null;
-    format?: string;
-    category?: string;
-  }) => Promise<void>;
-}
-
-function HookDetailModal({ hook, pillars, pillarColor, pillarName, onClose, onCopy, onUseInPost, onDelete, onUpdate }: HookDetailModalProps) {
-  const [copied, setCopied] = useState(false);
-  const [isEditing, setIsEditing] = useState(false);
-  const [saving, setSaving] = useState(false);
-  const [editText, setEditText] = useState(hook.text);
-  const [editScenes, setEditScenes] = useState(hook.scenes || '');
-  const [editConclusion, setEditConclusion] = useState(hook.conclusion || '');
-  const [editFormat, setEditFormat] = useState(hook.format);
-  const [editCategory, setEditCategory] = useState(hook.category);
-  const [editPillarId, setEditPillarId] = useState<string | null>(hook.pillarId);
-  const catColors = CATEGORY_COLORS[hook.category] || { bg: 'rgba(142, 142, 147, 0.12)', text: '#8E8E93' };
-
-  const handleCopy = async () => {
-    await onCopy(hook);
-    setCopied(true);
-    setTimeout(() => setCopied(false), 2000);
-  };
-
-  const handleStartEdit = () => {
-    setEditText(hook.text);
-    setEditScenes(hook.scenes || '');
-    setEditConclusion(hook.conclusion || '');
-    setEditFormat(hook.format);
-    setEditCategory(hook.category);
-    setEditPillarId(hook.pillarId);
-    setIsEditing(true);
-  };
-
-  const handleCancelEdit = () => {
-    setIsEditing(false);
-  };
-
-  const handleSave = async () => {
-    if (!editText.trim()) return;
-    setSaving(true);
-    try {
-      await onUpdate(hook.id, {
-        text: editText.trim(),
-        scenes: editScenes.trim() || null,
-        conclusion: editConclusion.trim() || null,
-        format: editFormat,
-        category: editCategory,
-        pillarId: editPillarId,
-      });
-      setIsEditing(false);
-    } finally {
-      setSaving(false);
-    }
-  };
-
-  const scenesLines = hook.scenes?.split('\n').filter((line) => line.trim()) || [];
-  const conclusionLines = hook.conclusion?.split('\n').filter((line) => line.trim()) || [];
-
-  return (
-    <div className="fixed inset-0 z-50 overflow-y-auto">
-      <div className="fixed inset-0 bg-black/50 animate-backdrop" onClick={onClose} />
-      <div className="flex min-h-full items-center justify-center p-3 sm:p-4">
-        <div
-          className="relative bg-bg-card border border-border-default rounded-2xl w-full max-w-xl animate-scale-in"
-          style={{ boxShadow: 'var(--shadow-xl)' }}
-        >
-          <div className="max-h-[85vh] overflow-y-auto rounded-2xl">
-            {/* Header */}
-            <div className="sticky top-0 z-10 bg-bg-card rounded-t-2xl border-b border-border-default">
-              <div className="flex items-start gap-3 p-4 sm:p-5">
-                <div
-                  className="flex h-10 w-10 items-center justify-center rounded-xl shrink-0 mt-0.5"
-                  style={{ backgroundColor: catColors.bg, color: catColors.text }}
-                >
-                  <Lightbulb size={20} />
-                </div>
-                <div className="flex-1 min-w-0">
-                  <div className="flex items-center gap-2 flex-wrap mb-1">
-                    <span
-                      className="badge text-[11px]"
-                      style={{ backgroundColor: catColors.bg, color: catColors.text }}
-                    >
-                      {CATEGORY_LABELS[hook.category] || hook.category}
-                    </span>
-                    <span
-                      className="badge text-[11px]"
-                      style={{ backgroundColor: `${pillarColor}15`, color: pillarColor }}
-                    >
-                      {pillarName}
-                    </span>
-                  </div>
-                  <h2 className="text-base font-semibold text-text-primary leading-snug">
-                    {isEditing ? 'Editando Ideia' : 'Ideia de Conteudo'}
-                  </h2>
-                </div>
-                <button
-                  onClick={onClose}
-                  className="p-1.5 rounded-lg hover:bg-bg-hover transition-colors text-text-tertiary shrink-0"
-                >
-                  <X size={18} />
-                </button>
-              </div>
-              {!isEditing && (
-                <div className="flex items-center gap-2 px-4 sm:px-5 pb-4">
-                  <button
-                    onClick={() => onUseInPost(hook)}
-                    className="btn-accent flex items-center gap-2 text-sm"
-                  >
-                    <ArrowRight size={14} />
-                    Usar em Post
-                  </button>
-                  <button
-                    onClick={handleCopy}
-                    className={cn(
-                      'btn-ghost flex items-center gap-2 text-sm',
-                      copied && 'text-success'
-                    )}
-                  >
-                    {copied ? <Check size={14} /> : <Copy size={14} />}
-                    {copied ? 'Copiado!' : 'Copiar'}
-                  </button>
-                  <button
-                    onClick={handleStartEdit}
-                    className="btn-ghost flex items-center gap-2 text-sm"
-                  >
-                    <Edit3 size={14} />
-                    Editar
-                  </button>
-                  <div className="flex-1" />
-                  <button
-                    onClick={() => onDelete(hook.id)}
-                    className="p-2 rounded-lg text-text-tertiary hover:bg-error-surface hover:text-error transition-colors"
-                    title="Excluir"
-                  >
-                    <Trash2 size={15} />
-                  </button>
-                </div>
-              )}
-              {isEditing && (
-                <div className="flex items-center gap-2 px-4 sm:px-5 pb-4">
-                  <button
-                    onClick={handleSave}
-                    disabled={saving || !editText.trim()}
-                    className={cn(
-                      'btn-accent flex items-center gap-2 text-sm',
-                      (saving || !editText.trim()) && 'opacity-50 cursor-not-allowed'
-                    )}
-                  >
-                    {saving ? <Loader2 size={14} className="animate-spin" /> : <Check size={14} />}
-                    {saving ? 'Salvando...' : 'Salvar'}
-                  </button>
-                  <button
-                    onClick={handleCancelEdit}
-                    className="btn-ghost flex items-center gap-2 text-sm"
-                    disabled={saving}
-                  >
-                    Cancelar
-                  </button>
-                </div>
-              )}
-            </div>
-
-            {/* Content */}
-            <div className="p-4 sm:p-5 space-y-4">
-              {isEditing ? (
-                /* ===== EDIT MODE ===== */
-                <>
-                  {/* Gancho */}
-                  <div>
-                    <label className="text-xs font-semibold text-text-secondary mb-2 block">Gancho *</label>
-                    <textarea
-                      value={editText}
-                      onChange={(e) => setEditText(e.target.value)}
-                      className="input min-h-[72px] resize-y"
-                      autoFocus
-                    />
-                  </div>
-
-                  {/* Cenas */}
-                  <div>
-                    <label className="text-xs font-semibold text-text-secondary mb-2 block">Cenas</label>
-                    <textarea
-                      value={editScenes}
-                      onChange={(e) => setEditScenes(e.target.value)}
-                      placeholder="Uma cena por linha"
-                      className="input min-h-[120px] resize-y"
-                    />
-                    <p className="text-[11px] text-text-tertiary mt-1">Uma cena por linha</p>
-                  </div>
-
-                  {/* Conclusao */}
-                  <div>
-                    <label className="text-xs font-semibold text-text-secondary mb-2 block">Conclusao</label>
-                    <textarea
-                      value={editConclusion}
-                      onChange={(e) => setEditConclusion(e.target.value)}
-                      placeholder="CTA ou fechamento"
-                      className="input min-h-[56px] resize-y"
-                    />
-                  </div>
-
-                  {/* Formato */}
-                  <div>
-                    <label className="text-xs font-semibold text-text-secondary mb-2 block">Formato</label>
-                    <div className="flex flex-wrap gap-2">
-                      {FORMATS.map((f) => (
-                        <button
-                          key={f}
-                          type="button"
-                          onClick={() => setEditFormat(f)}
-                          className={cn(
-                            'badge transition-all cursor-pointer',
-                            editFormat === f
-                              ? 'bg-accent-surface text-accent'
-                              : 'bg-bg-secondary text-text-secondary hover:bg-bg-hover'
-                          )}
-                        >
-                          {FORMAT_FILTER_LABELS[f]}
-                        </button>
-                      ))}
-                    </div>
-                  </div>
-
-                  {/* Categoria */}
-                  <div>
-                    <label className="text-xs font-semibold text-text-secondary mb-2 block">Categoria</label>
-                    <div className="flex flex-wrap gap-2">
-                      {CATEGORIES.filter((c) => c !== 'ALL').map((c) => {
-                        const colors = CATEGORY_COLORS[c] || { bg: 'rgba(142, 142, 147, 0.12)', text: '#8E8E93' };
-                        return (
-                          <button
-                            key={c}
-                            type="button"
-                            onClick={() => setEditCategory(c as HookCategory)}
-                            className={cn(
-                              'badge transition-all cursor-pointer',
-                              editCategory === c
-                                ? ''
-                                : 'bg-bg-secondary text-text-secondary hover:bg-bg-hover'
-                            )}
-                            style={editCategory === c ? { backgroundColor: colors.bg, color: colors.text } : undefined}
-                          >
-                            {CATEGORY_LABELS[c]}
-                          </button>
-                        );
-                      })}
-                    </div>
-                  </div>
-
-                  {/* Pilar */}
-                  <div>
-                    <label className="text-xs font-semibold text-text-secondary mb-2 block">Pilar</label>
-                    <div className="flex flex-wrap gap-2">
-                      <button
-                        type="button"
-                        onClick={() => setEditPillarId(null)}
-                        className={cn(
-                          'badge transition-all cursor-pointer',
-                          !editPillarId
-                            ? 'bg-accent-surface text-accent'
-                            : 'bg-bg-secondary text-text-secondary hover:bg-bg-hover'
-                        )}
-                      >
-                        Universal
-                      </button>
-                      {pillars.map((p) => (
-                        <button
-                          key={p.id}
-                          type="button"
-                          onClick={() => setEditPillarId(p.id)}
-                          className={cn(
-                            'badge transition-all cursor-pointer',
-                            editPillarId === p.id
-                              ? 'text-white'
-                              : 'bg-bg-secondary text-text-secondary hover:bg-bg-hover'
-                          )}
-                          style={editPillarId === p.id ? { backgroundColor: p.color } : undefined}
-                        >
-                          {p.name}
-                        </button>
-                      ))}
-                    </div>
-                  </div>
-                </>
-              ) : (
-                /* ===== VIEW MODE ===== */
-                <>
-                  {/* Formato */}
-                  <div>
-                    <p className="text-xs font-semibold text-text-secondary mb-2">Formato</p>
-                    <div className="rounded-xl bg-bg-secondary p-3">
-                      <p className="text-sm text-accent font-medium">
-                        {FORMAT_LABELS[hook.format as PostFormat] || 'Todos os formatos'}
-                      </p>
-                    </div>
-                  </div>
-
-                  {/* Gancho */}
-                  <div>
-                    <p className="text-xs font-semibold text-text-secondary mb-2">Gancho</p>
-                    <div className="rounded-xl bg-bg-secondary p-4">
-                      <p className="text-sm text-text-primary leading-relaxed">{hook.text}</p>
-                    </div>
-                  </div>
-
-                  {/* Cenas */}
-                  <div>
-                    <p className="text-xs font-semibold text-text-secondary mb-2">Cenas</p>
-                    <div className="rounded-xl bg-bg-secondary p-4">
-                      {scenesLines.length > 0 ? (
-                        <div className="space-y-2">
-                          {scenesLines.map((line, i) => (
-                            <div key={i} className="flex items-start gap-2">
-                              <span className="text-xs font-bold text-accent mt-0.5 shrink-0">{i + 1}.</span>
-                              <p className="text-sm text-text-primary leading-relaxed">{line}</p>
-                            </div>
-                          ))}
-                        </div>
-                      ) : (
-                        <p className="text-sm text-text-tertiary italic">Nenhuma cena definida</p>
-                      )}
-                    </div>
-                  </div>
-
-                  {/* Conclusao */}
-                  <div>
-                    <p className="text-xs font-semibold text-text-secondary mb-2">Conclusao</p>
-                    <div className="rounded-xl bg-bg-secondary p-4">
-                      {conclusionLines.length > 0 ? (
-                        <div className="space-y-2">
-                          {conclusionLines.map((line, i) => (
-                            <p key={i} className="text-sm text-text-primary leading-relaxed">{line}</p>
-                          ))}
-                        </div>
-                      ) : (
-                        <p className="text-sm text-text-tertiary italic">Nenhuma conclusao definida</p>
-                      )}
-                    </div>
-                  </div>
-
-                  {/* Metadata row */}
-                  <div className="grid grid-cols-2 gap-3">
-                    <div>
-                      <p className="text-xs font-semibold text-text-secondary mb-2">Categoria</p>
-                      <div className="rounded-xl bg-bg-secondary p-3">
-                        <div className="flex items-center gap-2">
-                          <span className="inline-block h-2.5 w-2.5 rounded-full" style={{ backgroundColor: catColors.text }} />
-                          <p className="text-sm text-text-primary font-medium">
-                            {CATEGORY_LABELS[hook.category] || hook.category}
-                          </p>
-                        </div>
-                      </div>
-                    </div>
-                    <div>
-                      <p className="text-xs font-semibold text-text-secondary mb-2">Pilar</p>
-                      <div className="rounded-xl bg-bg-secondary p-3">
-                        <div className="flex items-center gap-2">
-                          <span className="inline-block h-2.5 w-2.5 rounded-full" style={{ backgroundColor: pillarColor }} />
-                          <p className="text-sm text-text-primary font-medium">{pillarName}</p>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-
-                  {/* Uso */}
-                  <div>
-                    <p className="text-xs font-semibold text-text-secondary mb-2">Uso</p>
-                    <div className="rounded-xl bg-bg-secondary p-3 flex items-center gap-3">
-                      <div
-                        className="flex h-8 w-8 items-center justify-center rounded-lg"
-                        style={{ backgroundColor: 'rgba(184, 255, 0, 0.12)' }}
-                      >
-                        <Hash size={14} className="text-accent" />
-                      </div>
-                      <div>
-                        <p className="text-sm font-semibold text-text-primary">{hook.usageCount}x utilizado</p>
-                        <p className="text-[11px] text-text-tertiary">
-                          {hook.usageCount === 0
-                            ? 'Ainda nao foi usado em nenhum post'
-                            : `Usado em ${hook.usageCount} post${hook.usageCount > 1 ? 's' : ''}`}
-                        </p>
-                      </div>
-                    </div>
-                  </div>
-                </>
-              )}
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-  );
-}
-
-// ===== Create Hook Modal =====
-
-interface CreateHookModalProps {
-  pillars: ContentPillar[];
-  onSubmit: (data: {
-    text: string;
-    scenes?: string | null;
-    conclusion?: string | null;
-    pillarId: string | null;
-    format: string;
-    category: string;
-  }) => Promise<void>;
-  onClose: () => void;
-}
-
-function CreateHookModal({ pillars, onSubmit, onClose }: CreateHookModalProps) {
-  const [text, setText] = useState('');
-  const [scenes, setScenes] = useState('');
-  const [conclusion, setConclusion] = useState('');
-  const [pillarId, setPillarId] = useState<string | null>(null);
-  const [format, setFormat] = useState('ALL');
-  const [category, setCategory] = useState('QUESTION');
-  const [saving, setSaving] = useState(false);
-
-  async function handleSubmit(e: React.FormEvent) {
-    e.preventDefault();
-    if (!text.trim()) return;
-
-    setSaving(true);
-    try {
-      await onSubmit({
-        text: text.trim(),
-        scenes: scenes.trim() || null,
-        conclusion: conclusion.trim() || null,
-        pillarId,
-        format,
-        category,
-      });
-    } finally {
-      setSaving(false);
-    }
-  }
-
-  return (
-    <div className="fixed inset-0 z-50 overflow-y-auto">
-      <div className="fixed inset-0 bg-black/50 animate-backdrop" onClick={onClose} />
-      <div className="flex min-h-full items-center justify-center p-3 sm:p-4">
-        <div
-          className="relative w-full max-w-lg rounded-2xl bg-bg-card border border-border-default animate-scale-in"
-          style={{ boxShadow: 'var(--shadow-xl)' }}
-          onClick={(e) => e.stopPropagation()}
-        >
-          <div className="max-h-[85vh] overflow-y-auto rounded-2xl">
-        {/* Header */}
-        <div className="sticky top-0 z-10 flex items-center gap-3 border-b border-border-default p-4 sm:p-5 bg-bg-card rounded-t-2xl">
-          <div
-            className="flex h-9 w-9 items-center justify-center rounded-xl shrink-0"
-            style={{ backgroundColor: 'rgba(184, 255, 0, 0.12)' }}
-          >
-            <Lightbulb size={18} className="text-accent" />
-          </div>
-          <div className="flex-1">
-            <h2 className="text-base font-semibold text-text-primary">Nova Ideia</h2>
-            <p className="text-xs text-text-tertiary">Estruture seu roteiro de conteudo</p>
-          </div>
-          <button
-            onClick={onClose}
-            className="p-1.5 rounded-lg text-text-tertiary hover:bg-bg-hover transition-colors"
-          >
-            <X size={18} />
-          </button>
-        </div>
-
-        {/* Form */}
-        <form onSubmit={handleSubmit} className="p-4 sm:p-5 space-y-5">
-          {/* Section: Roteiro */}
-          <div className="space-y-3">
-            <p className="text-xs font-semibold text-text-secondary tracking-wide">Roteiro</p>
-
-            {/* Gancho */}
-            <div>
-              <label className="text-xs text-text-tertiary mb-1 block">Gancho *</label>
-              <textarea
-                value={text}
-                onChange={(e) => setText(e.target.value)}
-                placeholder="A frase de abertura que prende a atencao. Ex: Voce sabia que 80% dos e-commerces perdem dinheiro em ads?"
-                className="input min-h-[72px] resize-y"
-                autoFocus
-              />
-            </div>
-
-            {/* Cenas */}
-            <div>
-              <label className="text-xs text-text-tertiary mb-1 block">Cenas</label>
-              <textarea
-                value={scenes}
-                onChange={(e) => setScenes(e.target.value)}
-                placeholder="Descreva cada cena em uma linha. Ex:&#10;Mostrar dashboard com metricas&#10;Explicar estrategia X&#10;Revelar resultado final"
-                className="input min-h-[90px] resize-y"
-              />
-              <p className="text-[11px] text-text-tertiary mt-1">Uma cena por linha</p>
-            </div>
-
-            {/* Conclusao */}
-            <div>
-              <label className="text-xs text-text-tertiary mb-1 block">Conclusao</label>
-              <textarea
-                value={conclusion}
-                onChange={(e) => setConclusion(e.target.value)}
-                placeholder="CTA ou fechamento. Ex: Comenta QUERO que eu te ensino como fazer"
-                className="input min-h-[56px] resize-y"
-              />
-            </div>
-          </div>
-
-          {/* Section: Classificacao */}
-          <div className="space-y-3">
-            <p className="text-xs font-semibold text-text-secondary tracking-wide">Classificacao</p>
-
-            {/* Format */}
-            <div>
-              <label className="text-xs text-text-tertiary mb-1.5 block">Formato</label>
-              <div className="flex flex-wrap gap-2">
-                {FORMATS.map((f) => (
-                  <button
-                    key={f}
-                    type="button"
-                    onClick={() => setFormat(f)}
-                    className={cn(
-                      'badge transition-all cursor-pointer',
-                      format === f
-                        ? 'bg-accent-surface text-accent'
-                        : 'bg-bg-secondary text-text-secondary hover:bg-bg-hover'
-                    )}
-                  >
-                    {FORMAT_FILTER_LABELS[f]}
-                  </button>
-                ))}
-              </div>
-            </div>
-
-            {/* Pillar */}
-            <div>
-              <label className="text-xs text-text-tertiary mb-1.5 block">Pilar</label>
-              <div className="flex flex-wrap gap-2">
-                <button
-                  type="button"
-                  onClick={() => setPillarId(null)}
-                  className={cn(
-                    'badge transition-all cursor-pointer',
-                    !pillarId
-                      ? 'bg-accent-surface text-accent'
-                      : 'bg-bg-secondary text-text-secondary hover:bg-bg-hover'
-                  )}
-                >
-                  Universal
-                </button>
-                {pillars.map((p) => (
-                  <button
-                    key={p.id}
-                    type="button"
-                    onClick={() => setPillarId(p.id)}
-                    className={cn(
-                      'badge transition-all cursor-pointer',
-                      pillarId === p.id
-                        ? 'text-white'
-                        : 'bg-bg-secondary text-text-secondary hover:bg-bg-hover'
-                    )}
-                    style={
-                      pillarId === p.id
-                        ? { backgroundColor: p.color }
-                        : undefined
-                    }
-                  >
-                    {p.name}
-                  </button>
-                ))}
-              </div>
-            </div>
-
-            {/* Category */}
-            <div>
-              <label className="text-xs text-text-tertiary mb-1.5 block">Categoria</label>
-              <div className="flex flex-wrap gap-2">
-                {CATEGORIES.filter((c) => c !== 'ALL').map((c) => {
-                  const colors = CATEGORY_COLORS[c] || { bg: 'rgba(142, 142, 147, 0.12)', text: '#8E8E93' };
-                  return (
-                    <button
-                      key={c}
-                      type="button"
-                      onClick={() => setCategory(c)}
-                      className={cn(
-                        'badge transition-all cursor-pointer',
-                        category === c
-                          ? ''
-                          : 'bg-bg-secondary text-text-secondary hover:bg-bg-hover'
-                      )}
-                      style={
-                        category === c
-                          ? { backgroundColor: colors.bg, color: colors.text }
-                          : undefined
-                      }
-                    >
-                      {CATEGORY_LABELS[c]}
-                    </button>
-                  );
-                })}
-              </div>
-            </div>
-          </div>
-
-          {/* Actions */}
-          <div className="flex gap-3 pt-3 border-t border-border-default">
-            <button type="button" onClick={onClose} className="btn-ghost flex-1 text-sm">
-              Cancelar
-            </button>
-            <button
-              type="submit"
-              disabled={saving || !text.trim()}
-              className={cn(
-                'btn-accent flex-1 flex items-center justify-center gap-2 text-sm',
-                (saving || !text.trim()) && 'opacity-50 cursor-not-allowed'
-              )}
-            >
-              {saving ? (
-                <>
-                  <Loader2 size={16} className="animate-spin" />
-                  Criando...
-                </>
-              ) : (
-                'Criar Ideia'
-              )}
-            </button>
-          </div>
-        </form>
-          </div>
-        </div>
-      </div>
-    </div>
   );
 }

@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 import { requireAuth } from '@/lib/auth';
 import { generateId } from '@/lib/utils';
+import { updateCommissionSchema, parseBody } from '@/lib/validations';
 
 const DEFAULT_CONFIGS = [
   { format: 'REEL', cpmValue: 2.0 },
@@ -48,14 +49,12 @@ export async function PUT(request: Request) {
     const auth = await requireAuth();
     if (auth.error) return auth.error;
 
-    const body = await request.json() as { format: string; cpmValue: number };
-
-    if (!body.format || typeof body.cpmValue !== 'number' || body.cpmValue < 0) {
-      return NextResponse.json(
-        { error: 'Format e cpmValue (>= 0) sao obrigatorios' },
-        { status: 400 }
-      );
+    const raw = await request.json();
+    const parsed = parseBody(updateCommissionSchema, raw);
+    if (!parsed.success) {
+      return NextResponse.json({ error: parsed.error }, { status: 400 });
     }
+    const body = parsed.data;
 
     const config = await prisma.commissionConfig.upsert({
       where: { format: body.format },

@@ -1,6 +1,8 @@
 import { NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 import { requireAuth } from '@/lib/auth';
+import { updatePostSchema, patchPostSchema, parseBody } from '@/lib/validations';
+import type { PostFormat, PostStatus } from '@prisma/client';
 
 interface RouteContext {
   params: Promise<{ id: string }>;
@@ -32,17 +34,13 @@ export async function PUT(request: Request, context: RouteContext) {
     const auth = await requireAuth();
     if (auth.error) return auth.error;
     const { id } = await context.params;
-    const body = await request.json() as {
-      title?: string;
-      hook?: string;
-      body?: string;
-      caption?: string;
-      hashtags?: string;
-      format?: string;
-      pillarId?: string;
-      status?: string;
-      scheduledDate?: string | null;
-    };
+    const raw = await request.json();
+
+    const parsed = parseBody(updatePostSchema, raw);
+    if (!parsed.success) {
+      return NextResponse.json({ error: parsed.error }, { status: 400 });
+    }
+    const body = parsed.data;
 
     const post = await prisma.post.update({
       where: { id },
@@ -52,12 +50,15 @@ export async function PUT(request: Request, context: RouteContext) {
         ...(body.body !== undefined && { body: body.body }),
         ...(body.caption !== undefined && { caption: body.caption }),
         ...(body.hashtags !== undefined && { hashtags: body.hashtags }),
-        ...(body.format !== undefined && { format: body.format }),
+        ...(body.format !== undefined && { format: body.format as PostFormat }),
         ...(body.pillarId !== undefined && { pillarId: body.pillarId }),
-        ...(body.status !== undefined && { status: body.status }),
+        ...(body.status !== undefined && { status: body.status as PostStatus }),
         ...(body.scheduledDate !== undefined && {
           scheduledDate: body.scheduledDate ? new Date(body.scheduledDate) : null,
         }),
+        ...(body.purpose !== undefined && { purpose: body.purpose }),
+        ...(body.audience !== undefined && { audience: body.audience }),
+        ...(body.onlyIvan !== undefined && { onlyIvan: body.onlyIvan }),
       },
       include: { contentPillar: true },
     });
@@ -74,7 +75,13 @@ export async function PATCH(request: Request, context: RouteContext) {
     const auth = await requireAuth();
     if (auth.error) return auth.error;
     const { id } = await context.params;
-    const body = await request.json() as { scheduledDate?: string; status?: string };
+    const raw = await request.json();
+
+    const parsed = parseBody(patchPostSchema, raw);
+    if (!parsed.success) {
+      return NextResponse.json({ error: parsed.error }, { status: 400 });
+    }
+    const body = parsed.data;
 
     const updateData: Record<string, unknown> = {};
 
@@ -82,7 +89,7 @@ export async function PATCH(request: Request, context: RouteContext) {
       updateData.scheduledDate = new Date(body.scheduledDate);
     }
     if (body.status !== undefined) {
-      updateData.status = body.status;
+      updateData.status = body.status as PostStatus;
     }
 
     const post = await prisma.post.update({

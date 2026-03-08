@@ -3,6 +3,7 @@ import { getServerSession } from 'next-auth';
 import { prisma } from '@/lib/prisma';
 import { authOptions } from '@/lib/auth';
 import { syncTikTokAccount } from '@/lib/sync/tiktok-sync';
+import { syncAccountSchema, parseBody } from '@/lib/validations';
 
 export async function POST(request: NextRequest) {
   try {
@@ -12,14 +13,12 @@ export async function POST(request: NextRequest) {
     }
     const userId = (session.user as Record<string, unknown>).id as string;
 
-    const { accountId } = (await request.json()) as { accountId: string };
-
-    if (!accountId) {
-      return NextResponse.json(
-        { error: 'accountId obrigatorio' },
-        { status: 400 }
-      );
+    const raw = await request.json();
+    const parsed = parseBody(syncAccountSchema, raw);
+    if (!parsed.success) {
+      return NextResponse.json({ error: parsed.error }, { status: 400 });
     }
+    const { accountId } = parsed.data;
 
     const account = await prisma.socialAccount.findFirst({
       where: { id: accountId, userId, platform: 'tiktok' },

@@ -24,6 +24,7 @@ export const HookCategory = {
   CONTRARIAN: 'CONTRARIAN',
   STORY_HOOK: 'STORY_HOOK',
   CHALLENGE: 'CHALLENGE',
+  COMPETITOR: 'COMPETITOR',
 } as const;
 export type HookCategory = (typeof HookCategory)[keyof typeof HookCategory];
 
@@ -67,6 +68,9 @@ export interface Post {
   pillarId: string;
   status: PostStatus;
   scheduledDate: string | null;
+  purpose: string | null;
+  audience: string | null;
+  onlyIvan: boolean;
   createdAt: string;
   updatedAt: string;
   pillar?: ContentPillar;
@@ -82,6 +86,10 @@ export interface Hook {
   category: HookCategory;
   usageCount: number;
   isActive: boolean;
+  avgSaves: number;
+  avgShares: number;
+  performanceScore: number;
+  lastUsedAt: string | null;
   pillar?: ContentPillar;
 }
 
@@ -364,3 +372,94 @@ export const STATUS_ORDER: PostStatus[] = [
   'SCHEDULED',
   'PUBLISHED',
 ] as const;
+
+// ===== Dashboard Types =====
+
+export interface PipelineStatusItem {
+  status: string;
+  count: number;
+  color: string;
+}
+
+export interface PillarMixItem {
+  id: string;
+  name: string;
+  slug: string;
+  color: string;
+  targetPercentage: number;
+  count: number;
+  percentage: number;
+}
+
+export interface UpcomingPostItem {
+  id: string;
+  title: string;
+  scheduledDate: string;
+  pillarName: string;
+  pillarColor: string;
+  format: string;
+}
+
+export interface MetricsSummary {
+  views: number;
+  likes: number;
+  comments: number;
+  shares: number;
+  posts: number;
+}
+
+export interface PlatformBreakdown {
+  platform: string;
+  label: string;
+  postsCount: number;
+  views: number;
+  likes: number;
+  comments: number;
+  shares: number;
+  cpmValue: number;
+}
+
+export interface ProfileBreakdown {
+  accountId: string;
+  displayName: string;
+  username: string;
+  platform: string;
+  postsCount: number;
+  views: number;
+  likes: number;
+  comments: number;
+  shares: number;
+  cpmValue: number;
+}
+
+export interface TopPostItem {
+  id: string;
+  caption: string;
+  views: number;
+  likes: number;
+  comments: number;
+  shares: number;
+  engagement: number;
+  platform: string;
+  thumbnailUrl: string;
+  postUrl: string;
+  publishedAt: string;
+  mediaType: string;
+  accountName: string;
+}
+
+export interface DashboardStats {
+  postsThisMonth: number;
+  monthlyGoal: number;
+  consistencyScore: number;
+  pipeline: PipelineStatusItem[];
+  contentMix: PillarMixItem[];
+  upcomingPosts: UpcomingPostItem[];
+  resultsWithoutPost: number;
+  metricsSummary: MetricsSummary | null;
+  dateRange: { startDate: string; endDate: string; label: string };
+  totalCpmValue: number;
+  platformBreakdown: PlatformBreakdown[];
+  profileBreakdown: ProfileBreakdown[];
+  topPosts: TopPostItem[];
+}

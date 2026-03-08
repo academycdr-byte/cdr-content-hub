@@ -2,6 +2,8 @@ import { NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 import { requireAuth } from '@/lib/auth';
 import { generateId } from '@/lib/utils';
+import { updateResultSchema, parseBody } from '@/lib/validations';
+import type { ResultImageType } from '@prisma/client';
 
 interface RouteContext {
   params: Promise<{ id: string }>;
@@ -33,17 +35,13 @@ export async function PUT(request: Request, context: RouteContext) {
     const auth = await requireAuth();
     if (auth.error) return auth.error;
     const { id } = await context.params;
-    const body = await request.json() as {
-      clientName?: string;
-      clientNiche?: string;
-      metricType?: string;
-      metricValue?: string;
-      metricUnit?: string;
-      period?: string;
-      description?: string;
-      testimonialText?: string | null;
-      imageUrls?: { url: string; altText?: string; type?: string }[];
-    };
+    const raw = await request.json();
+
+    const parsed = parseBody(updateResultSchema, raw);
+    if (!parsed.success) {
+      return NextResponse.json({ error: parsed.error }, { status: 400 });
+    }
+    const body = parsed.data;
 
     const updateData: Record<string, unknown> = {};
 
@@ -66,7 +64,7 @@ export async function PUT(request: Request, context: RouteContext) {
             resultId: id,
             url: img.url,
             altText: img.altText || '',
-            type: img.type || 'SCREENSHOT',
+            type: (img.type || 'SCREENSHOT') as ResultImageType,
           })),
         });
       }

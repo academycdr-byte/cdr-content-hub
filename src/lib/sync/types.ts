@@ -4,13 +4,19 @@
  * Used by instagram-sync, tiktok-sync, sync-all, and the cron endpoint.
  */
 
-export type SyncTrigger = 'cron' | 'webhook' | 'manual';
+import type {
+  SocialPlatform as PrismaSocialPlatform,
+  SyncTrigger as PrismaSyncTrigger,
+  SyncStatus as PrismaSyncStatus,
+} from '@prisma/client';
 
-export type SyncStatus = 'success' | 'error' | 'partial';
+export type SyncTrigger = PrismaSyncTrigger;
+export type SyncStatus = PrismaSyncStatus;
+export type SyncPlatform = PrismaSocialPlatform;
 
 export interface SyncResult {
   accountId: string;
-  platform: string;
+  platform: SyncPlatform;
   postsFound: number;
   postsSynced: number;
   status: SyncStatus;

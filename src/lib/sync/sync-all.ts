@@ -7,6 +7,7 @@
  * TODO: [v2] Add webhook triggers for real-time sync (Instagram Meta Webhooks, TikTok Webhooks).
  */
 
+import { logger } from '@/lib/logger';
 import { prisma } from '@/lib/prisma';
 import { syncInstagramAccount } from '@/lib/sync/instagram-sync';
 import { syncTikTokAccount } from '@/lib/sync/tiktok-sync';
@@ -42,7 +43,7 @@ export async function syncAllAccounts(trigger: SyncTrigger = 'cron'): Promise<Sy
   });
 
   if (accounts.length === 0) {
-    console.log(`[Sync All] No active accounts with autoSync enabled (trigger: ${trigger})`);
+    logger.info(`[Sync All] No active accounts with autoSync enabled (trigger: ${trigger})`);
     return {
       total: 0,
       synced: 0,
@@ -52,7 +53,7 @@ export async function syncAllAccounts(trigger: SyncTrigger = 'cron'): Promise<Sy
     };
   }
 
-  console.log(`[Sync All] Starting sync for ${accounts.length} accounts (trigger: ${trigger})`);
+  logger.info(`[Sync All] Starting sync for ${accounts.length} accounts (trigger: ${trigger})`);
 
   // Run all syncs in parallel with Promise.allSettled
   const settledResults = await Promise.allSettled(
@@ -87,7 +88,7 @@ export async function syncAllAccounts(trigger: SyncTrigger = 'cron'): Promise<Sy
       // but just in case there is an unexpected rejection.
       results.push({
         accountId: 'unknown',
-        platform: 'unknown',
+        platform: 'instagram',
         postsFound: 0,
         postsSynced: 0,
         status: 'error',
@@ -108,7 +109,7 @@ export async function syncAllAccounts(trigger: SyncTrigger = 'cron'): Promise<Sy
     durationMs: Date.now() - start,
   };
 
-  console.log(
+  logger.info(
     `[Sync All] Completed: ${synced} synced, ${failed} failed, ${summary.durationMs}ms (trigger: ${trigger})`
   );
 

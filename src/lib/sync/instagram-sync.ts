@@ -7,9 +7,11 @@
  * - Future webhook handler
  */
 
-import { fetchInstagramMedia, refreshLongLivedToken } from '@/lib/instagram';
+import { fetchInstagramMedia, fetchInstagramProfileStats, refreshLongLivedToken } from '@/lib/instagram';
+import { logger } from '@/lib/logger';
 import { prisma } from '@/lib/prisma';
 import { generateId } from '@/lib/utils';
+import { decryptIfNeeded, encryptIfConfigured } from '@/lib/crypto';
 import type { SyncResult, SyncTrigger } from '@/lib/sync/types';
 
 interface InstagramAccount {
@@ -50,12 +52,12 @@ export async function syncInstagramAccount(
 
   try {
     // 1. Token auto-refresh (< 7 days remaining)
-    let accessToken = account.accessToken;
+    let accessToken = decryptIfNeeded(account.accessToken);
     const sevenDaysFromNow = new Date();
     sevenDaysFromNow.setDate(sevenDaysFromNow.getDate() + 7);
 
     if (account.tokenExpiresAt && account.tokenExpiresAt < sevenDaysFromNow) {
-      console.log(`[IG Sync] Token expiring/expired for @${account.username}, refreshing...`);
+      logger.info(`[IG Sync] Token expiring/expired for @${account.username}, refreshing...`);
 
       // If already expired, cannot refresh
       if (account.tokenExpiresAt < new Date()) {
@@ -72,20 +74,35 @@ export async function syncInstagramAccount(
         return result;
       }
 
-      const refreshed = await refreshLongLivedToken(account.accessToken);
+      const refreshed = await refreshLongLivedToken(accessToken);
       accessToken = refreshed.access_token;
       const newExpiresAt = new Date();
       newExpiresAt.setSeconds(newExpiresAt.getSeconds() + refreshed.expires_in);
 
       await prisma.socialAccount.update({
         where: { id: account.id },
-        data: { accessToken, tokenExpiresAt: newExpiresAt },
+        data: { accessToken: encryptIfConfigured(accessToken), tokenExpiresAt: newExpiresAt },
       });
-      console.log(`[IG Sync] Token renewed for @${account.username} - expires: ${newExpiresAt.toISOString()}`);
+      logger.info(`[IG Sync] Token renewed for @${account.username} - expires: ${newExpiresAt.toISOString()}`);
     }
 
     // 2. Fetch posts from Instagram
     const posts = await fetchInstagramMedia(accessToken, account.igUserId);
+
+    // 2b. Update profile stats (followers + profile picture)
+    try {
+      const profileStats = await fetchInstagramProfileStats(accessToken, account.igUserId);
+      await prisma.socialAccount.update({
+        where: { id: account.id },
+        data: {
+          followersCount: profileStats.followersCount,
+          profilePictureUrl: profileStats.profilePictureUrl,
+        },
+      });
+      logger.info(`[IG Sync] Profile updated for @${account.username}: ${profileStats.followersCount} followers`);
+    } catch (profileError) {
+      console.warn(`[IG Sync] Could not update profile stats for @${account.username}:`, profileError instanceof Error ? profileError.message : 'Unknown');
+    }
 
     // 3. Upsert PostMetrics
     let postsSynced = 0;
@@ -135,7 +152,7 @@ export async function syncInstagramAccount(
       data: { lastSyncAt: new Date() },
     });
 
-    console.log(`[IG Sync] @${account.username}: ${posts.length} posts found, ${postsSynced} synced (trigger: ${trigger})`);
+    logger.info(`[IG Sync] @${account.username}: ${posts.length} posts found, ${postsSynced} synced (trigger: ${trigger})`);
 
     const result: SyncResult = {
       accountId: account.id,

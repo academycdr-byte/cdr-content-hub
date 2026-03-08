@@ -4,6 +4,7 @@ import { exchangeTikTokCode, getTikTokProfile } from '@/lib/tiktok';
 import { prisma } from '@/lib/prisma';
 import { authOptions } from '@/lib/auth';
 import { generateId } from '@/lib/utils';
+import { encryptIfConfigured } from '@/lib/crypto';
 
 export async function GET(request: NextRequest) {
   const { searchParams } = new URL(request.url);
@@ -60,8 +61,8 @@ export async function GET(request: NextRequest) {
       profilePictureUrl: profile.avatar_url,
       followersCount: profile.follower_count,
       tiktokOpenId: openId,
-      tiktokToken: tokens.access_token,
-      tiktokRefresh: tokens.refresh_token,
+      tiktokToken: encryptIfConfigured(tokens.access_token),
+      tiktokRefresh: encryptIfConfigured(tokens.refresh_token),
       tiktokExpiresAt: expiresAt,
       autoSync: true,
       isActive: true,

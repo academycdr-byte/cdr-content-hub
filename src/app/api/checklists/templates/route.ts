@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 import { requireAuth } from '@/lib/auth';
+import { updateChecklistTemplatesSchema, parseBody } from '@/lib/validations';
 
 export async function GET() {
   try {
@@ -10,11 +11,10 @@ export async function GET() {
       orderBy: { stage: 'asc' },
     });
 
-    // Parse items from JSON string
     const parsed = templates.map((t) => ({
       id: t.id,
       stage: t.stage,
-      items: JSON.parse(t.items) as string[],
+      items: t.items as string[],
     }));
 
     return NextResponse.json(parsed);
@@ -31,18 +31,20 @@ export async function PUT(request: Request) {
   try {
     const auth = await requireAuth();
     if (auth.error) return auth.error;
-    const body = await request.json() as Array<{
-      id: string;
-      stage: string;
-      items: string[];
-    }>;
+    const raw = await request.json();
+
+    const parsedBody = parseBody(updateChecklistTemplatesSchema, raw);
+    if (!parsedBody.success) {
+      return NextResponse.json({ error: parsedBody.error }, { status: 400 });
+    }
+    const body = parsedBody.data;
 
     const updated = await prisma.$transaction(
       body.map((template) =>
         prisma.checklistTemplate.update({
           where: { id: template.id },
           data: {
-            items: JSON.stringify(template.items),
+            items: template.items,
           },
         })
       )
@@ -51,7 +53,7 @@ export async function PUT(request: Request) {
     const parsed = updated.map((t) => ({
       id: t.id,
       stage: t.stage,
-      items: JSON.parse(t.items) as string[],
+      items: t.items as string[],
     }));
 
     return NextResponse.json(parsed);

@@ -8,9 +8,11 @@ import { useResultsStore } from '@/stores/results-store';
 import { useToastStore } from '@/stores/toast-store';
 import { MetricType } from '@/types';
 import type { ClientResult } from '@/types';
+import dynamic from 'next/dynamic';
 import ResultCard from '@/components/results/result-card';
-import ResultFormModal from '@/components/results/result-form-modal';
 import type { ResultFormData } from '@/components/results/result-form-modal';
+
+const ResultFormModal = dynamic(() => import('@/components/results/result-form-modal'), { ssr: false });
 
 const METRIC_OPTIONS = [
   { value: '', label: 'Todos os tipos' },

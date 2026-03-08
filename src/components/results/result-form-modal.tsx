@@ -146,12 +146,12 @@ export default function ResultFormModal({ isOpen, onClose, onSubmit, editingResu
       {/* Centering wrapper */}
       <div className="flex min-h-full items-center justify-center p-3 sm:p-4">
         {/* Modal */}
-        <div className="relative bg-bg-card border border-border-default rounded-2xl w-full max-w-lg animate-scale-in"
+        <div className="relative bg-bg-modal border border-border-default rounded-2xl w-full max-w-lg animate-scale-in"
           style={{ boxShadow: 'var(--shadow-xl)' }}
         >
           <div className="max-h-[85vh] overflow-y-auto rounded-2xl">
         {/* Header */}
-        <div className="sticky top-0 z-10 flex items-center gap-3 p-4 sm:p-5 border-b border-border-default bg-bg-card rounded-t-2xl">
+        <div className="sticky top-0 z-10 flex items-center gap-3 p-4 sm:p-5 border-b border-border-default bg-bg-modal rounded-t-2xl">
           <div
             className="flex h-9 w-9 items-center justify-center rounded-xl shrink-0"
             style={{ backgroundColor: 'rgba(184, 255, 0, 0.12)' }}

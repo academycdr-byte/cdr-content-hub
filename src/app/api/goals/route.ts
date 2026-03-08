@@ -1,6 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 import { requireAuth } from '@/lib/auth';
+import { createGoalSchema, parseBody } from '@/lib/validations';
+import type { GoalPeriod } from '@prisma/client';
 
 export async function GET(request: NextRequest) {
   try {
@@ -81,20 +83,12 @@ export async function POST(request: Request) {
     if (auth.error) return auth.error;
     const userId = auth.session!.user.id;
 
-    const body = await request.json() as {
-      socialAccountId: string;
-      metricType?: string;
-      targetValue: number;
-      period: string;
-      endDate: string;
-    };
-
-    if (!body.socialAccountId || !body.targetValue || !body.period || !body.endDate) {
-      return NextResponse.json(
-        { error: 'socialAccountId, targetValue, period e endDate sao obrigatorios' },
-        { status: 400 }
-      );
+    const raw = await request.json();
+    const parsed = parseBody(createGoalSchema, raw);
+    if (!parsed.success) {
+      return NextResponse.json({ error: parsed.error }, { status: 400 });
     }
+    const body = parsed.data;
 
     // Get current followers count for startValue
     const account = await prisma.socialAccount.findUnique({
@@ -123,7 +117,7 @@ export async function POST(request: Request) {
         targetValue: body.targetValue,
         currentValue: account.followersCount,
         startValue: account.followersCount,
-        period: body.period,
+        period: body.period as GoalPeriod,
         endDate: new Date(body.endDate),
         status: 'active',
       },

@@ -154,7 +154,7 @@ export default function SearchCommand() {
       <div
         className="w-full max-w-[560px] mx-4 overflow-hidden animate-scale-in"
         style={{
-          background: 'var(--bg-card)',
+          background: 'var(--bg-modal)',
           border: '1px solid var(--border)',
           borderRadius: 'var(--radius-xl)',
           boxShadow: 'var(--shadow-xl)',

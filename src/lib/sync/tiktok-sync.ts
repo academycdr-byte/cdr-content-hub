@@ -7,9 +7,11 @@
  * - Future webhook handler
  */
 
-import { fetchTikTokVideos, refreshTikTokToken } from '@/lib/tiktok';
+import { fetchTikTokVideos, getTikTokProfile, refreshTikTokToken } from '@/lib/tiktok';
+import { logger } from '@/lib/logger';
 import { prisma } from '@/lib/prisma';
 import { generateId } from '@/lib/utils';
+import { decryptIfNeeded, encryptIfConfigured } from '@/lib/crypto';
 import type { SyncResult, SyncTrigger } from '@/lib/sync/types';
 
 interface TikTokAccount {
@@ -51,15 +53,15 @@ export async function syncTikTokAccount(
 
   try {
     // 1. Token auto-refresh if expired
-    let accessToken = account.tiktokToken;
+    let accessToken = decryptIfNeeded(account.tiktokToken);
     if (
       account.tiktokExpiresAt &&
       account.tiktokExpiresAt < new Date() &&
       account.tiktokRefresh
     ) {
-      console.log(`[TK Sync] Token expired for @${account.username}, refreshing...`);
+      logger.info(`[TK Sync] Token expired for @${account.username}, refreshing...`);
 
-      const refreshed = await refreshTikTokToken(account.tiktokRefresh);
+      const refreshed = await refreshTikTokToken(decryptIfNeeded(account.tiktokRefresh));
       accessToken = refreshed.access_token;
       const expiresAt = new Date();
       expiresAt.setSeconds(expiresAt.getSeconds() + refreshed.expires_in);
@@ -67,12 +69,12 @@ export async function syncTikTokAccount(
       await prisma.socialAccount.update({
         where: { id: account.id },
         data: {
-          tiktokToken: refreshed.access_token,
-          tiktokRefresh: refreshed.refresh_token,
+          tiktokToken: encryptIfConfigured(refreshed.access_token),
+          tiktokRefresh: encryptIfConfigured(refreshed.refresh_token),
           tiktokExpiresAt: expiresAt,
         },
       });
-      console.log(`[TK Sync] Token renewed for @${account.username} - expires: ${expiresAt.toISOString()}`);
+      logger.info(`[TK Sync] Token renewed for @${account.username} - expires: ${expiresAt.toISOString()}`);
     }
 
     // If expired and no refresh token, fail gracefully
@@ -96,6 +98,21 @@ export async function syncTikTokAccount(
 
     // 2. Fetch videos from TikTok
     const videos = await fetchTikTokVideos(accessToken);
+
+    // 2b. Update profile stats (followers + profile picture)
+    try {
+      const profile = await getTikTokProfile(accessToken);
+      await prisma.socialAccount.update({
+        where: { id: account.id },
+        data: {
+          followersCount: profile.follower_count,
+          profilePictureUrl: profile.avatar_url,
+        },
+      });
+      logger.info(`[TK Sync] Profile updated for @${account.username}: ${profile.follower_count} followers`);
+    } catch (profileError) {
+      console.warn(`[TK Sync] Could not update profile stats for @${account.username}:`, profileError instanceof Error ? profileError.message : 'Unknown');
+    }
 
     // 3. Upsert PostMetrics
     let postsSynced = 0;
@@ -145,7 +162,7 @@ export async function syncTikTokAccount(
       data: { lastSyncAt: new Date() },
     });
 
-    console.log(`[TK Sync] @${account.username}: ${videos.length} videos found, ${postsSynced} synced (trigger: ${trigger})`);
+    logger.info(`[TK Sync] @${account.username}: ${videos.length} videos found, ${postsSynced} synced (trigger: ${trigger})`);
 
     const result: SyncResult = {
       accountId: account.id,

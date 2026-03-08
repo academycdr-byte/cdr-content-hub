@@ -1,30 +1,28 @@
 import { NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 import { requireAuth } from '@/lib/auth';
+import { postStatusSchema, parseBody } from '@/lib/validations';
+import type { PostStatus } from '@prisma/client';
 
 interface RouteContext {
   params: Promise<{ id: string }>;
 }
-
-const VALID_STATUSES = ['IDEA', 'SCRIPT', 'PRODUCTION', 'REVIEW', 'SCHEDULED', 'PUBLISHED'];
 
 export async function PATCH(request: Request, context: RouteContext) {
   try {
     const auth = await requireAuth();
     if (auth.error) return auth.error;
     const { id } = await context.params;
-    const body = await request.json() as { status: string };
+    const raw = await request.json();
 
-    if (!body.status || !VALID_STATUSES.includes(body.status)) {
-      return NextResponse.json(
-        { error: 'Status invalido. Valores aceitos: ' + VALID_STATUSES.join(', ') },
-        { status: 400 }
-      );
+    const parsed = parseBody(postStatusSchema, raw);
+    if (!parsed.success) {
+      return NextResponse.json({ error: parsed.error }, { status: 400 });
     }
 
     const post = await prisma.post.update({
       where: { id },
-      data: { status: body.status },
+      data: { status: parsed.data.status as PostStatus },
       include: { contentPillar: true },
     });
 

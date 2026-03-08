@@ -1,5 +1,6 @@
 'use client';
 
+import { memo } from 'react';
 import { Film, LayoutGrid, Image, MessageCircle, AlertTriangle, Calendar } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import type { Post, PostFormat } from '@/types';
@@ -18,7 +19,7 @@ const FORMAT_ICONS: Record<PostFormat, React.ReactNode> = {
   STORY: <MessageCircle size={12} />,
 };
 
-export default function PipelineCard({ post, daysInColumn, onClick, isDragging }: PipelineCardProps) {
+const PipelineCard = memo(function PipelineCard({ post, daysInColumn, onClick, isDragging }: PipelineCardProps) {
   const pillarColor = post.pillar?.color || '#6E6E73';
   const isOverdue = daysInColumn > 3;
 
@@ -84,4 +85,6 @@ export default function PipelineCard({ post, daysInColumn, onClick, isDragging }
       </div>
     </button>
   );
-}
+});
+
+export default PipelineCard;

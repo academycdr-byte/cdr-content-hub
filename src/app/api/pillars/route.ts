@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 import { requireAuth } from '@/lib/auth';
+import { updatePillarsSchema, parseBody } from '@/lib/validations';
 
 export async function GET() {
   try {
@@ -25,20 +26,16 @@ export async function PUT(request: Request) {
   try {
     const auth = await requireAuth();
     if (auth.error) return auth.error;
-    const body = await request.json() as Array<{
-      id: string;
-      name: string;
-      color: string;
-      targetPercentage: number;
-      description: string;
-      order: number;
-    }>;
+    const raw = await request.json();
+
+    const parsed = parseBody(updatePillarsSchema, raw);
+    if (!parsed.success) {
+      return NextResponse.json({ error: parsed.error }, { status: 400 });
+    }
+    const body = parsed.data;
 
     // Validate total percentage = 100
-    const totalPercentage = body.reduce(
-      (sum: number, p: { targetPercentage: number }) => sum + p.targetPercentage,
-      0
-    );
+    const totalPercentage = body.reduce((sum, p) => sum + p.targetPercentage, 0);
     if (totalPercentage !== 100) {
       return NextResponse.json(
         { error: 'A soma dos percentuais deve ser 100%' },

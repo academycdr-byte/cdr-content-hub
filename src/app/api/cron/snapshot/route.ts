@@ -13,6 +13,7 @@
 
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
+import { logger } from '@/lib/logger';
 
 export async function GET(request: NextRequest) {
   // 1. Validate CRON_SECRET
@@ -108,7 +109,7 @@ export async function GET(request: NextRequest) {
     });
     goalsExpired = expired.count;
 
-    console.log(
+    logger.info(
       `[Cron Snapshot] Done: ${snapshotsCreated} snapshots, ${goalsAchieved} achieved, ${goalsExpired} expired`
     );
 

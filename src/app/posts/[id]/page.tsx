@@ -9,6 +9,7 @@ import {
   Save,
   Loader2,
   AlertTriangle,
+  Brain,
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useToastStore } from '@/stores/toast-store';
@@ -39,6 +40,17 @@ export default function PostBuilderPage({ params }: PostBuilderPageProps) {
   const [title, setTitle] = useState('');
   const [caption, setCaption] = useState('');
   const [hashtags, setHashtags] = useState('');
+  const [purpose, setPurpose] = useState('');
+  const [audience, setAudience] = useState('');
+  const [onlyIvan, setOnlyIvan] = useState(false);
+
+  // AI analysis
+  const [aiAnalysis, setAiAnalysis] = useState<{
+    onlyIvanScore: number;
+    analysis: string;
+    suggestion: string;
+  } | null>(null);
+  const [analyzingAi, setAnalyzingAi] = useState(false);
 
   // Checklist state (Story 2.4)
   const [checklistTemplateItems, setChecklistTemplateItems] = useState<string[]>([]);
@@ -69,6 +81,9 @@ export default function PostBuilderPage({ params }: PostBuilderPageProps) {
       setTitle(postData.title);
       setCaption(postData.caption || '');
       setHashtags(postData.hashtags || '');
+      setPurpose(postData.purpose || '');
+      setAudience(postData.audience || '');
+      setOnlyIvan(postData.onlyIvan || false);
 
       // Parse body as framework values
       if (postData.body) {
@@ -134,7 +149,7 @@ export default function PostBuilderPage({ params }: PostBuilderPageProps) {
 
   // Auto-save every 30 seconds
   useEffect(() => {
-    const currentData = JSON.stringify({ title, caption, hashtags, frameworkValues });
+    const currentData = JSON.stringify({ title, caption, hashtags, frameworkValues, purpose, audience, onlyIvan });
 
     if (lastSavedRef.current === currentData || !post) return;
 
@@ -152,7 +167,7 @@ export default function PostBuilderPage({ params }: PostBuilderPageProps) {
         clearTimeout(autoSaveTimerRef.current);
       }
     };
-  }, [title, caption, hashtags, frameworkValues, post]);
+  }, [title, caption, hashtags, frameworkValues, purpose, audience, onlyIvan, post]);
 
   // Save post
   const savePost = useCallback(async (isAutoSave = false) => {
@@ -173,6 +188,9 @@ export default function PostBuilderPage({ params }: PostBuilderPageProps) {
           body,
           caption,
           hashtags,
+          purpose: purpose || null,
+          audience: audience || null,
+          onlyIvan,
         }),
       });
 
@@ -191,7 +209,7 @@ export default function PostBuilderPage({ params }: PostBuilderPageProps) {
     } finally {
       if (!isAutoSave) setSaving(false);
     }
-  }, [post, title, caption, hashtags, frameworkValues, addToast]);
+  }, [post, title, caption, hashtags, frameworkValues, purpose, audience, onlyIvan, addToast]);
 
   // Advance status
   const advanceStatus = useCallback(async () => {
@@ -269,6 +287,47 @@ export default function PostBuilderPage({ params }: PostBuilderPageProps) {
     }
   }, [post, completedItems, addToast]);
 
+  // Analyze with AI
+  const analyzeWithAi = useCallback(async () => {
+    if (!post) return;
+    setAnalyzingAi(true);
+    setAiAnalysis(null);
+
+    try {
+      const hookValue = frameworkValues.hook || frameworkValues.cover || '';
+      const res = await fetch('/api/ai/analyze-post', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          title,
+          hook: hookValue,
+          caption,
+          format: post.format,
+        }),
+      });
+
+      if (!res.ok) {
+        const errorData = await res.json() as { error?: string };
+        throw new Error(errorData.error || 'Failed to analyze');
+      }
+
+      const data = await res.json() as {
+        onlyIvanScore: number;
+        analysis: string;
+        suggestion: string;
+      };
+      setAiAnalysis(data);
+      addToast('Analise concluida!', 'success');
+    } catch (error) {
+      addToast(
+        error instanceof Error ? error.message : 'Erro ao analisar com IA',
+        'error'
+      );
+    } finally {
+      setAnalyzingAi(false);
+    }
+  }, [post, title, caption, frameworkValues, addToast]);
+
   // Framework
   const format = post?.format as PostFormat;
   const framework = format ? FRAMEWORKS[format] : null;
@@ -342,6 +401,23 @@ export default function PostBuilderPage({ params }: PostBuilderPageProps) {
         />
 
         <div className="flex items-center gap-2 shrink-0">
+          <button
+            onClick={analyzeWithAi}
+            disabled={analyzingAi}
+            className="btn-ghost flex items-center gap-2 text-xs"
+          >
+            {analyzingAi ? (
+              <>
+                <Loader2 size={14} className="animate-spin" />
+                Analisando...
+              </>
+            ) : (
+              <>
+                <Brain size={14} />
+                Analisar IA
+              </>
+            )}
+          </button>
           <button
             onClick={() => savePost(false)}
             disabled={saving}
@@ -445,6 +521,99 @@ export default function PostBuilderPage({ params }: PostBuilderPageProps) {
               )}
             </div>
           </div>
+
+          {/* Strategy: Purpose, Audience, Only Ivan */}
+          <div className="card p-6 space-y-4">
+            <h3 className="text-heading-3 text-text-primary">Estrategia</h3>
+
+            <div>
+              <label htmlFor="post-purpose" className="text-label text-text-secondary mb-1.5 block">
+                Que mudanca eu quero criar com esse post?
+              </label>
+              <textarea
+                id="post-purpose"
+                value={purpose}
+                onChange={(e) => setPurpose(e.target.value)}
+                placeholder="Ex: Fazer donos de e-commerce entenderem que precisam de trafego pago estrategico"
+                className="input min-h-[60px] resize-y"
+                rows={2}
+              />
+            </div>
+
+            <div>
+              <label htmlFor="post-audience" className="text-label text-text-secondary mb-1.5 block">
+                Para quem ESPECIFICAMENTE?
+              </label>
+              <textarea
+                id="post-audience"
+                value={audience}
+                onChange={(e) => setAudience(e.target.value)}
+                placeholder="Ex: Donos de e-commerce de moda com faturamento entre 50k-200k/mes"
+                className="input min-h-[60px] resize-y"
+                rows={2}
+              />
+            </div>
+
+            <label
+              htmlFor="post-only-ivan-editor"
+              className="flex items-center gap-3 rounded-lg border border-border-default bg-bg-primary px-4 py-3 cursor-pointer transition-all hover:border-border-strong"
+            >
+              <input
+                id="post-only-ivan-editor"
+                type="checkbox"
+                checked={onlyIvan}
+                onChange={(e) => setOnlyIvan(e.target.checked)}
+                className="h-4 w-4 rounded accent-accent"
+              />
+              <div>
+                <p className="text-sm font-medium text-text-primary">So o Ivan poderia ter criado isso?</p>
+                <p className="text-[11px] text-text-tertiary">Marque se este conteudo tem a sua assinatura unica</p>
+              </div>
+            </label>
+          </div>
+
+          {/* AI Analysis Result */}
+          {aiAnalysis && (
+            <div className="card p-6 animate-fade-in">
+              <div className="flex items-center gap-2 mb-4">
+                <Brain size={16} className="text-accent" />
+                <h3 className="text-heading-3 text-text-primary">Analise IA</h3>
+              </div>
+
+              {/* Score */}
+              <div className="flex items-center gap-4 mb-4">
+                <div className="flex flex-col items-center">
+                  <div
+                    className="flex h-14 w-14 items-center justify-center rounded-xl text-xl font-bold"
+                    style={{
+                      backgroundColor: aiAnalysis.onlyIvanScore >= 7
+                        ? 'rgba(184, 255, 0, 0.15)'
+                        : aiAnalysis.onlyIvanScore >= 4
+                          ? 'rgba(255, 214, 10, 0.15)'
+                          : 'rgba(255, 69, 58, 0.15)',
+                      color: aiAnalysis.onlyIvanScore >= 7
+                        ? '#B8FF00'
+                        : aiAnalysis.onlyIvanScore >= 4
+                          ? '#FFD60A'
+                          : '#FF453A',
+                    }}
+                  >
+                    {aiAnalysis.onlyIvanScore}
+                  </div>
+                  <p className="text-[10px] text-text-tertiary mt-1">So Ivan</p>
+                </div>
+                <div className="flex-1">
+                  <p className="text-sm text-text-primary">{aiAnalysis.analysis}</p>
+                </div>
+              </div>
+
+              {/* Suggestion */}
+              <div className="rounded-lg bg-accent-surface p-3">
+                <p className="text-xs font-semibold text-accent mb-1">Sugestao de melhoria</p>
+                <p className="text-xs text-text-primary">{aiAnalysis.suggestion}</p>
+              </div>
+            </div>
+          )}
 
           {/* Stage Checklist (Story 2.4) */}
           {checklistTemplateItems.length > 0 && (

@@ -1,7 +1,7 @@
 'use client';
 
+import { memo } from 'react';
 import { TrendingUp, Quote, Edit, Trash2, ArrowRight, ImageIcon } from 'lucide-react';
-import { cn } from '@/lib/utils';
 import type { ClientResult, MetricType } from '@/types';
 
 interface ResultCardProps {
@@ -27,7 +27,7 @@ const METRIC_COLORS: Record<MetricType, { bg: string; text: string }> = {
   OTHER: { bg: 'rgba(142, 142, 147, 0.12)', text: '#8E8E93' },
 } as const;
 
-export default function ResultCard({ result, onEdit, onDelete, onTransformToPost }: ResultCardProps) {
+const ResultCard = memo(function ResultCard({ result, onEdit, onDelete, onTransformToPost }: ResultCardProps) {
   const metricLabel = METRIC_LABELS[result.metricType as MetricType] || result.metricType;
   const colors = METRIC_COLORS[result.metricType as MetricType] || METRIC_COLORS.OTHER;
   const hasImages = result.images && result.images.length > 0;
@@ -127,4 +127,6 @@ export default function ResultCard({ result, onEdit, onDelete, onTransformToPost
       </div>
     </div>
   );
-}
+});
+
+export default ResultCard;

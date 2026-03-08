@@ -15,6 +15,7 @@ import {
   Settings,
   LogOut,
   Search,
+  Sparkles,
 } from 'lucide-react';
 import { signOut } from 'next-auth/react';
 import { cn } from '@/lib/utils';
@@ -33,6 +34,7 @@ const NAV_ITEMS: NavItem[] = [
   { label: 'Calendario', href: '/calendar', icon: <Calendar size={20} /> },
   { label: 'Pipeline', href: '/pipeline', icon: <Kanban size={20} /> },
   { label: 'Ideias', href: '/hooks', icon: <Lightbulb size={20} /> },
+  { label: 'Ideacao', href: '/ideation', icon: <Sparkles size={20} /> },
   { label: 'Metricas', href: '/metrics', icon: <BarChart3 size={20} /> },
   { label: 'Metas', href: '/goals', icon: <Target size={20} /> },
   { label: 'Resultados', href: '/results', icon: <Trophy size={20} /> },

@@ -2,6 +2,8 @@ import { NextRequest, NextResponse } from 'next/server';
 import { getServerSession } from 'next-auth';
 import { prisma } from '@/lib/prisma';
 import { authOptions } from '@/lib/auth';
+import { logger } from '@/lib/logger';
+import { autoSyncSchema, parseBody } from '@/lib/validations';
 
 /**
  * PATCH /api/social/auto-sync
@@ -17,15 +19,12 @@ export async function PATCH(request: NextRequest) {
     }
     const userId = (session.user as Record<string, unknown>).id as string;
 
-    const body = (await request.json()) as { accountId: string; autoSync: boolean };
-    const { accountId, autoSync } = body;
-
-    if (!accountId || typeof autoSync !== 'boolean') {
-      return NextResponse.json(
-        { error: 'accountId (string) e autoSync (boolean) obrigatorios' },
-        { status: 400 }
-      );
+    const raw = await request.json();
+    const parsed = parseBody(autoSyncSchema, raw);
+    if (!parsed.success) {
+      return NextResponse.json({ error: parsed.error }, { status: 400 });
     }
+    const { accountId, autoSync } = parsed.data;
 
     // Verify ownership
     const account = await prisma.socialAccount.findFirst({
@@ -44,7 +43,7 @@ export async function PATCH(request: NextRequest) {
       data: { autoSync },
     });
 
-    console.log(`[Auto-sync] @${account.username} (${account.platform}): autoSync=${autoSync}`);
+    logger.info(`[Auto-sync] @${account.username} (${account.platform}): autoSync=${autoSync}`);
 
     return NextResponse.json({ success: true, autoSync });
   } catch (error) {

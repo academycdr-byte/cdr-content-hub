@@ -19,7 +19,10 @@ import CalendarFilters from '@/components/calendar/calendar-filters';
 import CalendarDndGrid from '@/components/calendar/calendar-dnd-grid';
 import CalendarPostCard from '@/components/calendar/calendar-post-card';
 import CalendarSocialCard from '@/components/calendar/calendar-social-card';
-import CreatePostModal, { type CreatePostData } from '@/components/posts/create-post-modal';
+import dynamic from 'next/dynamic';
+import type { CreatePostData } from '@/components/posts/create-post-modal';
+
+const CreatePostModal = dynamic(() => import('@/components/posts/create-post-modal'), { ssr: false });
 import { formatDateISO } from '@/lib/utils';
 import type { Post, CalendarEntry } from '@/types';
 

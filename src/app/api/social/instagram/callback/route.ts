@@ -8,6 +8,7 @@ import {
 import { prisma } from '@/lib/prisma';
 import { authOptions } from '@/lib/auth';
 import { generateId } from '@/lib/utils';
+import { encryptIfConfigured } from '@/lib/crypto';
 
 export async function GET(request: NextRequest) {
   const { searchParams } = new URL(request.url);
@@ -85,7 +86,7 @@ export async function GET(request: NextRequest) {
         profilePictureUrl: profile.profilePictureUrl,
         followersCount: profile.followersCount,
         igUserId: profile.igUserId,
-        accessToken: longToken.access_token,
+        accessToken: encryptIfConfigured(longToken.access_token),
         tokenExpiresAt: expiresAt,
         autoSync: true,
         isActive: true,

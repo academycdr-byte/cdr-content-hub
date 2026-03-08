@@ -1,4 +1,5 @@
 import { useEffect, useRef } from 'react';
+import { logger } from '@/lib/logger';
 
 /**
  * Hook that silently refreshes expiring Instagram tokens.
@@ -31,7 +32,7 @@ export function useTokenRefresh() {
         };
 
         if (data.refreshed > 0) {
-          console.log(
+          logger.info(
             `[Token Refresh] Renewed ${data.refreshed}/${data.total} token(s)`
           );
         }

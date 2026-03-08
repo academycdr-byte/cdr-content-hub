@@ -19,6 +19,9 @@ export interface CreatePostData {
   format: PostFormat;
   pillarId: string;
   scheduledDate: string | null;
+  purpose: string | null;
+  audience: string | null;
+  onlyIvan: boolean;
 }
 
 const FORMATS: PostFormat[] = ['REEL', 'CAROUSEL', 'STATIC', 'STORY'];
@@ -36,6 +39,9 @@ export default function CreatePostModal({
   const [scheduledDate, setScheduledDate] = useState(
     defaultDate ? formatDateISO(defaultDate) : ''
   );
+  const [purpose, setPurpose] = useState('');
+  const [audience, setAudience] = useState('');
+  const [onlyIvan, setOnlyIvan] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
 
@@ -76,12 +82,18 @@ export default function CreatePostModal({
         format,
         pillarId,
         scheduledDate: scheduledDate || null,
+        purpose: purpose.trim() || null,
+        audience: audience.trim() || null,
+        onlyIvan,
       });
       // Reset form
       setTitle('');
       setFormat('REEL');
       setPillarId(pillars[0]?.id || '');
       setScheduledDate('');
+      setPurpose('');
+      setAudience('');
+      setOnlyIvan(false);
       onClose();
     } catch {
       setError('Erro ao criar post. Tente novamente.');
@@ -101,7 +113,7 @@ export default function CreatePostModal({
       {/* Modal */}
       <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
         <div
-          className="w-full max-w-[480px] rounded-2xl bg-bg-card border border-border-default animate-scale-in"
+          className="w-full max-w-[480px] rounded-2xl bg-bg-modal border border-border-default animate-scale-in"
           style={{ boxShadow: 'var(--shadow-xl)' }}
           onClick={(e) => e.stopPropagation()}
         >
@@ -190,6 +202,56 @@ export default function CreatePostModal({
                   </button>
                 ))}
               </div>
+            </div>
+
+            {/* Purpose */}
+            <div>
+              <label htmlFor="post-purpose" className="text-label text-text-secondary mb-2 block">
+                Que mudanca eu quero criar com esse post?
+              </label>
+              <textarea
+                id="post-purpose"
+                value={purpose}
+                onChange={(e) => setPurpose(e.target.value)}
+                placeholder="Ex: Fazer donos de e-commerce entenderem que precisam de trafego pago estrategico"
+                className="input min-h-[60px] resize-y"
+                rows={2}
+              />
+            </div>
+
+            {/* Audience */}
+            <div>
+              <label htmlFor="post-audience" className="text-label text-text-secondary mb-2 block">
+                Para quem ESPECIFICAMENTE?
+              </label>
+              <textarea
+                id="post-audience"
+                value={audience}
+                onChange={(e) => setAudience(e.target.value)}
+                placeholder="Ex: Donos de e-commerce de moda com faturamento entre 50k-200k/mes"
+                className="input min-h-[60px] resize-y"
+                rows={2}
+              />
+            </div>
+
+            {/* Only Ivan */}
+            <div>
+              <label
+                htmlFor="post-only-ivan"
+                className="flex items-center gap-3 rounded-lg border border-border-default bg-bg-primary px-4 py-3 cursor-pointer transition-all hover:border-border-strong"
+              >
+                <input
+                  id="post-only-ivan"
+                  type="checkbox"
+                  checked={onlyIvan}
+                  onChange={(e) => setOnlyIvan(e.target.checked)}
+                  className="h-4 w-4 rounded accent-accent"
+                />
+                <div>
+                  <p className="text-sm font-medium text-text-primary">So o Ivan poderia ter criado isso?</p>
+                  <p className="text-[11px] text-text-tertiary">Marque se este conteudo tem a sua assinatura unica</p>
+                </div>
+              </label>
             </div>
 
             {/* Date */}

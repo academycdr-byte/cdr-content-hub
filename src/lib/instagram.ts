@@ -3,6 +3,8 @@
 // Note: Meta deprecated 'impressions' and 'plays' on April 21, 2025.
 //       Use 'views' metric instead (available from v22.0+).
 
+import { logger } from '@/lib/logger';
+
 const FB_API = 'https://graph.facebook.com';
 const API_VERSION = 'v22.0';
 const META_APP_ID = process.env.META_APP_ID!;
@@ -120,6 +122,23 @@ export async function getConnectedProfiles(
         followersCount: igAccount.followers_count || 0,
       };
     });
+}
+
+export async function fetchInstagramProfileStats(
+  accessToken: string,
+  igUserId: string
+): Promise<{ followersCount: number; profilePictureUrl: string }> {
+  const url = `${FB_API}/${API_VERSION}/${igUserId}?fields=followers_count,profile_picture_url&access_token=${accessToken}`;
+  const res = await fetch(url);
+  if (!res.ok) {
+    const err = await res.text();
+    throw new Error(`Failed to fetch IG profile stats: ${err}`);
+  }
+  const data = (await res.json()) as { followers_count?: number; profile_picture_url?: string };
+  return {
+    followersCount: data.followers_count || 0,
+    profilePictureUrl: data.profile_picture_url || '',
+  };
 }
 
 interface IGMedia {
@@ -246,10 +265,10 @@ async function fetchMediaInsights(
         }
       } else {
         const errText = await insightsRes.text();
-        console.log(`[IG Sync] Insights [${metrics.join(',')}] for ${mediaId} (${mediaType}): ${insightsRes.status} - ${errText.slice(0, 100)}`);
+        logger.info(`[IG Sync] Insights [${metrics.join(',')}] for ${mediaId} (${mediaType}): ${insightsRes.status} - ${errText.slice(0, 100)}`);
       }
     } catch (err) {
-      console.log(`[IG Sync] Insights error for ${mediaId}: ${err instanceof Error ? err.message : 'unknown'}`);
+      logger.info(`[IG Sync] Insights error for ${mediaId}: ${err instanceof Error ? err.message : 'unknown'}`);
     }
   }
 

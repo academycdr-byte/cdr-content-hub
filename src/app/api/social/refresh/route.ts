@@ -3,6 +3,8 @@ import { getServerSession } from 'next-auth';
 import { prisma } from '@/lib/prisma';
 import { authOptions } from '@/lib/auth';
 import { refreshLongLivedToken } from '@/lib/instagram';
+import { logger } from '@/lib/logger';
+import { decryptIfNeeded, encryptIfConfigured } from '@/lib/crypto';
 
 /**
  * POST /api/social/refresh
@@ -53,7 +55,7 @@ export async function POST() {
       }
 
       try {
-        const result = await refreshLongLivedToken(account.accessToken!);
+        const result = await refreshLongLivedToken(decryptIfNeeded(account.accessToken!));
 
         // Calculate new expiry date
         const newExpiresAt = new Date();
@@ -62,13 +64,13 @@ export async function POST() {
         await prisma.socialAccount.update({
           where: { id: account.id },
           data: {
-            accessToken: result.access_token,
+            accessToken: encryptIfConfigured(result.access_token),
             tokenExpiresAt: newExpiresAt,
           },
         });
 
         refreshed++;
-        console.log(
+        logger.info(
           `[Token Refresh] Renewed token for @${account.username} - new expiry: ${newExpiresAt.toISOString()}`
         );
       } catch (error) {

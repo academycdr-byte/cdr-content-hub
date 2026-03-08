@@ -2,6 +2,8 @@ import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 import { requireAuth } from '@/lib/auth';
 import { generateId } from '@/lib/utils';
+import { createPostSchema, parseBody } from '@/lib/validations';
+import type { PostFormat, PostStatus } from '@prisma/client';
 
 export async function GET(request: NextRequest) {
   try {
@@ -54,34 +56,28 @@ export async function POST(request: Request) {
     const auth = await requireAuth();
     if (auth.error) return auth.error;
     const userId = auth.session!.user.id;
-    const body = await request.json() as {
-      title: string;
-      format: string;
-      pillarId: string;
-      scheduledDate?: string;
-      hook?: string;
-      status?: string;
-      body?: string;
-    };
+    const raw = await request.json();
 
-    if (!body.title || !body.format || !body.pillarId) {
-      return NextResponse.json(
-        { error: 'Titulo, formato e pilar sao obrigatorios' },
-        { status: 400 }
-      );
+    const parsed = parseBody(createPostSchema, raw);
+    if (!parsed.success) {
+      return NextResponse.json({ error: parsed.error }, { status: 400 });
     }
+    const body = parsed.data;
 
     const post = await prisma.post.create({
       data: {
         id: generateId(),
         title: body.title,
-        format: body.format,
+        format: body.format as PostFormat,
         pillarId: body.pillarId,
         createdById: userId,
-        status: body.status || 'IDEA',
+        status: (body.status || 'IDEA') as PostStatus,
         scheduledDate: body.scheduledDate ? new Date(body.scheduledDate) : null,
         hook: body.hook || null,
         body: body.body || null,
+        purpose: body.purpose || null,
+        audience: body.audience || null,
+        onlyIvan: body.onlyIvan || false,
       },
       include: {
         contentPillar: true,

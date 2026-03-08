@@ -14,6 +14,7 @@
 
 import { NextRequest, NextResponse } from 'next/server';
 import { syncAllAccounts } from '@/lib/sync/sync-all';
+import { logger } from '@/lib/logger';
 
 /** Maximum execution time in ms (55s, leaving 5s buffer for Vercel 60s limit). */
 const MAX_EXECUTION_MS = 55_000;
@@ -47,7 +48,7 @@ export async function GET(request: NextRequest) {
 
     const summary = await Promise.race([syncPromise, timeoutPromise]);
 
-    console.log(
+    logger.info(
       `[Cron Sync] Done: ${summary.total} accounts, ${summary.synced} synced, ${summary.failed} failed, ${Date.now() - start}ms`
     );
 

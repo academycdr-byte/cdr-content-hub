@@ -10,12 +10,14 @@ import {
   type DragStartEvent,
   type DragEndEvent,
 } from '@dnd-kit/core';
-import { Filter, Kanban } from 'lucide-react';
+import { Filter, Kanban, Plus } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { cn } from '@/lib/utils';
 import { useToastStore } from '@/stores/toast-store';
 import PipelineColumn from '@/components/pipeline/pipeline-column';
 import PipelineCard from '@/components/pipeline/pipeline-card';
+import CreatePostModal from '@/components/posts/create-post-modal';
+import type { CreatePostData } from '@/components/posts/create-post-modal';
 import type { Post, PostStatus, ContentPillar } from '@/types';
 import { STATUS_ORDER, STATUS_LABELS } from '@/types';
 
@@ -33,6 +35,8 @@ export default function PipelinePage() {
   const [pillars, setPillars] = useState<ContentPillar[]>([]);
   const [loading, setLoading] = useState(true);
   const [activePost, setActivePost] = useState<Post | null>(null);
+
+  const [showCreateModal, setShowCreateModal] = useState(false);
 
   // Filters
   const [filterPillar, setFilterPillar] = useState<string>('');
@@ -169,6 +173,18 @@ export default function PipelinePage() {
     }
   }, [posts, addToast]);
 
+  const handleCreatePost = useCallback(async (data: CreatePostData) => {
+    const res = await fetch('/api/posts', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(data),
+    });
+    if (!res.ok) throw new Error('Failed to create post');
+    const newPost = await res.json() as Post;
+    setPosts((prev) => [newPost, ...prev]);
+    addToast('Post criado!', 'success');
+  }, [addToast]);
+
   const hasActiveFilters = filterPillar || filterFormat;
 
   if (loading) {
@@ -196,9 +212,18 @@ export default function PipelinePage() {
           </p>
         </div>
 
-        <div className="hidden md:flex items-center gap-1.5 text-text-tertiary">
-          <Kanban size={16} />
-          <span className="text-xs font-medium">Kanban</span>
+        <div className="flex items-center gap-3">
+          <button
+            onClick={() => setShowCreateModal(true)}
+            className="btn-accent flex items-center gap-2 text-sm"
+          >
+            <Plus size={16} />
+            Novo Post
+          </button>
+          <div className="hidden md:flex items-center gap-1.5 text-text-tertiary">
+            <Kanban size={16} />
+            <span className="text-xs font-medium">Kanban</span>
+          </div>
         </div>
       </div>
 
@@ -354,6 +379,13 @@ export default function PipelinePage() {
           </div>
         )}
       </div>
+
+      <CreatePostModal
+        isOpen={showCreateModal}
+        onClose={() => setShowCreateModal(false)}
+        onSubmit={handleCreatePost}
+        pillars={pillars}
+      />
     </div>
   );
 }

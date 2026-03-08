@@ -1,5 +1,6 @@
 'use client';
 
+import { memo } from 'react';
 import { Film, LayoutGrid, Image, MessageCircle } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import type { Post, PostFormat } from '@/types';
@@ -17,7 +18,7 @@ const FORMAT_ICONS: Record<PostFormat, React.ReactNode> = {
   STORY: <MessageCircle size={11} />,
 };
 
-export default function CalendarPostCard({
+const CalendarPostCard = memo(function CalendarPostCard({
   post,
   onClick,
   isDragging,
@@ -43,4 +44,6 @@ export default function CalendarPostCard({
       <span className="truncate text-text-primary">{post.title}</span>
     </button>
   );
-}
+});
+
+export default CalendarPostCard;

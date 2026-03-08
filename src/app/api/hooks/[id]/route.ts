@@ -1,6 +1,8 @@
 import { NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 import { requireAuth } from '@/lib/auth';
+import { updateHookSchema, parseBody } from '@/lib/validations';
+import type { HookCategory } from '@prisma/client';
 
 interface RouteContext {
   params: Promise<{ id: string }>;
@@ -29,16 +31,13 @@ export async function PATCH(request: Request, context: RouteContext) {
     const auth = await requireAuth();
     if (auth.error) return auth.error;
     const { id } = await context.params;
-    const body = await request.json() as {
-      text?: string;
-      scenes?: string | null;
-      conclusion?: string | null;
-      pillarId?: string | null;
-      format?: string;
-      category?: string;
-      usageCount?: number;
-      incrementUsage?: boolean;
-    };
+    const raw = await request.json();
+
+    const parsed = parseBody(updateHookSchema, raw);
+    if (!parsed.success) {
+      return NextResponse.json({ error: parsed.error }, { status: 400 });
+    }
+    const body = parsed.data;
 
     const updateData: Record<string, unknown> = {};
 
@@ -58,10 +57,11 @@ export async function PATCH(request: Request, context: RouteContext) {
       updateData.format = body.format;
     }
     if (body.category !== undefined) {
-      updateData.category = body.category;
+      updateData.category = body.category as HookCategory;
     }
     if (body.incrementUsage) {
       updateData.usageCount = { increment: 1 };
+      updateData.lastUsedAt = new Date();
     } else if (body.usageCount !== undefined) {
       updateData.usageCount = body.usageCount;
     }

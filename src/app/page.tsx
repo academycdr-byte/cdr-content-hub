@@ -8,7 +8,6 @@ import {
   ArrowRight,
   TrendingUp,
   Clock,
-  Flame,
   Eye,
   Heart,
   MessageCircle,
@@ -18,121 +17,18 @@ import {
   ExternalLink,
 } from 'lucide-react';
 import { formatDate } from '@/lib/utils';
-import { STATUS_LABELS } from '@/types';
+import { PLATFORM_COLORS } from '@/lib/constants';
+import { STATUS_LABELS, type DashboardStats } from '@/types';
 import ContentMixChart from '@/components/dashboard/content-mix-chart';
-import ConsistencyHeatmap from '@/components/dashboard/consistency-heatmap';
 import DateRangeFilter, {
   computeDateRange,
   getDateRangeLabel,
 } from '@/components/dashboard/date-range-filter';
 import type { DateRange } from '@/components/dashboard/date-range-filter';
-
-// ===== Interfaces =====
-
-interface PipelineStatusItem {
-  status: string;
-  count: number;
-  color: string;
-}
-
-interface PillarMixItem {
-  id: string;
-  name: string;
-  slug: string;
-  color: string;
-  targetPercentage: number;
-  count: number;
-  percentage: number;
-}
-
-interface UpcomingPostItem {
-  id: string;
-  title: string;
-  scheduledDate: string;
-  pillarName: string;
-  pillarColor: string;
-  format: string;
-}
-
-interface MetricsSummary {
-  views: number;
-  likes: number;
-  comments: number;
-  shares: number;
-  posts: number;
-}
-
-interface DateRangeInfo {
-  startDate: string;
-  endDate: string;
-  label: string;
-}
-
-interface PlatformBreakdown {
-  platform: string;
-  label: string;
-  postsCount: number;
-  views: number;
-  likes: number;
-  comments: number;
-  shares: number;
-  cpmValue: number;
-}
-
-interface ProfileBreakdown {
-  accountId: string;
-  displayName: string;
-  username: string;
-  platform: string;
-  postsCount: number;
-  views: number;
-  likes: number;
-  comments: number;
-  shares: number;
-  cpmValue: number;
-}
-
-interface TopPostItem {
-  id: string;
-  caption: string;
-  views: number;
-  likes: number;
-  comments: number;
-  shares: number;
-  engagement: number;
-  platform: string;
-  thumbnailUrl: string;
-  postUrl: string;
-  publishedAt: string;
-  mediaType: string;
-  accountName: string;
-}
-
-interface DashboardStats {
-  postsThisMonth: number;
-  monthlyGoal: number;
-  consistencyScore: number;
-  pipeline: PipelineStatusItem[];
-  contentMix: PillarMixItem[];
-  upcomingPosts: UpcomingPostItem[];
-  resultsWithoutPost: number;
-  metricsSummary: MetricsSummary | null;
-  dateRange: DateRangeInfo;
-  totalCpmValue: number;
-  platformBreakdown: PlatformBreakdown[];
-  profileBreakdown: ProfileBreakdown[];
-  topPosts: TopPostItem[];
-}
+import SignalsPanel from '@/components/dashboard/signals-panel';
+import FormatSignature from '@/components/dashboard/format-signature';
 
 // ===== Helpers =====
-
-const PLATFORM_COLORS: Record<string, string> = {
-  instagram: '#E4405F',
-  tiktok: '#000000',
-  youtube: '#FF0000',
-  facebook: '#1877F2',
-  twitter: '#1DA1F2',
-};
 
 function formatMetricNumber(value: number): string {
   if (value >= 1_000_000) return `${(value / 1_000_000).toFixed(1)}M`;
@@ -226,8 +122,9 @@ export default function DashboardPage() {
     );
   }
 
+  const syncedPostsCount = stats?.metricsSummary?.posts || 0;
   const progressPercentage = stats && stats.monthlyGoal > 0
-    ? Math.min(Math.round((stats.postsThisMonth / stats.monthlyGoal) * 100), 100)
+    ? Math.min(Math.round((syncedPostsCount / stats.monthlyGoal) * 100), 100)
     : 0;
 
   const totalInPipeline = stats
@@ -255,6 +152,9 @@ export default function DashboardPage() {
         <DateRangeFilter value={dateRange} onChange={handleDateRangeChange} />
       </div>
 
+      {/* Signals Panel */}
+      <SignalsPanel />
+
       {/* Loading overlay for refetch */}
       <div className={loading ? 'opacity-50 pointer-events-none transition-opacity duration-200' : 'transition-opacity duration-200'}>
         {stats && (
@@ -270,7 +170,7 @@ export default function DashboardPage() {
                   </div>
                 </div>
                 <div className="flex items-baseline gap-2 mb-2">
-                  <p className="text-3xl font-bold text-text-primary">{stats.postsThisMonth}</p>
+                  <p className="text-3xl font-bold text-text-primary">{syncedPostsCount}</p>
                   <p className="text-sm text-text-secondary">/ {stats.monthlyGoal}</p>
                 </div>
                 <div className="h-1.5 w-full rounded-full bg-bg-hover overflow-hidden">
@@ -685,32 +585,13 @@ export default function DashboardPage() {
               </div>
             </div>
 
-            {/* ===== CONSISTENCY & RESULTS ===== */}
-            <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 mb-4">
-              {/* Consistency card */}
-              <div className="card p-6">
-                <div className="flex items-center justify-between mb-4">
-                  <p className="text-label text-text-tertiary">Consistencia</p>
-                  <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-accent-surface">
-                    <Flame size={16} className="text-accent" />
-                  </div>
-                </div>
-                <div className="flex items-baseline gap-2 mb-3">
-                  <p className="text-3xl font-bold text-text-primary">
-                    {stats.consistencyScore > 0 ? `${stats.consistencyScore}%` : '--'}
-                  </p>
-                </div>
-                <p className="text-sm text-text-secondary">
-                  {stats.consistencyScore === 0
-                    ? 'Comece a publicar para ver seu score'
-                    : stats.consistencyScore >= 80
-                      ? 'Excelente consistencia!'
-                      : stats.consistencyScore >= 50
-                        ? 'Boa frequencia, continue assim!'
-                        : 'Tente publicar mais vezes por semana'}
-                </p>
-              </div>
+            {/* ===== FORMAT SIGNATURE ===== */}
+            <div className="mb-6">
+              <FormatSignature />
+            </div>
 
+            {/* ===== RESULTS ===== */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
               {/* Results */}
               <div className="card p-6">
                 <div className="flex items-center justify-between mb-4">
@@ -752,11 +633,6 @@ export default function DashboardPage() {
                   posts com metricas {periodLabel}
                 </p>
               </div>
-            </div>
-
-            {/* Consistency Heatmap */}
-            <div className="mb-4">
-              <ConsistencyHeatmap />
             </div>
           </>
         )}

@@ -1,6 +1,8 @@
 import { NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 import { requireAuth } from '@/lib/auth';
+import { updateGoalSchema, parseBody } from '@/lib/validations';
+import type { GoalPeriod, GoalStatus } from '@prisma/client';
 
 interface RouteContext {
   params: Promise<{ id: string }>;
@@ -27,19 +29,19 @@ export async function PATCH(request: Request, context: RouteContext) {
       return NextResponse.json({ error: 'Sem permissao' }, { status: 403 });
     }
 
-    const body = await request.json() as {
-      targetValue?: number;
-      period?: string;
-      endDate?: string;
-      status?: string;
-    };
+    const raw = await request.json();
+    const parsed = parseBody(updateGoalSchema, raw);
+    if (!parsed.success) {
+      return NextResponse.json({ error: parsed.error }, { status: 400 });
+    }
+    const body = parsed.data;
 
     const updateData: Record<string, unknown> = {};
 
     if (body.targetValue !== undefined) updateData.targetValue = body.targetValue;
-    if (body.period !== undefined) updateData.period = body.period;
+    if (body.period !== undefined) updateData.period = body.period as GoalPeriod;
     if (body.endDate !== undefined) updateData.endDate = new Date(body.endDate);
-    if (body.status !== undefined) updateData.status = body.status;
+    if (body.status !== undefined) updateData.status = body.status as GoalStatus;
 
     const goal = await prisma.goal.update({
       where: { id },

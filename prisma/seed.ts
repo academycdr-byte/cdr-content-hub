@@ -141,6 +141,9 @@ async function main() {
     { text: 'Comenta SIM se voce quer receber mais conteudo como esse', pillarSlug: null, format: 'ALL', category: 'CHALLENGE' },
   ];
 
+  // Clear existing hooks for idempotent seeding
+  await prisma.hook.deleteMany({});
+
   for (const hook of hooks) {
     await prisma.hook.create({
       data: {
