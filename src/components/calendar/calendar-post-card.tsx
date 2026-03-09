@@ -19,6 +19,13 @@ const FORMAT_ICONS: Record<PostFormat, React.ReactNode> = {
   STORY: <MessageCircle size={11} />,
 };
 
+const FORMAT_LABELS: Record<PostFormat, string> = {
+  REEL: 'Reel',
+  CAROUSEL: 'Carrossel',
+  STATIC: 'Imagem',
+  STORY: 'Story',
+};
+
 const CalendarPostCard = memo(function CalendarPostCard({
   post,
   onClick,
@@ -47,6 +54,9 @@ const CalendarPostCard = memo(function CalendarPostCard({
           {FORMAT_ICONS[post.format as PostFormat]}
         </span>
         <span className="truncate text-text-primary">{post.title}</span>
+        <span className="shrink-0 text-[9px] font-normal text-text-tertiary">
+          {FORMAT_LABELS[post.format as PostFormat]}
+        </span>
       </button>
 
       {onDelete && (
