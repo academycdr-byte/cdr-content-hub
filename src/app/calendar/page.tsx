@@ -33,6 +33,7 @@ export default function CalendarPage() {
     fetchPosts,
     fetchPillars,
     updatePost,
+    removePost,
   } = usePostsStore();
 
   const { addToast } = useToastStore();
@@ -100,6 +101,28 @@ export default function CalendarPage() {
     usePostsStore.getState().addPost(newPost);
     addToast('Post planejado com sucesso!', 'success');
   }, [addToast]);
+
+  const handleDeletePost = useCallback(async (post: Post) => {
+    const confirmed = window.confirm(`Remover "${post.title}" do planejamento?`);
+    if (!confirmed) return;
+
+    // Optimistic removal
+    removePost(post.id);
+
+    try {
+      const res = await fetch(`/api/posts/${post.id}`, { method: 'DELETE' });
+      if (!res.ok) {
+        // Revert on failure
+        usePostsStore.getState().addPost(post);
+        addToast('Erro ao remover post. Tente novamente.', 'error');
+      } else {
+        addToast('Post removido com sucesso!', 'success');
+      }
+    } catch {
+      usePostsStore.getState().addPost(post);
+      addToast('Erro ao remover post. Tente novamente.', 'error');
+    }
+  }, [removePost, addToast]);
 
   const handleDragStart = useCallback((event: DragStartEvent) => {
     const post = posts.find((p) => p.id === event.active.id);
@@ -235,6 +258,7 @@ export default function CalendarPage() {
               calendarEntries={{}}
               onDayClick={handleDayClick}
               onPostClick={handlePostClick}
+              onDeletePost={handleDeletePost}
             />
 
             <DragOverlay>
