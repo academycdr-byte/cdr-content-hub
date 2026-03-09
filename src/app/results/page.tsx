@@ -75,7 +75,7 @@ export default function ResultsPage() {
 
     const success = await deleteResult(id);
     if (success) {
-      addToast('Resultado excluido com sucesso.', 'success');
+      addToast('Resultado excluído com sucesso.', 'success');
     } else {
       addToast('Erro ao excluir resultado.', 'error');
     }
@@ -97,16 +97,16 @@ export default function ResultsPage() {
       );
 
       if (!caseStudyPillar) {
-        addToast('Pilar "Case Studies" nao encontrado. Crie o pilar primeiro.', 'error');
+        addToast('Pilar "Case Studies" não encontrado. Crie o pilar primeiro.', 'error');
         return;
       }
 
       const slides: Record<string, string> = {
         cover: `${result.metricValue}${result.metricUnit} de ${result.metricType} para ${result.clientName}`,
         slide1: `Contexto: ${result.clientName} - ${result.clientNiche}\n\nDesafio: ${result.description || 'Descreva o desafio enfrentado pelo cliente'}`,
-        slide2: 'Estrategia utilizada:\n\n1. [Preencha o passo 1]\n2. [Preencha o passo 2]\n3. [Preencha o passo 3]',
+        slide2: 'Estratégia utilizada:\n\n1. [Preencha o passo 1]\n2. [Preencha o passo 2]\n3. [Preencha o passo 3]',
         slide3: 'Framework aplicado:\n\n[Detalhe o framework ou metodologia usada]',
-        slide4: 'Execucao:\n\n[Descreva como foi a implementacao]',
+        slide4: 'Execução:\n\n[Descreva como foi a implementacao]',
         slide5: `Resultado:\n\n${result.metricValue}${result.metricUnit} de ${result.metricType} em ${result.period}`,
       };
 
@@ -283,7 +283,7 @@ export default function ResultsPage() {
           <p className="text-sm text-text-secondary max-w-md mb-6">
             {hasActiveFilters
               ? 'Tente ajustar os filtros para encontrar o que procura.'
-              : 'Cadastre os resultados dos seus clientes para construir um portfolio de cases de sucesso e transformar em conteudo.'}
+              : 'Cadastre os resultados dos seus clientes para construir um portfolio de cases de sucesso e transformar em conteúdo.'}
           </p>
           {!hasActiveFilters && (
             <button onClick={handleCreate} className="btn-accent flex items-center gap-2">
@@ -333,7 +333,7 @@ export default function ResultsPage() {
                   page >= totalPages && 'opacity-50 cursor-not-allowed'
                 )}
               >
-                Proxima
+                Próxima
                 <ChevronRight size={14} />
               </button>
             </div>

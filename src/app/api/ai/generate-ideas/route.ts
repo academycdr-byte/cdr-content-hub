@@ -14,7 +14,7 @@ export async function POST(request: Request) {
     const limitResult = aiLimiter.check(auth.session.user.id || 'anonymous');
     if (!limitResult.success) {
       return NextResponse.json(
-        { error: 'Muitas requisicoes. Tente novamente em 1 minuto.' },
+        { error: 'Muitas requisições. Tente novamente em 1 minuto.' },
         { status: 429 }
       );
     }
@@ -77,7 +77,7 @@ export async function POST(request: Request) {
       .map((h) => `- "${h.text}" (score: ${h.performanceScore}, usado ${h.usageCount}x)`)
       .join('\n');
 
-    const prompt = `Baseado nos posts que mais performaram e nos hooks ativos, sugira 5 ideias de conteudo que so o Ivan Furtado poderia criar.
+    const prompt = `Baseado nos posts que mais performaram e nos hooks ativos, sugira 5 ideias de conteúdo que só o Ivan Furtado poderia criar.
 
 PILAR FOCO: ${pillarName}
 
@@ -90,14 +90,14 @@ ${hooksContext}` : ''}
 Para cada ideia, retorne EXATAMENTE neste formato JSON (array de 5 objetos):
 [
   {
-    "title": "titulo do post",
+    "title": "título do post",
     "hook": "frase de gancho de abertura",
-    "angle": "angulo unico do conteudo",
+    "angle": "ângulo único do conteúdo",
     "justification": "por que essa ideia vai performar baseado nos dados"
   }
 ]
 
-IMPORTANTE: Retorne APENAS o array JSON, sem markdown, sem explicacao adicional.`;
+IMPORTANTE: Retorne APENAS o array JSON, sem markdown, sem explicação adicional.`;
 
     const response = await askClaude(prompt);
 
@@ -125,7 +125,7 @@ IMPORTANTE: Retorne APENAS o array JSON, sem markdown, sem explicacao adicional.
 
     if (message.includes('ANTHROPIC_API_KEY')) {
       return NextResponse.json(
-        { error: 'ANTHROPIC_API_KEY nao configurada. Adicione no ambiente.' },
+        { error: 'ANTHROPIC_API_KEY não configurada. Adicione no ambiente.' },
         { status: 503 }
       );
     }

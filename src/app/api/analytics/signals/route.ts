@@ -45,8 +45,8 @@ export async function GET() {
         type: 'consistency',
         severity: 'warning',
         title: 'Sem dados de performance',
-        description: 'Nenhuma metrica sincronizada nos ultimos 30 dias.',
-        action: 'Conecte suas redes sociais e sincronize metricas',
+        description: 'Nenhuma métrica sincronizada nos ultimos 30 dias.',
+        action: 'Conecte suas redes sociais e sincronize métricas',
       });
 
       return NextResponse.json(signals.slice(0, 5));
@@ -66,8 +66,8 @@ export async function GET() {
           type: 'sharing',
           severity: 'info',
           title: `"${postTitle}" tem alto compartilhamento`,
-          description: `${metric.shares} shares (media: ${Math.round(avgShares)}). Este tema ressoa com a audiencia.`,
-          action: 'Crie mais conteudo sobre este tema',
+          description: `${metric.shares} shares (média: ${Math.round(avgShares)}). Este tema ressoa com a audiencia.`,
+          action: 'Crie mais conteúdo sobre este tema',
           relatedPostId: metric.post?.id || undefined,
         });
       }
@@ -81,7 +81,7 @@ export async function GET() {
           type: 'conversation',
           severity: 'info',
           title: `"${postTitle}" gera muitas conversas`,
-          description: `${metric.comments} comentarios (media: ${Math.round(avgComments)}). Explore mais este angulo.`,
+          description: `${metric.comments} comentários (média: ${Math.round(avgComments)}). Explore mais este ângulo.`,
           action: 'Crie um post aprofundando este tema',
           relatedPostId: metric.post?.id || undefined,
         });
@@ -113,7 +113,7 @@ export async function GET() {
           severity: 'warning',
           title: `Pilar "${pillar.name}" esta descoberto`,
           description: `Apenas ${Math.round(actualPercentage)}% dos posts (meta: ${pillar.targetPercentage}%).`,
-          action: `Crie mais conteudo de ${pillar.name}`,
+          action: `Crie mais conteúdo de ${pillar.name}`,
         });
       }
     }
@@ -143,8 +143,8 @@ export async function GET() {
         type: 'format_strength',
         severity: 'info',
         title: `${bestFormat} e seu ponto forte`,
-        description: `Media de ${Math.round(bestAvgViews).toLocaleString()} views por post neste formato.`,
-        action: `Priorize conteudo em formato ${bestFormat}`,
+        description: `Média de ${Math.round(bestAvgViews).toLocaleString()} views por post neste formato.`,
+        action: `Priorize conteúdo em formato ${bestFormat}`,
       });
     }
 

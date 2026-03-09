@@ -151,7 +151,7 @@ export default function IdeationPage() {
       }
     } catch (error) {
       console.error('Failed to fetch ideation data:', error instanceof Error ? error.message : 'Unknown');
-      addToast('Erro ao carregar dados de ideacao', 'error');
+      addToast('Erro ao carregar dados de ideação', 'error');
     } finally {
       setLoading(false);
     }
@@ -292,8 +292,8 @@ export default function IdeationPage() {
             <Sparkles size={20} className="text-accent" />
           </div>
           <div>
-            <h1 className="text-display text-text-primary">Sessao de Ideacao</h1>
-            <p className="text-sm text-text-secondary">Planejamento semanal de conteudo</p>
+            <h1 className="text-display text-text-primary">Sessão de Ideação</h1>
+            <p className="text-sm text-text-secondary">Planejamento semanal de conteúdo</p>
           </div>
         </div>
       </div>
@@ -304,7 +304,7 @@ export default function IdeationPage() {
           <div className="flex items-center gap-2 mb-4">
             <TrendingUp size={16} className="text-accent" />
             <h2 className="text-heading-3 text-text-primary">Top da Semana</h2>
-            <span className="text-[11px] text-text-tertiary ml-auto">Por shares + comentarios</span>
+            <span className="text-[11px] text-text-tertiary ml-auto">Por shares + comentários</span>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3 stagger-children">
@@ -372,7 +372,7 @@ export default function IdeationPage() {
             <h2 className="text-heading-3 text-text-primary">Pilares Descobertos</h2>
           </div>
           <p className="text-xs text-text-secondary mb-3">
-            Pilares sem conteudo agendado na proxima semana
+            Pilares sem conteúdo agendado na próxima semana
           </p>
 
           {context && context.uncoveredPillars.length > 0 ? (
@@ -431,7 +431,7 @@ export default function IdeationPage() {
             </div>
           ) : (
             <p className="text-sm text-text-tertiary text-center py-4">
-              Crie hooks para ver sugestoes
+              Crie hooks para ver sugestões
             </p>
           )}
         </div>
@@ -485,7 +485,7 @@ export default function IdeationPage() {
               >
                 <p className="text-sm font-semibold text-text-primary mb-1">{idea.title}</p>
                 <p className="text-xs text-accent font-medium mb-2">Hook: {idea.hook}</p>
-                <p className="text-xs text-text-secondary mb-1">Angulo: {idea.angle}</p>
+                <p className="text-xs text-text-secondary mb-1">Ângulo: {idea.angle}</p>
                 <p className="text-[11px] text-text-tertiary">Justificativa: {idea.justification}</p>
               </div>
             ))}
@@ -500,7 +500,7 @@ export default function IdeationPage() {
           <h2 className="text-heading-3 text-text-primary">Ideias Rapidas</h2>
         </div>
         <p className="text-xs text-text-tertiary mb-4">
-          Descreva brevemente sua ideia e a IA monta o plano de execucao
+          Descreva brevemente sua ideia e a IA monta o plano de execução
         </p>
 
         {/* Input */}
@@ -557,7 +557,7 @@ export default function IdeationPage() {
             {expandingIdea ? (
               <div className="p-6 flex flex-col items-center gap-3">
                 <Loader2 size={24} className="animate-spin text-accent" />
-                <p className="text-sm text-text-secondary">Montando plano de execucao...</p>
+                <p className="text-sm text-text-secondary">Montando plano de execução...</p>
               </div>
             ) : expandedPlan ? (
               <div>
@@ -566,7 +566,7 @@ export default function IdeationPage() {
                   <div className="flex items-start justify-between gap-3 mb-2">
                     <div className="flex-1">
                       <p className="text-xs text-accent font-semibold uppercase tracking-wider mb-1">
-                        Plano de Execucao
+                        Plano de Execução
                       </p>
                       <p className="text-sm font-medium text-text-primary">{expandedPlan.summary}</p>
                     </div>
@@ -628,7 +628,7 @@ export default function IdeationPage() {
                       <p className="text-sm font-medium text-text-primary">{expandedPlan.cta}</p>
                     </div>
                     <div>
-                      <p className="text-xs text-text-tertiary mb-0.5">Melhor horario:</p>
+                      <p className="text-xs text-text-tertiary mb-0.5">Melhor horário:</p>
                       <p className="text-sm font-medium text-text-primary">{expandedPlan.bestTime}</p>
                     </div>
                   </div>
@@ -741,7 +741,7 @@ export default function IdeationPage() {
 
         {ideas.length === 0 && !expandedPlan && !expandingIdea && (
           <p className="text-sm text-text-tertiary text-center py-4 mt-2">
-            Descreva sua ideia acima e clique em Expandir para ver o plano de execucao
+            Descreva sua ideia acima e clique em Expandir para ver o plano de execução
           </p>
         )}
       </div>

@@ -2,9 +2,9 @@ import { z } from 'zod';
 
 // ─── Posts ──────────────────────────────────────────────────────
 export const createPostSchema = z.object({
-  title: z.string().min(1, 'Titulo e obrigatorio').max(500),
-  format: z.string().min(1, 'Formato e obrigatorio'),
-  pillarId: z.string().min(1, 'Pilar e obrigatorio'),
+  title: z.string().min(1, 'Título é obrigatório').max(500),
+  format: z.string().min(1, 'Formato é obrigatório'),
+  pillarId: z.string().min(1, 'Pilar é obrigatório'),
   scheduledDate: z.string().datetime({ offset: true }).optional().or(z.string().regex(/^\d{4}-\d{2}-\d{2}/).optional()),
   hook: z.string().max(2000).optional(),
   status: z.string().optional(),
@@ -37,13 +37,13 @@ export const patchPostSchema = z.object({
 const VALID_STATUSES = ['IDEA', 'SCRIPT', 'PRODUCTION', 'REVIEW', 'SCHEDULED', 'PUBLISHED'] as const;
 export const postStatusSchema = z.object({
   status: z.enum(VALID_STATUSES, {
-    error: `Status invalido. Valores aceitos: ${VALID_STATUSES.join(', ')}`,
+    error: `Status inválido. Valores aceitos: ${VALID_STATUSES.join(', ')}`,
   }),
 });
 
 // ─── Hooks ──────────────────────────────────────────────────────
 export const createHookSchema = z.object({
-  text: z.string().min(1, 'Texto do gancho e obrigatorio').max(2000),
+  text: z.string().min(1, 'Texto do gancho é obrigatório').max(2000),
   scenes: z.string().max(5000).nullable().optional(),
   conclusion: z.string().max(5000).nullable().optional(),
   pillarId: z.string().nullable().optional(),
@@ -69,11 +69,11 @@ export const suggestHookSchema = z.object({
 
 // ─── Goals ──────────────────────────────────────────────────────
 export const createGoalSchema = z.object({
-  socialAccountId: z.string().min(1, 'socialAccountId e obrigatorio'),
+  socialAccountId: z.string().min(1, 'socialAccountId é obrigatório'),
   metricType: z.string().optional(),
   targetValue: z.number().int().positive('targetValue deve ser positivo'),
-  period: z.string().min(1, 'period e obrigatorio'),
-  endDate: z.string().min(1, 'endDate e obrigatorio'),
+  period: z.string().min(1, 'period é obrigatório'),
+  endDate: z.string().min(1, 'endDate é obrigatório'),
 });
 
 export const updateGoalSchema = z.object({
@@ -91,12 +91,12 @@ const resultImageSchema = z.object({
 });
 
 export const createResultSchema = z.object({
-  clientName: z.string().min(1, 'clientName e obrigatorio').max(200),
-  clientNiche: z.string().min(1, 'clientNiche e obrigatorio').max(200),
-  metricType: z.string().min(1, 'metricType e obrigatorio'),
-  metricValue: z.string().min(1, 'metricValue e obrigatorio').max(100),
+  clientName: z.string().min(1, 'clientName é obrigatório').max(200),
+  clientNiche: z.string().min(1, 'clientNiche é obrigatório').max(200),
+  metricType: z.string().min(1, 'metricType é obrigatório'),
+  metricValue: z.string().min(1, 'metricValue é obrigatório').max(100),
   metricUnit: z.string().max(50).optional(),
-  period: z.string().min(1, 'period e obrigatorio').max(200),
+  period: z.string().min(1, 'period é obrigatório').max(200),
   description: z.string().max(2000).optional(),
   testimonialText: z.string().max(5000).optional(),
   imageUrls: z.array(resultImageSchema).optional(),
@@ -141,23 +141,23 @@ export const updateChecklistTemplatesSchema = z.array(
 
 // ─── Commissions ────────────────────────────────────────────────
 export const updateCommissionSchema = z.object({
-  format: z.string().min(1, 'Format e obrigatorio'),
+  format: z.string().min(1, 'Formato é obrigatório'),
   cpmValue: z.number().min(0, 'cpmValue deve ser >= 0'),
 });
 
 // ─── Social ─────────────────────────────────────────────────────
 export const autoSyncSchema = z.object({
-  accountId: z.string().min(1, 'accountId e obrigatorio'),
-  autoSync: z.boolean({ error: 'autoSync e obrigatorio' }),
+  accountId: z.string().min(1, 'accountId é obrigatório'),
+  autoSync: z.boolean({ error: 'autoSync é obrigatório' }),
 });
 
 export const syncAccountSchema = z.object({
-  accountId: z.string().min(1, 'accountId e obrigatorio'),
+  accountId: z.string().min(1, 'accountId é obrigatório'),
 });
 
 // ─── AI ─────────────────────────────────────────────────────────
 export const analyzePostSchema = z.object({
-  title: z.string().min(1, 'Titulo e obrigatorio').max(500),
+  title: z.string().min(1, 'Título é obrigatório').max(500),
   hook: z.string().max(2000).optional(),
   caption: z.string().max(5000).optional(),
   format: z.string().optional(),
@@ -169,12 +169,12 @@ export const generateIdeasSchema = z.object({
 });
 
 export const expandIdeaSchema = z.object({
-  text: z.string().min(1, 'Texto da ideia e obrigatorio').max(5000),
+  text: z.string().min(1, 'Texto da ideia é obrigatório').max(5000),
 });
 
 // ─── Ideation ───────────────────────────────────────────────────
 export const createIdeaSchema = z.object({
-  text: z.string().min(1, 'Texto da ideia e obrigatorio').max(5000),
+  text: z.string().min(1, 'Texto da ideia é obrigatório').max(5000),
   pillarId: z.string().nullable().optional(),
 });
 

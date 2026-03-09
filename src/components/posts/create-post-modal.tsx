@@ -67,7 +67,7 @@ export default function CreatePostModal({
     setError('');
 
     if (!title.trim()) {
-      setError('Titulo e obrigatorio');
+      setError('Título é obrigatório');
       return;
     }
     if (!pillarId) {
@@ -133,7 +133,7 @@ export default function CreatePostModal({
             {/* Title */}
             <div>
               <label htmlFor="post-title" className="text-label text-text-secondary mb-2 block">
-                Titulo
+                Título
               </label>
               <input
                 id="post-title"
@@ -173,7 +173,7 @@ export default function CreatePostModal({
             {/* Pillar */}
             <div>
               <label htmlFor="post-pillar" className="text-label text-text-secondary mb-2 block">
-                Pilar de Conteudo
+                Pilar de Conteúdo
               </label>
               <div className="grid grid-cols-1 gap-2">
                 {pillars.map((p) => (
@@ -207,13 +207,13 @@ export default function CreatePostModal({
             {/* Purpose */}
             <div>
               <label htmlFor="post-purpose" className="text-label text-text-secondary mb-2 block">
-                Que mudanca eu quero criar com esse post?
+                Que mudança eu quero criar com esse post?
               </label>
               <textarea
                 id="post-purpose"
                 value={purpose}
                 onChange={(e) => setPurpose(e.target.value)}
-                placeholder="Ex: Fazer donos de e-commerce entenderem que precisam de trafego pago estrategico"
+                placeholder="Ex: Fazer donos de e-commerce entenderem que precisam de tráfego pago estratégico"
                 className="input min-h-[60px] resize-y"
                 rows={2}
               />
@@ -228,7 +228,7 @@ export default function CreatePostModal({
                 id="post-audience"
                 value={audience}
                 onChange={(e) => setAudience(e.target.value)}
-                placeholder="Ex: Donos de e-commerce de moda com faturamento entre 50k-200k/mes"
+                placeholder="Ex: Donos de e-commerce de moda com faturamento entre 50k-200k/mês"
                 className="input min-h-[60px] resize-y"
                 rows={2}
               />
@@ -248,8 +248,8 @@ export default function CreatePostModal({
                   className="h-4 w-4 rounded accent-accent"
                 />
                 <div>
-                  <p className="text-sm font-medium text-text-primary">So o Ivan poderia ter criado isso?</p>
-                  <p className="text-[11px] text-text-tertiary">Marque se este conteudo tem a sua assinatura unica</p>
+                  <p className="text-sm font-medium text-text-primary">Só o Ivan poderia ter criado isso?</p>
+                  <p className="text-[11px] text-text-tertiary">Marque se este conteúdo tem a sua assinatura única</p>
                 </div>
               </label>
             </div>

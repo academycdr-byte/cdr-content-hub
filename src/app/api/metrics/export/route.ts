@@ -47,9 +47,9 @@ export async function GET(request: NextRequest) {
     });
 
     // Build CSV
-    const header = 'Post,Plataforma,Views,Likes,Comentarios,Shares,Data';
+    const header = 'Post,Plataforma,Views,Likes,Comentários,Shares,Data';
     const rows = metrics.map((m) => {
-      const postTitle = m.post?.title || m.caption?.slice(0, 50) || 'Sem titulo';
+      const postTitle = m.post?.title || m.caption?.slice(0, 50) || 'Sem título';
       // Escape CSV values that may contain commas or quotes
       const safeTitle = `"${postTitle.replace(/"/g, '""')}"`;
       const platformLabel = m.socialAccount?.platform || m.platform;
@@ -63,11 +63,11 @@ export async function GET(request: NextRequest) {
       status: 200,
       headers: {
         'Content-Type': 'text/csv; charset=utf-8',
-        'Content-Disposition': `attachment; filename="metricas-${from || 'inicio'}-${to || 'hoje'}.csv"`,
+        'Content-Disposition': `attachment; filename="métricas-${from || 'inicio'}-${to || 'hoje'}.csv"`,
       },
     });
   } catch (error) {
-    const msg = error instanceof Error ? error.message : 'Erro ao exportar metricas';
+    const msg = error instanceof Error ? error.message : 'Erro ao exportar métricas';
     console.error('Metrics export error:', msg);
     return NextResponse.json({ error: msg }, { status: 500 });
   }

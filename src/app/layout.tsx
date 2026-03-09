@@ -16,7 +16,7 @@ export const metadata: Metadata = {
     default: 'CDR Content Hub',
     template: '%s | CDR Content Hub',
   },
-  description: 'Sistema de producao de conteudo Instagram da CDR Group',
+  description: 'Sistema de produção de conteúdo Instagram da CDR Group',
   other: {
     'tiktok-developers-site-verification': 'xnQg1imhq1YuzGVCD9lq1pyIjM7K7PEo',
   },

@@ -28,11 +28,11 @@ export default function PostSidebar({ post, pillar }: PostSidebarProps) {
         month: 'long',
         year: 'numeric',
       })
-    : 'Nao agendado';
+    : 'Não agendado';
 
   return (
     <div className="card p-5 space-y-4">
-      <h3 className="text-heading-3 text-text-primary">Informacoes</h3>
+      <h3 className="text-heading-3 text-text-primary">Informações</h3>
 
       {/* Status */}
       <div className="flex items-center gap-3">

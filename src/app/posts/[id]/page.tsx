@@ -217,7 +217,7 @@ export default function PostBuilderPage({ params }: PostBuilderPageProps) {
 
     const currentIndex = STATUS_ORDER.indexOf(post.status as PostStatus);
     if (currentIndex === -1 || currentIndex >= STATUS_ORDER.length - 1) {
-      addToast('Este post ja esta no ultimo status', 'info');
+      addToast('Este post já está no último status', 'info');
       return;
     }
 
@@ -228,7 +228,7 @@ export default function PostBuilderPage({ params }: PostBuilderPageProps) {
       );
       if (uncompleted.length > 0) {
         addToast(
-          `Complete a checklist antes de avancar (${uncompleted.length} item${uncompleted.length !== 1 ? 's' : ''} pendente${uncompleted.length !== 1 ? 's' : ''})`,
+          `Complete a checklist antes de avançar (${uncompleted.length} item${uncompleted.length !== 1 ? 's' : ''} pendente${uncompleted.length !== 1 ? 's' : ''})`,
           'error'
         );
         return;
@@ -257,7 +257,7 @@ export default function PostBuilderPage({ params }: PostBuilderPageProps) {
       // Refresh checklist for new stage
       fetchChecklist(post.id, nextStatus);
     } catch {
-      addToast('Erro ao avancar status', 'error');
+      addToast('Erro ao avançar status', 'error');
     } finally {
       setAdvancing(false);
     }
@@ -317,7 +317,7 @@ export default function PostBuilderPage({ params }: PostBuilderPageProps) {
         suggestion: string;
       };
       setAiAnalysis(data);
-      addToast('Analise concluida!', 'success');
+      addToast('Análise concluída!', 'success');
     } catch (error) {
       addToast(
         error instanceof Error ? error.message : 'Erro ao analisar com IA',
@@ -397,7 +397,7 @@ export default function PostBuilderPage({ params }: PostBuilderPageProps) {
           value={title}
           onChange={(e) => setTitle(e.target.value)}
           className="text-heading-1 text-text-primary bg-transparent border-none outline-none flex-1 placeholder:text-text-tertiary"
-          placeholder="Titulo do post..."
+          placeholder="Título do post..."
         />
 
         <div className="flex items-center gap-2 shrink-0">
@@ -445,12 +445,12 @@ export default function PostBuilderPage({ params }: PostBuilderPageProps) {
               {advancing ? (
                 <>
                   <Loader2 size={14} className="animate-spin" />
-                  Avancando...
+                  Avançando...
                 </>
               ) : (
                 <>
                   <ArrowRight size={14} />
-                  Avancar para {STATUS_LABELS[STATUS_ORDER[currentStatusIndex + 1]]}
+                  Avançar para {STATUS_LABELS[STATUS_ORDER[currentStatusIndex + 1]]}
                 </>
               )}
             </button>
@@ -524,17 +524,17 @@ export default function PostBuilderPage({ params }: PostBuilderPageProps) {
 
           {/* Strategy: Purpose, Audience, Only Ivan */}
           <div className="card p-6 space-y-4">
-            <h3 className="text-heading-3 text-text-primary">Estrategia</h3>
+            <h3 className="text-heading-3 text-text-primary">Estratégia</h3>
 
             <div>
               <label htmlFor="post-purpose" className="text-label text-text-secondary mb-1.5 block">
-                Que mudanca eu quero criar com esse post?
+                Que mudança eu quero criar com esse post?
               </label>
               <textarea
                 id="post-purpose"
                 value={purpose}
                 onChange={(e) => setPurpose(e.target.value)}
-                placeholder="Ex: Fazer donos de e-commerce entenderem que precisam de trafego pago estrategico"
+                placeholder="Ex: Fazer donos de e-commerce entenderem que precisam de tráfego pago estratégico"
                 className="input min-h-[60px] resize-y"
                 rows={2}
               />
@@ -548,7 +548,7 @@ export default function PostBuilderPage({ params }: PostBuilderPageProps) {
                 id="post-audience"
                 value={audience}
                 onChange={(e) => setAudience(e.target.value)}
-                placeholder="Ex: Donos de e-commerce de moda com faturamento entre 50k-200k/mes"
+                placeholder="Ex: Donos de e-commerce de moda com faturamento entre 50k-200k/mês"
                 className="input min-h-[60px] resize-y"
                 rows={2}
               />
@@ -566,8 +566,8 @@ export default function PostBuilderPage({ params }: PostBuilderPageProps) {
                 className="h-4 w-4 rounded accent-accent"
               />
               <div>
-                <p className="text-sm font-medium text-text-primary">So o Ivan poderia ter criado isso?</p>
-                <p className="text-[11px] text-text-tertiary">Marque se este conteudo tem a sua assinatura unica</p>
+                <p className="text-sm font-medium text-text-primary">Só o Ivan poderia ter criado isso?</p>
+                <p className="text-[11px] text-text-tertiary">Marque se este conteúdo tem a sua assinatura única</p>
               </div>
             </label>
           </div>
@@ -577,7 +577,7 @@ export default function PostBuilderPage({ params }: PostBuilderPageProps) {
             <div className="card p-6 animate-fade-in">
               <div className="flex items-center gap-2 mb-4">
                 <Brain size={16} className="text-accent" />
-                <h3 className="text-heading-3 text-text-primary">Analise IA</h3>
+                <h3 className="text-heading-3 text-text-primary">Análise IA</h3>
               </div>
 
               {/* Score */}
@@ -600,7 +600,7 @@ export default function PostBuilderPage({ params }: PostBuilderPageProps) {
                   >
                     {aiAnalysis.onlyIvanScore}
                   </div>
-                  <p className="text-[10px] text-text-tertiary mt-1">So Ivan</p>
+                  <p className="text-[10px] text-text-tertiary mt-1">Só Ivan</p>
                 </div>
                 <div className="flex-1">
                   <p className="text-sm text-text-primary">{aiAnalysis.analysis}</p>
@@ -609,7 +609,7 @@ export default function PostBuilderPage({ params }: PostBuilderPageProps) {
 
               {/* Suggestion */}
               <div className="rounded-lg bg-accent-surface p-3">
-                <p className="text-xs font-semibold text-accent mb-1">Sugestao de melhoria</p>
+                <p className="text-xs font-semibold text-accent mb-1">Sugestão de melhoria</p>
                 <p className="text-xs text-text-primary">{aiAnalysis.suggestion}</p>
               </div>
             </div>
@@ -623,7 +623,7 @@ export default function PostBuilderPage({ params }: PostBuilderPageProps) {
                   Checklist: {STATUS_LABELS[post.status as PostStatus]}
                 </h3>
                 <span className="text-xs text-text-tertiary">
-                  {completedItems.length}/{checklistTemplateItems.length} concluidos
+                  {completedItems.length}/{checklistTemplateItems.length} concluídos
                 </span>
               </div>
 
@@ -674,7 +674,7 @@ export default function PostBuilderPage({ params }: PostBuilderPageProps) {
                 <div className="mt-3 flex items-center gap-2 rounded-lg bg-warning-surface px-3 py-2">
                   <AlertTriangle size={14} className="text-warning shrink-0" />
                   <p className="text-xs text-warning">
-                    Complete todos os items antes de avancar o status.
+                    Complete todos os itens antes de avançar o status.
                   </p>
                 </div>
               )}

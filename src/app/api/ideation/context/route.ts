@@ -44,7 +44,7 @@ export async function GET() {
       .map((m) => ({
         id: m.id,
         postId: m.post?.id || null,
-        title: m.post?.title || m.caption?.substring(0, 60) || 'Post sem titulo',
+        title: m.post?.title || m.caption?.substring(0, 60) || 'Post sem título',
         format: m.post?.format || m.mediaType || 'UNKNOWN',
         pillarName: m.post?.contentPillar?.name || null,
         pillarColor: m.post?.contentPillar?.color || null,

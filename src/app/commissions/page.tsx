@@ -14,25 +14,25 @@ interface CpmConfig {
 const FORMAT_META: Record<string, { label: string; description: string; icon: React.ReactNode; color: string }> = {
   REEL: {
     label: 'Reels / Video',
-    description: 'Videos curtos (Reels, TikTok)',
+    description: 'Vídeos curtos (Reels, TikTok)',
     icon: <Film size={20} />,
     color: '#E4405F',
   },
   CAROUSEL: {
     label: 'Carrossel',
-    description: 'Posts com multiplas imagens',
+    description: 'Posts com múltiplas imagens',
     icon: <Images size={20} />,
     color: '#7C3AED',
   },
   STATIC: {
     label: 'Imagem Estatica',
-    description: 'Post com imagem unica',
+    description: 'Post com imagem única',
     icon: <Image size={20} />,
     color: '#2563EB',
   },
   STORY: {
     label: 'Story',
-    description: 'Stories temporarios (24h)',
+    description: 'Stories temporários (24h)',
     icon: <Clapperboard size={20} />,
     color: '#D97706',
   },
@@ -124,9 +124,9 @@ export default function CommissionsPage() {
     <div className="max-w-4xl mx-auto animate-fade-in">
       {/* Header */}
       <div className="mb-6">
-        <h1 className="text-display text-text-primary">Comissoes</h1>
+        <h1 className="text-display text-text-primary">Comissões</h1>
         <p className="mt-2 text-text-secondary">
-          Configure o valor CPM (custo por mil views) de cada formato de conteudo.
+          Configure o valor CPM (custo por mil views) de cada formato de conteúdo.
         </p>
       </div>
 
@@ -136,7 +136,7 @@ export default function CommissionsPage() {
           <Info size={16} className="text-accent" />
         </div>
         <div>
-          <p className="text-sm font-semibold text-text-primary mb-1">Como funciona o calculo</p>
+          <p className="text-sm font-semibold text-text-primary mb-1">Como funciona o cálculo</p>
           <p className="text-sm text-text-secondary">
             O valor estimado de cada post e calculado como: <span className="font-mono text-text-primary">views / 1.000 x CPM</span>
           </p>

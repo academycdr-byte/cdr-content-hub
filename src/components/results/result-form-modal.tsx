@@ -211,9 +211,9 @@ export default function ResultFormModal({ isOpen, onClose, onSubmit, editingResu
             </div>
           </div>
 
-          {/* Section: Metrica */}
+          {/* Section: Métrica */}
           <div className="space-y-3">
-            <p className="text-xs font-semibold text-text-secondary tracking-wide">Metrica Principal</p>
+            <p className="text-xs font-semibold text-text-secondary tracking-wide">Métrica Principal</p>
             <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
               <div className="col-span-2 sm:col-span-1">
                 <label className="text-xs text-text-tertiary mb-1 block">Tipo *</label>
@@ -255,7 +255,7 @@ export default function ResultFormModal({ isOpen, onClose, onSubmit, editingResu
                 />
               </div>
               <div className="col-span-2 sm:col-span-1">
-                <label className="text-xs text-text-tertiary mb-1 block">Periodo *</label>
+                <label className="text-xs text-text-tertiary mb-1 block">Período *</label>
                 <input
                   type="text"
                   value={form.period}
@@ -272,11 +272,11 @@ export default function ResultFormModal({ isOpen, onClose, onSubmit, editingResu
           <div className="space-y-3">
             <p className="text-xs font-semibold text-text-secondary tracking-wide">Detalhes (opcional)</p>
             <div>
-              <label className="text-xs text-text-tertiary mb-1 block">Descricao</label>
+              <label className="text-xs text-text-tertiary mb-1 block">Descrição</label>
               <textarea
                 value={form.description}
                 onChange={(e) => handleChange('description', e.target.value)}
-                placeholder="Contexto, estrategia utilizada, desafios superados..."
+                placeholder="Contexto, estratégia utilizada, desafios superados..."
                 className="input min-h-[72px] resize-y"
                 rows={2}
               />
@@ -328,7 +328,7 @@ export default function ResultFormModal({ isOpen, onClose, onSubmit, editingResu
                       type="text"
                       value={img.altText}
                       onChange={(e) => handleImageChange(index, 'altText', e.target.value)}
-                      placeholder="Descricao"
+                      placeholder="Descrição"
                       className="input w-28 text-xs"
                     />
                     <button

@@ -6,12 +6,11 @@ import Link from 'next/link';
 import {
   LayoutDashboard,
   Calendar,
-  Kanban,
   Lightbulb,
+  Sparkles,
   MoreHorizontal,
   BarChart3,
   Target,
-  Trophy,
   DollarSign,
   Share2,
   Settings,
@@ -27,18 +26,17 @@ interface NavItem {
 
 const MAIN_ITEMS: NavItem[] = [
   { label: 'Home', href: '/', icon: <LayoutDashboard size={20} /> },
-  { label: 'Calendario', href: '/calendar', icon: <Calendar size={20} /> },
-  { label: 'Pipeline', href: '/pipeline', icon: <Kanban size={20} /> },
+  { label: 'Calendário', href: '/calendar', icon: <Calendar size={20} /> },
   { label: 'Ideias', href: '/hooks', icon: <Lightbulb size={20} /> },
+  { label: 'Ideação', href: '/ideation', icon: <Sparkles size={20} /> },
 ];
 
 const MORE_ITEMS: NavItem[] = [
-  { label: 'Metricas', href: '/metrics', icon: <BarChart3 size={20} /> },
+  { label: 'Métricas', href: '/metrics', icon: <BarChart3 size={20} /> },
   { label: 'Metas', href: '/goals', icon: <Target size={20} /> },
-  { label: 'Resultados', href: '/results', icon: <Trophy size={20} /> },
-  { label: 'Comissoes', href: '/commissions', icon: <DollarSign size={20} /> },
+  { label: 'Comissões', href: '/commissions', icon: <DollarSign size={20} /> },
   { label: 'Social', href: '/social', icon: <Share2 size={20} /> },
-  { label: 'Configuracoes', href: '/settings/pillars', icon: <Settings size={20} /> },
+  { label: 'Configurações', href: '/settings/pillars', icon: <Settings size={20} /> },
 ];
 
 export default function MobileBottomNav() {

@@ -50,7 +50,7 @@ export default function LoginPage() {
             CH
           </div>
           <h1 className="text-heading-1 text-text-primary">Content Hub</h1>
-          <p className="mt-1 text-sm text-text-secondary">CDR Group - Producao de Conteudo</p>
+          <p className="mt-1 text-sm text-text-secondary">CDR Group - Produção de Conteúdo</p>
         </div>
 
         {/* Login Form */}

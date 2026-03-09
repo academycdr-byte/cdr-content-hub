@@ -41,14 +41,14 @@ export default function CalendarHeader({
           <button
             onClick={onPrevMonth}
             className="flex h-9 w-9 items-center justify-center rounded-lg hover:bg-bg-hover transition-colors"
-            title="Mes anterior"
+            title="Mês anterior"
           >
             <ChevronLeft size={20} className="text-text-secondary" />
           </button>
           <button
             onClick={onNextMonth}
             className="flex h-9 w-9 items-center justify-center rounded-lg hover:bg-bg-hover transition-colors"
-            title="Proximo mes"
+            title="Próximo mês"
           >
             <ChevronRight size={20} className="text-text-secondary" />
           </button>

@@ -131,7 +131,7 @@ export default function PipelinePage() {
 
     // Don't allow moving published posts
     if (post.status === 'PUBLISHED') {
-      addToast('Posts publicados nao podem ser movidos', 'error');
+      addToast('Posts publicados não podem ser movidos', 'error');
       return;
     }
 

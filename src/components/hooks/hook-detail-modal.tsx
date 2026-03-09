@@ -113,7 +113,7 @@ export function HookDetailModal({ hook, pillars, pillarColor, pillarName, onClos
                     </span>
                   </div>
                   <h2 className="text-base font-semibold text-text-primary leading-snug">
-                    {isEditing ? 'Editando Ideia' : 'Ideia de Conteudo'}
+                    {isEditing ? 'Editando Ideia' : 'Ideia de Conteúdo'}
                   </h2>
                 </div>
                 <button
@@ -211,9 +211,9 @@ export function HookDetailModal({ hook, pillars, pillarColor, pillarName, onClos
                     <p className="text-[11px] text-text-tertiary mt-1">Uma cena por linha</p>
                   </div>
 
-                  {/* Conclusao */}
+                  {/* Conclusão */}
                   <div>
-                    <label className="text-xs font-semibold text-text-secondary mb-2 block">Conclusao</label>
+                    <label className="text-xs font-semibold text-text-secondary mb-2 block">Conclusão</label>
                     <textarea
                       value={editConclusion}
                       onChange={(e) => setEditConclusion(e.target.value)}
@@ -345,9 +345,9 @@ export function HookDetailModal({ hook, pillars, pillarColor, pillarName, onClos
                     </div>
                   </div>
 
-                  {/* Conclusao */}
+                  {/* Conclusão */}
                   <div>
-                    <p className="text-xs font-semibold text-text-secondary mb-2">Conclusao</p>
+                    <p className="text-xs font-semibold text-text-secondary mb-2">Conclusão</p>
                     <div className="rounded-xl bg-bg-secondary p-4">
                       {conclusionLines.length > 0 ? (
                         <div className="space-y-2">
@@ -356,7 +356,7 @@ export function HookDetailModal({ hook, pillars, pillarColor, pillarName, onClos
                           ))}
                         </div>
                       ) : (
-                        <p className="text-sm text-text-tertiary italic">Nenhuma conclusao definida</p>
+                        <p className="text-sm text-text-tertiary italic">Nenhuma conclusão definida</p>
                       )}
                     </div>
                   </div>
@@ -399,7 +399,7 @@ export function HookDetailModal({ hook, pillars, pillarColor, pillarName, onClos
                         <p className="text-sm font-semibold text-text-primary">{hook.usageCount}x utilizado</p>
                         <p className="text-[11px] text-text-tertiary">
                           {hook.usageCount === 0
-                            ? 'Ainda nao foi usado em nenhum post'
+                            ? 'Ainda não foi usado em nenhum post'
                             : `Usado em ${hook.usageCount} post${hook.usageCount > 1 ? 's' : ''}`}
                         </p>
                       </div>

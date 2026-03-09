@@ -39,7 +39,7 @@ const STAT_CARDS = [
   },
   {
     key: 'comments' as const,
-    label: 'Total Comentarios',
+    label: 'Total Comentários',
     icon: MessageCircle,
     color: 'var(--success)',
     bgColor: 'var(--success-surface)',
@@ -104,7 +104,7 @@ export default function MetricsOverview({ data, loading }: MetricsOverviewProps)
       {totals.posts > 0 && (
         <div className="card p-5">
           <p className="text-xs font-medium text-text-secondary mb-3">
-            Distribuicao por plataforma ({totals.posts} posts)
+            Distribuição por plataforma ({totals.posts} posts)
           </p>
           <div className="flex items-center gap-3 h-3 rounded-full overflow-hidden bg-bg-hover">
             {igPercent > 0 && (

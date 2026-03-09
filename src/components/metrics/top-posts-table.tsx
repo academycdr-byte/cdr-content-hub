@@ -55,7 +55,7 @@ function PlatformBadge({ platform }: { platform: string }) {
 const SORT_COLUMNS: { key: SortColumn; label: string }[] = [
   { key: 'views', label: 'Views' },
   { key: 'likes', label: 'Likes' },
-  { key: 'comments', label: 'Comentarios' },
+  { key: 'comments', label: 'Comentários' },
   { key: 'shares', label: 'Shares' },
   { key: 'engagement', label: 'Engajamento' },
 ] as const;
@@ -89,7 +89,7 @@ export default function TopPostsTable({ posts, loading }: TopPostsTableProps) {
     return (
       <div className="card p-8 flex flex-col items-center justify-center text-center">
         <p className="text-sm text-text-secondary">
-          Nenhum post encontrado para o periodo selecionado.
+          Nenhum post encontrado para o período selecionado.
         </p>
       </div>
     );

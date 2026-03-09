@@ -73,7 +73,7 @@ export async function GET(request: NextRequest) {
       offset,
     });
   } catch (error) {
-    const msg = error instanceof Error ? error.message : 'Erro ao buscar metricas';
+    const msg = error instanceof Error ? error.message : 'Erro ao buscar métricas';
     console.error('Metrics fetch error:', msg);
     return NextResponse.json({ error: msg }, { status: 500 });
   }

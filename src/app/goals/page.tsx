@@ -308,7 +308,7 @@ export default function GoalsPage() {
           <div className="flex items-center justify-between mb-4 flex-wrap gap-3">
             <div className="flex items-center gap-2">
               <TrendingUp size={18} className="text-accent" />
-              <h2 className="text-heading-3 text-text-primary">Evolucao de Seguidores</h2>
+              <h2 className="text-heading-3 text-text-primary">Evolução de Seguidores</h2>
             </div>
             <div className="flex items-center gap-3 flex-wrap">
               {/* Account selector for chart */}
@@ -430,9 +430,9 @@ export default function GoalsPage() {
           ) : (
             <div className="flex flex-col items-center justify-center py-12 text-text-tertiary">
               <TrendingUp size={32} className="mb-3 opacity-40" />
-              <p className="text-sm font-medium">Sem dados historicos</p>
+              <p className="text-sm font-medium">Sem dados históricos</p>
               <p className="text-xs mt-1 mb-4">
-                Registre o primeiro snapshot para comecar a acompanhar a evolucao.
+                Registre o primeiro snapshot para começar a acompanhar a evolução.
               </p>
               <button
                 onClick={handleSnapshot}
@@ -493,7 +493,7 @@ export default function GoalsPage() {
               </div>
               <div>
                 <h3 className="text-heading-3 text-text-primary">Remover Meta</h3>
-                <p className="text-xs text-text-secondary">Essa acao nao pode ser desfeita</p>
+                <p className="text-xs text-text-secondary">Essa ação não pode ser desfeita</p>
               </div>
             </div>
             <div className="flex gap-3">

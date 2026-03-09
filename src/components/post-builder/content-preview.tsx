@@ -47,7 +47,7 @@ export default function ContentPreview({
         <div className="space-y-3">
           {/* Post Title */}
           <div className="pb-3 border-b border-border-default">
-            <p className="text-sm font-semibold text-text-primary">{title || 'Sem titulo'}</p>
+            <p className="text-sm font-semibold text-text-primary">{title || 'Sem título'}</p>
             <div className="flex items-center gap-2 mt-1">
               <span
                 className="badge text-[10px]"

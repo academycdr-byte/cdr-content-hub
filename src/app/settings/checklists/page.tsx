@@ -124,7 +124,7 @@ export default function ChecklistsSettingsPage() {
         <div>
           <h1 className="text-heading-1 text-text-primary">Checklists por Etapa</h1>
           <p className="mt-1 text-sm text-text-secondary">
-            Configure os items de checklist para cada etapa do pipeline de producao.
+            Configure os items de checklist para cada etapa do pipeline de produção.
           </p>
         </div>
         <button
@@ -214,13 +214,13 @@ export default function ChecklistsSettingsPage() {
 
       {/* Settings Navigation */}
       <div className="mt-8 pt-6 border-t border-border-default">
-        <p className="text-label text-text-tertiary mb-3">Configuracoes</p>
+        <p className="text-label text-text-tertiary mb-3">Configurações</p>
         <div className="flex gap-3">
           <a
             href="/settings/pillars"
             className="badge bg-bg-secondary text-text-secondary hover:bg-bg-hover transition-colors cursor-pointer"
           >
-            Pilares de Conteudo
+            Pilares de Conteúdo
           </a>
           <span className="badge bg-accent-surface text-accent">
             Checklists

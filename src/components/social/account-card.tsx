@@ -42,11 +42,11 @@ function formatRelativeTime(dateStr: string | null): string {
   const diffMin = Math.floor(diffMs / 60000);
 
   if (diffMin < 1) return 'Agora mesmo';
-  if (diffMin < 60) return `${diffMin}min atras`;
+  if (diffMin < 60) return `${diffMin}min atrás`;
   const diffHours = Math.floor(diffMin / 60);
-  if (diffHours < 24) return `${diffHours}h atras`;
+  if (diffHours < 24) return `${diffHours}h atrás`;
   const diffDays = Math.floor(diffHours / 24);
-  if (diffDays < 7) return `${diffDays}d atras`;
+  if (diffDays < 7) return `${diffDays}d atrás`;
   return date.toLocaleDateString('pt-BR', { day: '2-digit', month: 'short' });
 }
 

@@ -115,7 +115,7 @@ export default function DashboardPage() {
             <BarChart3 size={28} className="text-error" />
           </div>
           <h2 className="text-heading-2 text-text-primary mb-2">Erro ao carregar dashboard</h2>
-          <p className="text-sm text-text-secondary mb-4">Nao foi possivel carregar os dados.</p>
+          <p className="text-sm text-text-secondary mb-4">Não foi possível carregar os dados.</p>
           <button onClick={() => fetchStats(dateRange)} className="btn-accent">Tentar novamente</button>
         </div>
       </div>
@@ -143,7 +143,7 @@ export default function DashboardPage() {
       <div className="mb-6">
         <h1 className="text-display text-text-primary">Dashboard</h1>
         <p className="mt-2 text-text-secondary">
-          Visao geral da sua producao de conteudo.
+          Visão geral da sua produção de conteúdo.
         </p>
       </div>
 
@@ -442,7 +442,7 @@ export default function DashboardPage() {
                 <div className="card p-4">
                   <div className="flex items-center gap-2 mb-2">
                     <MessageCircle size={14} className="text-text-tertiary" />
-                    <p className="text-[11px] text-text-tertiary">Comentarios</p>
+                    <p className="text-[11px] text-text-tertiary">Comentários</p>
                   </div>
                   <p className="text-xl font-bold text-text-primary">
                     {formatMetricNumber(stats.metricsSummary.comments)}
@@ -466,7 +466,7 @@ export default function DashboardPage() {
               <div className="card p-6">
                 <div className="flex items-center justify-between mb-4">
                   <p className="text-label text-text-tertiary">
-                    Mix de Conteudo {periodLabel}
+                    Mix de Conteúdo {periodLabel}
                   </p>
                   <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-accent-surface">
                     <BarChart3 size={16} className="text-accent" />
@@ -476,7 +476,7 @@ export default function DashboardPage() {
                   <ContentMixChart data={stats.contentMix} compact />
                 ) : (
                   <div className="flex flex-col items-center justify-center py-6">
-                    <p className="text-sm text-text-tertiary">Crie posts para ver a distribuicao</p>
+                    <p className="text-sm text-text-tertiary">Crie posts para ver a distribuição</p>
                   </div>
                 )}
               </div>
@@ -516,15 +516,15 @@ export default function DashboardPage() {
                       );
                     })}
                   {totalInPipeline === 0 && (
-                    <p className="text-xs text-text-tertiary">Nenhum post em producao</p>
+                    <p className="text-xs text-text-tertiary">Nenhum post em produção</p>
                   )}
                 </div>
               </div>
 
-              {/* Proximos Posts */}
+              {/* Próximos Posts */}
               <div className="card p-6">
                 <div className="flex items-center justify-between mb-4">
-                  <p className="text-label text-text-tertiary">Proximos Posts</p>
+                  <p className="text-label text-text-tertiary">Próximos Posts</p>
                   <Link
                     href="/calendar"
                     className="flex h-8 w-8 items-center justify-center rounded-lg bg-accent-surface hover:bg-accent-surface-hover transition-colors"
@@ -630,7 +630,7 @@ export default function DashboardPage() {
                   {stats.metricsSummary?.posts || 0}
                 </p>
                 <p className="text-sm text-text-secondary">
-                  posts com metricas {periodLabel}
+                  posts com métricas {periodLabel}
                 </p>
               </div>
             </div>

@@ -12,25 +12,21 @@ import {
 } from '@dnd-kit/core';
 import { useRouter } from 'next/navigation';
 import { usePostsStore } from '@/stores/posts-store';
-import { useCalendarStore } from '@/stores/calendar-store';
 import { useToastStore } from '@/stores/toast-store';
 import CalendarHeader from '@/components/calendar/calendar-header';
-import CalendarFilters from '@/components/calendar/calendar-filters';
 import CalendarDndGrid from '@/components/calendar/calendar-dnd-grid';
 import CalendarPostCard from '@/components/calendar/calendar-post-card';
-import CalendarSocialCard from '@/components/calendar/calendar-social-card';
 import dynamic from 'next/dynamic';
 import type { CreatePostData } from '@/components/posts/create-post-modal';
 
 const CreatePostModal = dynamic(() => import('@/components/posts/create-post-modal'), { ssr: false });
-import { formatDateISO } from '@/lib/utils';
-import type { Post, CalendarEntry } from '@/types';
+import type { Post } from '@/types';
 
 export default function CalendarPage() {
   const {
     posts,
     pillars,
-    loading: postsLoading,
+    loading,
     currentMonth,
     currentYear,
     setMonth,
@@ -39,25 +35,12 @@ export default function CalendarPage() {
     updatePost,
   } = usePostsStore();
 
-  const {
-    calendarEntries,
-    accounts,
-    selectedPlatform,
-    selectedAccountId,
-    loading: calendarLoading,
-    fetchCalendarData,
-    setPlatformFilter,
-    setAccountFilter,
-  } = useCalendarStore();
-
   const { addToast } = useToastStore();
   const router = useRouter();
 
   const [showCreateModal, setShowCreateModal] = useState(false);
   const [selectedDate, setSelectedDate] = useState<Date | null>(null);
   const [activePost, setActivePost] = useState<Post | null>(null);
-
-  const loading = postsLoading || calendarLoading;
 
   const sensors = useSensors(
     useSensor(PointerSensor, {
@@ -67,17 +50,11 @@ export default function CalendarPage() {
     })
   );
 
-  // Fetch internal posts + calendar social data
+  // Fetch planned posts
   useEffect(() => {
     fetchPillars();
     fetchPosts(currentYear, currentMonth);
-    fetchCalendarData(currentYear, currentMonth);
-  }, [fetchPillars, fetchPosts, fetchCalendarData, currentYear, currentMonth]);
-
-  // Re-fetch calendar data when filters change
-  useEffect(() => {
-    fetchCalendarData(currentYear, currentMonth);
-  }, [fetchCalendarData, currentYear, currentMonth, selectedPlatform, selectedAccountId]);
+  }, [fetchPillars, fetchPosts, currentYear, currentMonth]);
 
   const handlePrevMonth = useCallback(() => {
     const newMonth = currentMonth === 0 ? 11 : currentMonth - 1;
@@ -121,7 +98,7 @@ export default function CalendarPage() {
 
     const newPost = await res.json() as Post;
     usePostsStore.getState().addPost(newPost);
-    addToast('Post criado com sucesso!', 'success');
+    addToast('Post planejado com sucesso!', 'success');
   }, [addToast]);
 
   const handleDragStart = useCallback((event: DragStartEvent) => {
@@ -141,7 +118,7 @@ export default function CalendarPage() {
 
     // Don't allow dragging published posts
     if (post.status === 'PUBLISHED') {
-      addToast('Posts publicados nao podem ser movidos', 'error');
+      addToast('Posts publicados não podem ser movidos', 'error');
       return;
     }
 
@@ -170,6 +147,28 @@ export default function CalendarPage() {
     }
   }, [posts, updatePost, addToast]);
 
+  // Planning summary stats
+  const totalPlanned = posts.length;
+  const byFormat: Record<string, number> = {};
+  const byPillar: Record<string, { name: string; color: string; count: number }> = {};
+
+  for (const post of posts) {
+    byFormat[post.format] = (byFormat[post.format] || 0) + 1;
+    if (post.pillar) {
+      if (!byPillar[post.pillar.id]) {
+        byPillar[post.pillar.id] = { name: post.pillar.name, color: post.pillar.color, count: 0 };
+      }
+      byPillar[post.pillar.id].count += 1;
+    }
+  }
+
+  const FORMAT_LABELS: Record<string, string> = {
+    REEL: 'Reels',
+    CAROUSEL: 'Carrossel',
+    STATIC: 'Imagem',
+    STORY: 'Story',
+  };
+
   return (
     <div className="max-w-full animate-fade-in">
       <CalendarHeader
@@ -183,15 +182,41 @@ export default function CalendarPage() {
         onNewPost={handleNewPost}
       />
 
-      {/* Filters */}
-      <div className="mt-4">
-        <CalendarFilters
-          selectedPlatform={selectedPlatform}
-          selectedAccountId={selectedAccountId}
-          accounts={accounts}
-          onPlatformChange={setPlatformFilter}
-          onAccountChange={setAccountFilter}
-        />
+      {/* Planning Summary */}
+      <div className="mt-4 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+        <div className="flex items-center gap-4 flex-wrap">
+          <span className="text-sm text-text-secondary">
+            <span className="font-semibold text-text-primary">{totalPlanned}</span> post{totalPlanned !== 1 ? 's' : ''} planejado{totalPlanned !== 1 ? 's' : ''} no mês
+          </span>
+          {Object.entries(byFormat).length > 0 && (
+            <div className="flex items-center gap-2">
+              {Object.entries(byFormat).map(([format, count]) => (
+                <span
+                  key={format}
+                  className="badge text-[10px] bg-bg-secondary text-text-secondary"
+                >
+                  {FORMAT_LABELS[format] || format}: {count}
+                </span>
+              ))}
+            </div>
+          )}
+        </div>
+        {Object.entries(byPillar).length > 0 && (
+          <div className="flex items-center gap-2 flex-wrap">
+            {Object.values(byPillar).map((p) => (
+              <span
+                key={p.name}
+                className="badge text-[10px]"
+                style={{
+                  backgroundColor: `${p.color}15`,
+                  color: p.color,
+                }}
+              >
+                {p.name}: {p.count}
+              </span>
+            ))}
+          </div>
+        )}
       </div>
 
       <div className="mt-4">
@@ -206,8 +231,8 @@ export default function CalendarPage() {
             <CalendarDndGrid
               year={currentYear}
               month={currentMonth}
-              posts={selectedPlatform ? [] : posts}
-              calendarEntries={calendarEntries}
+              posts={posts}
+              calendarEntries={{}}
               onDayClick={handleDayClick}
               onPostClick={handlePostClick}
             />
@@ -227,9 +252,9 @@ export default function CalendarPage() {
         )}
       </div>
 
-      {/* Mobile: Weekly List with social posts */}
+      {/* Mobile: Weekly Planning List */}
       <div className="mt-6 md:hidden">
-        <MobileWeeklyList posts={posts} calendarEntries={calendarEntries} onPostClick={handlePostClick} />
+        <MobileWeeklyList posts={posts} onPostClick={handlePostClick} />
       </div>
 
       {/* Create Post Modal */}
@@ -248,7 +273,7 @@ function CalendarSkeleton() {
   return (
     <div className="card overflow-hidden">
       <div className="grid grid-cols-7 border-b border-border-default">
-        {['Dom', 'Seg', 'Ter', 'Qua', 'Qui', 'Sex', 'Sab'].map((day) => (
+        {['Dom', 'Seg', 'Ter', 'Qua', 'Qui', 'Sex', 'Sáb'].map((day) => (
           <div key={day} className="px-3 py-3 text-center text-label text-text-tertiary">
             {day}
           </div>
@@ -267,14 +292,12 @@ function CalendarSkeleton() {
   );
 }
 
-// Mobile weekly view with social posts
+// Mobile weekly planning view (no social posts)
 function MobileWeeklyList({
   posts,
-  calendarEntries,
   onPostClick,
 }: {
   posts: Post[];
-  calendarEntries: Record<string, CalendarEntry[]>;
   onPostClick: (post: Post) => void;
 }) {
   const now = new Date();
@@ -287,7 +310,7 @@ function MobileWeeklyList({
     return d;
   });
 
-  const dayNames = ['Dom', 'Seg', 'Ter', 'Qua', 'Qui', 'Sex', 'Sab'];
+  const dayNames = ['Dom', 'Seg', 'Ter', 'Qua', 'Qui', 'Sex', 'Sáb'];
 
   return (
     <div className="space-y-2">
@@ -302,33 +325,23 @@ function MobileWeeklyList({
           );
         });
 
-        const dateKey = formatDateISO(date);
-        const socialEntries = (calendarEntries[dateKey] || []).filter(
-          (e) => e.type === 'social'
-        );
-
-        const hasContent = dayPosts.length > 0 || socialEntries.length > 0;
-
         return (
           <div key={i} className="card p-4">
             <div className="flex items-center gap-2 mb-2">
               <span className="text-label text-text-tertiary">{dayNames[i]}</span>
               <span className="text-sm font-medium text-text-primary">{date.getDate()}</span>
-              {hasContent && (
+              {dayPosts.length > 0 && (
                 <span className="text-[10px] text-text-tertiary ml-auto">
-                  {dayPosts.length + socialEntries.length} post{dayPosts.length + socialEntries.length !== 1 ? 's' : ''}
+                  {dayPosts.length} post{dayPosts.length !== 1 ? 's' : ''}
                 </span>
               )}
             </div>
-            {!hasContent ? (
-              <p className="text-xs text-text-tertiary">Nenhum post</p>
+            {dayPosts.length === 0 ? (
+              <p className="text-xs text-text-tertiary">Nenhum post planejado</p>
             ) : (
               <div className="space-y-1">
                 {dayPosts.map((post) => (
                   <CalendarPostCard key={post.id} post={post} onClick={() => onPostClick(post)} />
-                ))}
-                {socialEntries.map((entry) => (
-                  <CalendarSocialCard key={entry.id} entry={entry} compact />
                 ))}
               </div>
             )}

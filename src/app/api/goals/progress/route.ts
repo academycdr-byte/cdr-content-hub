@@ -14,7 +14,7 @@ export async function GET(request: NextRequest) {
 
     if (!accountId) {
       return NextResponse.json(
-        { error: 'accountId e obrigatorio' },
+        { error: 'accountId é obrigatório' },
         { status: 400 }
       );
     }

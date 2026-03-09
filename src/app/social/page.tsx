@@ -73,7 +73,7 @@ export default function SocialPage() {
   const handleDisconnect = useCallback(
     async (accountId: string) => {
       const confirmed = window.confirm(
-        'Desconectar esta conta? Os dados sincronizados serao mantidos.'
+        'Desconectar esta conta? Os dados sincronizados serão mantidos.'
       );
       if (!confirmed) return;
 
@@ -93,7 +93,7 @@ export default function SocialPage() {
       if (success) {
         addToast(
           enabled
-            ? 'Auto-sync ativado. Posts serao sincronizados a cada 15 minutos.'
+            ? 'Auto-sync ativado. Posts serão sincronizados a cada 15 minutos.'
             : 'Auto-sync desativado.',
           enabled ? 'success' : 'info'
         );
@@ -153,7 +153,7 @@ export default function SocialPage() {
           Conectar Nova Conta
         </h2>
         <p className="text-sm text-text-secondary mb-4">
-          Conecte suas redes sociais para sincronizar conteudo automaticamente.
+          Conecte suas redes sociais para sincronizar conteúdo automaticamente.
         </p>
         <div className="flex items-center gap-3 flex-wrap">
           <ConnectButton platform="instagram" />

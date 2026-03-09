@@ -240,7 +240,7 @@ export default function MetricsPage() {
     const url = `/api/metrics/export?${query.toString()}`;
     const link = document.createElement('a');
     link.href = url;
-    link.download = `metricas-${dateRange.from}-${dateRange.to}.csv`;
+    link.download = `métricas-${dateRange.from}-${dateRange.to}.csv`;
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
@@ -258,7 +258,7 @@ export default function MetricsPage() {
         <div>
           <div className="flex items-center gap-2 mb-1">
             <BarChart3 size={24} className="text-accent" />
-            <h1 className="text-heading-1 text-text-primary">Metricas</h1>
+            <h1 className="text-heading-1 text-text-primary">Métricas</h1>
             {syncing && (
               <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-accent-surface text-accent text-xs font-medium">
                 <RefreshCw size={12} className="animate-spin" />
@@ -284,7 +284,7 @@ export default function MetricsPage() {
       {/* Filters */}
       <div className="card p-4 mb-6 space-y-3">
         <div className="flex flex-col sm:flex-row items-start sm:items-center gap-3">
-          <p className="text-xs font-medium text-text-secondary">Periodo:</p>
+          <p className="text-xs font-medium text-text-secondary">Período:</p>
           <div className="flex items-center gap-2">
             {DATE_PRESETS.map((preset) => (
               <button
@@ -308,7 +308,7 @@ export default function MetricsPage() {
               onChange={(e) => handleCustomFrom(e.target.value)}
               className="input py-1.5 px-2 text-xs w-[130px]"
             />
-            <span className="text-xs text-text-tertiary">ate</span>
+            <span className="text-xs text-text-tertiary">até</span>
             <input
               type="date"
               value={dateRange.to}
@@ -369,10 +369,10 @@ export default function MetricsPage() {
             <BarChart3 size={28} className="text-accent" />
           </div>
           <h2 className="text-heading-2 text-text-primary mb-2">
-            Nenhuma metrica encontrada
+            Nenhuma métrica encontrada
           </h2>
           <p className="text-sm text-text-secondary max-w-md mb-6">
-            Conecte suas contas sociais e sincronize para comecar a acompanhar
+            Conecte suas contas sociais e sincronize para começar a acompanhar
             o desempenho dos seus posts.
           </p>
           <Link

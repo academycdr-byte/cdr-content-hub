@@ -125,7 +125,7 @@ export function CreateGoalModal({ accounts, onClose, onCreate }: CreateGoalModal
           {/* Metric Type (locked to followers for now) */}
           <div>
             <label className="text-label text-text-secondary block mb-1.5">
-              Metrica
+              Métrica
             </label>
             <div className="input bg-bg-secondary text-text-secondary cursor-not-allowed">
               Seguidores
@@ -155,7 +155,7 @@ export function CreateGoalModal({ accounts, onClose, onCreate }: CreateGoalModal
           {/* Period */}
           <div>
             <label className="text-label text-text-secondary block mb-1.5">
-              Periodo
+              Período
             </label>
             <div className="flex gap-2">
               {(Object.entries(GOAL_PERIOD_LABELS) as [GoalPeriod, string][]).map(([key, label]) => (

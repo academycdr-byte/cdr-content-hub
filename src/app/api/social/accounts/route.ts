@@ -59,7 +59,7 @@ export async function DELETE(request: NextRequest) {
     const id = searchParams.get('id');
 
     if (!id) {
-      return NextResponse.json({ error: 'id obrigatorio' }, { status: 400 });
+      return NextResponse.json({ error: 'id obrigatório' }, { status: 400 });
     }
 
     // Verify ownership before deleting

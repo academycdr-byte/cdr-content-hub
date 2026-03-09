@@ -86,9 +86,9 @@ export default function PillarsSettingsPage() {
       {/* Header */}
       <div className="flex items-center justify-between mb-8">
         <div>
-          <h1 className="text-heading-1 text-text-primary">Pilares de Conteudo</h1>
+          <h1 className="text-heading-1 text-text-primary">Pilares de Conteúdo</h1>
           <p className="mt-1 text-sm text-text-secondary">
-            Configure os pilares e a distribuicao percentual do seu mix de conteudo.
+            Configure os pilares e a distribuição percentual do seu mix de conteúdo.
           </p>
         </div>
         <button
@@ -169,13 +169,13 @@ export default function PillarsSettingsPage() {
                   </div>
                 </div>
                 <div>
-                  <label className="text-label text-text-tertiary mb-1 block">Descricao</label>
+                  <label className="text-label text-text-tertiary mb-1 block">Descrição</label>
                   <input
                     type="text"
                     value={pillar.description}
                     onChange={(e) => updatePillar(index, 'description', e.target.value)}
                     className="input"
-                    placeholder="Descricao do pilar..."
+                    placeholder="Descrição do pilar..."
                   />
                 </div>
               </div>
@@ -197,10 +197,10 @@ export default function PillarsSettingsPage() {
 
       {/* Settings Navigation */}
       <div className="mt-8 pt-6 border-t border-border-default">
-        <p className="text-label text-text-tertiary mb-3">Configuracoes</p>
+        <p className="text-label text-text-tertiary mb-3">Configurações</p>
         <div className="flex gap-3">
           <span className="badge bg-accent-surface text-accent">
-            Pilares de Conteudo
+            Pilares de Conteúdo
           </span>
           <a
             href="/settings/checklists"

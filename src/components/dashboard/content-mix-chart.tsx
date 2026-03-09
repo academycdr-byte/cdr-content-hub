@@ -187,7 +187,7 @@ export default function ContentMixChart({ data, compact = false }: ContentMixCha
         <div className="mt-4 flex items-start gap-2 rounded-lg bg-warning-surface px-4 py-3">
           <AlertTriangle size={14} className="text-warning shrink-0 mt-0.5" />
           <p className="text-xs text-text-secondary">
-            <span className="font-semibold text-text-primary">Recomendacao:</span>{' '}
+            <span className="font-semibold text-text-primary">Recomendação:</span>{' '}
             Voce precisa de mais <span className="font-semibold" style={{ color: biggestNegative.color }}>{biggestNegative.name}</span> esta semana
             (desvio de {Math.abs(biggestNegative.deviation)}% abaixo do alvo).
           </p>

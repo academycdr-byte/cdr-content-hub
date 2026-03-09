@@ -67,7 +67,7 @@ export function CreateHookModal({ pillars, onSubmit, onClose }: CreateHookModalP
           </div>
           <div className="flex-1">
             <h2 className="text-base font-semibold text-text-primary">Nova Ideia</h2>
-            <p className="text-xs text-text-tertiary">Estruture seu roteiro de conteudo</p>
+            <p className="text-xs text-text-tertiary">Estruture seu roteiro de conteúdo</p>
           </div>
           <button
             onClick={onClose}
@@ -101,15 +101,15 @@ export function CreateHookModal({ pillars, onSubmit, onClose }: CreateHookModalP
               <textarea
                 value={scenes}
                 onChange={(e) => setScenes(e.target.value)}
-                placeholder="Descreva cada cena em uma linha. Ex:&#10;Mostrar dashboard com metricas&#10;Explicar estrategia X&#10;Revelar resultado final"
+                placeholder="Descreva cada cena em uma linha. Ex:&#10;Mostrar dashboard com métricas&#10;Explicar estratégia X&#10;Revelar resultado final"
                 className="input min-h-[90px] resize-y"
               />
               <p className="text-[11px] text-text-tertiary mt-1">Uma cena por linha</p>
             </div>
 
-            {/* Conclusao */}
+            {/* Conclusão */}
             <div>
-              <label className="text-xs text-text-tertiary mb-1 block">Conclusao</label>
+              <label className="text-xs text-text-tertiary mb-1 block">Conclusão</label>
               <textarea
                 value={conclusion}
                 onChange={(e) => setConclusion(e.target.value)}
@@ -119,9 +119,9 @@ export function CreateHookModal({ pillars, onSubmit, onClose }: CreateHookModalP
             </div>
           </div>
 
-          {/* Section: Classificacao */}
+          {/* Section: Classificação */}
           <div className="space-y-3">
-            <p className="text-xs font-semibold text-text-secondary tracking-wide">Classificacao</p>
+            <p className="text-xs font-semibold text-text-secondary tracking-wide">Classificação</p>
 
             {/* Format */}
             <div>

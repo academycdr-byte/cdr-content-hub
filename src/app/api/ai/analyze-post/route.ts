@@ -13,7 +13,7 @@ export async function POST(request: Request) {
     const limitResult = aiLimiter.check(auth.session.user.id || 'anonymous');
     if (!limitResult.success) {
       return NextResponse.json(
-        { error: 'Muitas requisicoes. Tente novamente em 1 minuto.' },
+        { error: 'Muitas requisições. Tente novamente em 1 minuto.' },
         { status: 429 }
       );
     }
@@ -25,9 +25,9 @@ export async function POST(request: Request) {
     }
     const body = parsed.data;
 
-    const prompt = `Analise este post de conteudo e de feedback:
+    const prompt = `Analise este post de conteúdo e de feedback:
 
-TITULO: ${body.title}
+TÍTULO: ${body.title}
 ${body.hook ? `HOOK: ${body.hook}` : ''}
 ${body.caption ? `CAPTION: ${body.caption}` : ''}
 ${body.format ? `FORMATO: ${body.format}` : ''}
@@ -35,13 +35,13 @@ ${body.format ? `FORMATO: ${body.format}` : ''}
 Retorne EXATAMENTE neste formato JSON:
 {
   "onlyIvanScore": 7,
-  "analysis": "O que torna este post unico ou generico",
-  "suggestion": "Sugestao concreta de melhoria para tornar mais 'so o Ivan'"
+  "analysis": "O que torna este post único ou genérico",
+  "suggestion": "Sugestão concreta de melhoria para tornar mais 'só o Ivan'"
 }
 
-O onlyIvanScore vai de 1 (muito generico, qualquer pessoa poderia criar) a 10 (impossivel de ser criado por outra pessoa que nao o Ivan).
+O onlyIvanScore vai de 1 (muito genérico, qualquer pessoa poderia criar) a 10 (impossível de ser criado por outra pessoa que não o Ivan).
 
-IMPORTANTE: Retorne APENAS o JSON, sem markdown, sem explicacao adicional.`;
+IMPORTANTE: Retorne APENAS o JSON, sem markdown, sem explicação adicional.`;
 
     const response = await askClaude(prompt);
 
@@ -68,7 +68,7 @@ IMPORTANTE: Retorne APENAS o JSON, sem markdown, sem explicacao adicional.`;
 
     if (message.includes('ANTHROPIC_API_KEY')) {
       return NextResponse.json(
-        { error: 'ANTHROPIC_API_KEY nao configurada. Adicione no ambiente.' },
+        { error: 'ANTHROPIC_API_KEY não configurada. Adicione no ambiente.' },
         { status: 503 }
       );
     }

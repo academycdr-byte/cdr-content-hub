@@ -129,7 +129,7 @@ export async function GET(request: NextRequest) {
       topPosts,
     });
   } catch (error) {
-    const msg = error instanceof Error ? error.message : 'Erro ao agregar metricas';
+    const msg = error instanceof Error ? error.message : 'Erro ao agregar métricas';
     console.error('Metrics aggregate error:', msg);
     return NextResponse.json({ error: msg }, { status: 500 });
   }

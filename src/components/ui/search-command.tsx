@@ -168,7 +168,7 @@ export default function SearchCommand() {
             type="text"
             value={query}
             onChange={(e) => handleInputChange(e.target.value)}
-            placeholder="Buscar posts por titulo..."
+            placeholder="Buscar posts por título..."
             className="flex-1 bg-transparent py-4 text-[15px] text-text-primary placeholder:text-text-tertiary outline-none"
           />
           <div className="flex items-center gap-2">
@@ -266,8 +266,8 @@ export default function SearchCommand() {
           {!loading && !query && (
             <div className="flex flex-col items-center justify-center py-12 text-text-tertiary">
               <Search size={32} className="mb-3 opacity-40" />
-              <p className="text-sm font-medium">Busca rapida</p>
-              <p className="text-xs mt-1">Digite para buscar posts por titulo</p>
+              <p className="text-sm font-medium">Busca rápida</p>
+              <p className="text-xs mt-1">Digite para buscar posts por título</p>
             </div>
           )}
         </div>

@@ -99,7 +99,7 @@ export default function NotificationBell() {
         ref={buttonRef}
         onClick={() => setIsOpen(!isOpen)}
         className="relative flex items-center justify-center w-8 h-8 rounded-lg transition-colors hover:bg-sidebar-hover"
-        title="Notificacoes"
+        title="Notificações"
       >
         <Bell size={18} className="text-sidebar-text" />
         {count > 0 && (
@@ -129,7 +129,7 @@ export default function NotificationBell() {
         >
           {/* Header */}
           <div className="flex items-center justify-between px-4 py-3 border-b border-border-default">
-            <h3 className="text-sm font-semibold text-text-primary">Notificacoes</h3>
+            <h3 className="text-sm font-semibold text-text-primary">Notificações</h3>
             <div className="flex items-center gap-2">
               {count > 0 && (
                 <button
@@ -168,7 +168,7 @@ export default function NotificationBell() {
             {!loading && notifications.length === 0 && (
               <div className="flex flex-col items-center justify-center py-10 text-text-tertiary">
                 <Bell size={28} className="mb-2 opacity-40" />
-                <p className="text-sm">Nenhuma notificacao</p>
+                <p className="text-sm">Nenhuma notificação</p>
                 <p className="text-xs mt-1">Tudo em dia!</p>
               </div>
             )}
@@ -227,7 +227,7 @@ export default function NotificationBell() {
             <div className="px-4 py-2.5 border-t border-border-default">
               <p className="text-[11px] text-text-tertiary text-center">
                 {count > 0
-                  ? `${count} nao ${count === 1 ? 'lida' : 'lidas'}`
+                  ? `${count} não ${count === 1 ? 'lida' : 'lidas'}`
                   : 'Todas lidas'}
               </p>
             </div>

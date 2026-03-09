@@ -112,7 +112,7 @@ export default function MetricsChart({ metrics, loading }: MetricsChartProps) {
     return (
       <div className="card p-8 flex flex-col items-center justify-center text-center">
         <p className="text-sm text-text-secondary">
-          Sem dados de views para o periodo selecionado.
+          Sem dados de views para o período selecionado.
         </p>
       </div>
     );

@@ -23,13 +23,13 @@ const THEME_OPTIONS: ThemeCard[] = [
   {
     value: 'dark',
     label: 'Escuro',
-    description: 'Tema escuro para reduzir cansaco visual',
+    description: 'Tema escuro para reduzir cansaço visual',
     icon: <Moon size={24} />,
   },
   {
     value: 'system',
     label: 'Sistema',
-    description: 'Segue a preferencia do seu dispositivo',
+    description: 'Segue a preferência do seu dispositivo',
     icon: <Monitor size={24} />,
   },
 ];
@@ -97,13 +97,13 @@ export default function AppearanceSettingsPage() {
 
       {/* Settings Navigation */}
       <div className="mt-8 pt-6 border-t border-border-default">
-        <p className="text-label text-text-tertiary mb-3">Configuracoes</p>
+        <p className="text-label text-text-tertiary mb-3">Configurações</p>
         <div className="flex gap-3">
           <a
             href="/settings/pillars"
             className="badge bg-bg-secondary text-text-secondary hover:bg-bg-hover transition-colors cursor-pointer"
           >
-            Pilares de Conteudo
+            Pilares de Conteúdo
           </a>
           <a
             href="/settings/checklists"

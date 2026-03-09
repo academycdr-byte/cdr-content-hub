@@ -31,8 +31,8 @@ const PRESETS: PresetOption[] = [
   { key: '7d', label: '7 dias' },
   { key: '30d', label: '30 dias' },
   { key: '90d', label: '90 dias' },
-  { key: 'this_month', label: 'Este mes' },
-  { key: 'last_month', label: 'Mes anterior' },
+  { key: 'this_month', label: 'Este mês' },
+  { key: 'last_month', label: 'Mês anterior' },
   { key: 'custom', label: 'Custom' },
 ];
 

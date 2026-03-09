@@ -75,7 +75,7 @@ export default function FormatSignature() {
           <p className="text-label text-text-tertiary">Assinatura de Formato</p>
         </div>
         <p className="text-sm text-text-tertiary text-center py-4">
-          Sincronize metricas para ver a performance por formato
+          Sincronize métricas para ver a performance por formato
         </p>
       </div>
     );

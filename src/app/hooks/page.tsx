@@ -77,7 +77,7 @@ export default function HooksPage() {
     try {
       const parts = [`Gancho: ${hook.text}`];
       if (hook.scenes) parts.push(`\nCenas:\n${hook.scenes}`);
-      if (hook.conclusion) parts.push(`\nConclusao: ${hook.conclusion}`);
+      if (hook.conclusion) parts.push(`\nConclusão: ${hook.conclusion}`);
       await navigator.clipboard.writeText(parts.join('\n'));
       addToast('Roteiro copiado!', 'success');
 
@@ -138,7 +138,7 @@ export default function HooksPage() {
       if (!res.ok) throw new Error('Failed to delete');
       setHooks((prev) => prev.filter((h) => h.id !== hookId));
       setSelectedHook(null);
-      addToast('Hook excluido!', 'success');
+      addToast('Hook excluído!', 'success');
     } catch {
       addToast('Erro ao excluir hook', 'error');
     }
