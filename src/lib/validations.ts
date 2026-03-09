@@ -12,6 +12,7 @@ export const createPostSchema = z.object({
   purpose: z.string().max(1000).nullable().optional(),
   audience: z.string().max(1000).nullable().optional(),
   onlyIvan: z.boolean().optional(),
+  socialAccountId: z.string().nullable().optional(),
 });
 
 export const updatePostSchema = z.object({
@@ -27,6 +28,7 @@ export const updatePostSchema = z.object({
   purpose: z.string().max(1000).nullable().optional(),
   audience: z.string().max(1000).nullable().optional(),
   onlyIvan: z.boolean().optional(),
+  socialAccountId: z.string().nullable().optional(),
 });
 
 export const patchPostSchema = z.object({

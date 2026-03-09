@@ -3,7 +3,7 @@
 import { useState, useEffect, type FormEvent } from 'react';
 import { X, Loader2 } from 'lucide-react';
 import { cn, formatDateISO } from '@/lib/utils';
-import type { ContentPillar, PostFormat } from '@/types';
+import type { ContentPillar, PostFormat, SocialAccount } from '@/types';
 import { FORMAT_LABELS } from '@/types';
 
 interface CreatePostModalProps {
@@ -12,6 +12,7 @@ interface CreatePostModalProps {
   onSubmit: (data: CreatePostData) => Promise<void>;
   pillars: ContentPillar[];
   defaultDate?: Date | null;
+  socialAccounts?: SocialAccount[];
 }
 
 export interface CreatePostData {
@@ -22,6 +23,7 @@ export interface CreatePostData {
   purpose: string | null;
   audience: string | null;
   onlyIvan: boolean;
+  socialAccountId: string | null;
 }
 
 const FORMATS: PostFormat[] = ['REEL', 'CAROUSEL', 'STATIC', 'STORY'];
@@ -32,6 +34,7 @@ export default function CreatePostModal({
   onSubmit,
   pillars,
   defaultDate,
+  socialAccounts = [],
 }: CreatePostModalProps) {
   const [title, setTitle] = useState('');
   const [format, setFormat] = useState<PostFormat>('REEL');
@@ -42,6 +45,7 @@ export default function CreatePostModal({
   const [purpose, setPurpose] = useState('');
   const [audience, setAudience] = useState('');
   const [onlyIvan, setOnlyIvan] = useState(false);
+  const [socialAccountId, setSocialAccountId] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
 
@@ -85,6 +89,7 @@ export default function CreatePostModal({
         purpose: purpose.trim() || null,
         audience: audience.trim() || null,
         onlyIvan,
+        socialAccountId,
       });
       // Reset form
       setTitle('');
@@ -94,6 +99,7 @@ export default function CreatePostModal({
       setPurpose('');
       setAudience('');
       setOnlyIvan(false);
+      setSocialAccountId(null);
       onClose();
     } catch {
       setError('Erro ao criar post. Tente novamente.');
@@ -253,6 +259,28 @@ export default function CreatePostModal({
                 </div>
               </label>
             </div>
+
+            {/* Social Account */}
+            {socialAccounts.length > 0 && (
+              <div>
+                <label htmlFor="post-account" className="text-label text-text-secondary mb-2 block">
+                  Perfil Social
+                </label>
+                <select
+                  id="post-account"
+                  value={socialAccountId || ''}
+                  onChange={(e) => setSocialAccountId(e.target.value || null)}
+                  className="input"
+                >
+                  <option value="">Nenhum (sem perfil vinculado)</option>
+                  {socialAccounts.map((acc) => (
+                    <option key={acc.id} value={acc.id}>
+                      {acc.platform === 'instagram' ? 'Instagram' : 'TikTok'} — @{acc.username}
+                    </option>
+                  ))}
+                </select>
+              </div>
+            )}
 
             {/* Date */}
             <div>

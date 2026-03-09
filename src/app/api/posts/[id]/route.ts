@@ -15,7 +15,7 @@ export async function GET(_request: Request, context: RouteContext) {
     const { id } = await context.params;
     const post = await prisma.post.findUnique({
       where: { id },
-      include: { contentPillar: true },
+      include: { contentPillar: true, socialAccount: { select: { id: true, platform: true, username: true, displayName: true } } },
     });
 
     if (!post) {
@@ -59,8 +59,9 @@ export async function PUT(request: Request, context: RouteContext) {
         ...(body.purpose !== undefined && { purpose: body.purpose }),
         ...(body.audience !== undefined && { audience: body.audience }),
         ...(body.onlyIvan !== undefined && { onlyIvan: body.onlyIvan }),
+        ...(body.socialAccountId !== undefined && { socialAccountId: body.socialAccountId }),
       },
-      include: { contentPillar: true },
+      include: { contentPillar: true, socialAccount: { select: { id: true, platform: true, username: true, displayName: true } } },
     });
 
     return NextResponse.json(post);
@@ -95,7 +96,7 @@ export async function PATCH(request: Request, context: RouteContext) {
     const post = await prisma.post.update({
       where: { id },
       data: updateData,
-      include: { contentPillar: true },
+      include: { contentPillar: true, socialAccount: { select: { id: true, platform: true, username: true, displayName: true } } },
     });
 
     return NextResponse.json(post);

@@ -71,9 +71,11 @@ export interface Post {
   purpose: string | null;
   audience: string | null;
   onlyIvan: boolean;
+  socialAccountId: string | null;
   createdAt: string;
   updatedAt: string;
   pillar?: ContentPillar;
+  socialAccount?: SocialAccount;
 }
 
 export interface Hook {

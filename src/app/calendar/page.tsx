@@ -20,7 +20,7 @@ import dynamic from 'next/dynamic';
 import type { CreatePostData } from '@/components/posts/create-post-modal';
 
 const CreatePostModal = dynamic(() => import('@/components/posts/create-post-modal'), { ssr: false });
-import type { Post } from '@/types';
+import type { Post, SocialAccount } from '@/types';
 
 export default function CalendarPage() {
   const {
@@ -42,6 +42,8 @@ export default function CalendarPage() {
   const [showCreateModal, setShowCreateModal] = useState(false);
   const [selectedDate, setSelectedDate] = useState<Date | null>(null);
   const [activePost, setActivePost] = useState<Post | null>(null);
+  const [socialAccounts, setSocialAccounts] = useState<SocialAccount[]>([]);
+  const [filterAccountId, setFilterAccountId] = useState<string | null>(null);
 
   const sensors = useSensors(
     useSensor(PointerSensor, {
@@ -51,10 +53,14 @@ export default function CalendarPage() {
     })
   );
 
-  // Fetch planned posts
+  // Fetch planned posts and social accounts
   useEffect(() => {
     fetchPillars();
     fetchPosts(currentYear, currentMonth);
+    fetch('/api/social/accounts')
+      .then((res) => (res.ok ? res.json() : []))
+      .then((data: SocialAccount[]) => setSocialAccounts(data))
+      .catch(() => {});
   }, [fetchPillars, fetchPosts, currentYear, currentMonth]);
 
   const handlePrevMonth = useCallback(() => {
@@ -170,12 +176,17 @@ export default function CalendarPage() {
     }
   }, [posts, updatePost, addToast]);
 
+  // Filter posts by selected account
+  const filteredPosts = filterAccountId
+    ? posts.filter((p) => p.socialAccountId === filterAccountId)
+    : posts;
+
   // Planning summary stats
-  const totalPlanned = posts.length;
+  const totalPlanned = filteredPosts.length;
   const byFormat: Record<string, number> = {};
   const byPillar: Record<string, { name: string; color: string; count: number }> = {};
 
-  for (const post of posts) {
+  for (const post of filteredPosts) {
     byFormat[post.format] = (byFormat[post.format] || 0) + 1;
     if (post.pillar) {
       if (!byPillar[post.pillar.id]) {
@@ -197,8 +208,11 @@ export default function CalendarPage() {
       <CalendarHeader
         year={currentYear}
         month={currentMonth}
-        posts={posts}
+        posts={filteredPosts}
         pillars={pillars}
+        socialAccounts={socialAccounts}
+        selectedAccountId={filterAccountId}
+        onAccountFilter={setFilterAccountId}
         onPrevMonth={handlePrevMonth}
         onNextMonth={handleNextMonth}
         onToday={handleToday}
@@ -254,7 +268,7 @@ export default function CalendarPage() {
             <CalendarDndGrid
               year={currentYear}
               month={currentMonth}
-              posts={posts}
+              posts={filteredPosts}
               calendarEntries={{}}
               onDayClick={handleDayClick}
               onPostClick={handlePostClick}
@@ -278,7 +292,7 @@ export default function CalendarPage() {
 
       {/* Mobile: Weekly Planning List */}
       <div className="mt-6 md:hidden">
-        <MobileWeeklyList posts={posts} onPostClick={handlePostClick} />
+        <MobileWeeklyList posts={filteredPosts} onPostClick={handlePostClick} />
       </div>
 
       {/* Create Post Modal */}
@@ -288,6 +302,7 @@ export default function CalendarPage() {
         onSubmit={handleCreatePost}
         pillars={pillars}
         defaultDate={selectedDate}
+        socialAccounts={socialAccounts}
       />
     </div>
   );

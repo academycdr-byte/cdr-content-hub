@@ -2,13 +2,16 @@
 
 import { ChevronLeft, ChevronRight, Plus } from 'lucide-react';
 import { MONTH_NAMES } from '@/lib/utils';
-import type { ContentPillar, Post } from '@/types';
+import type { ContentPillar, Post, SocialAccount } from '@/types';
 
 interface CalendarHeaderProps {
   year: number;
   month: number;
   posts: Post[];
   pillars: ContentPillar[];
+  socialAccounts?: SocialAccount[];
+  selectedAccountId?: string | null;
+  onAccountFilter?: (accountId: string | null) => void;
   onPrevMonth: () => void;
   onNextMonth: () => void;
   onToday: () => void;
@@ -20,6 +23,9 @@ export default function CalendarHeader({
   month,
   posts,
   pillars,
+  socialAccounts = [],
+  selectedAccountId,
+  onAccountFilter,
   onPrevMonth,
   onNextMonth,
   onToday,
@@ -86,6 +92,22 @@ export default function CalendarHeader({
             </div>
           ))}
         </div>
+
+        {/* Account Filter */}
+        {socialAccounts.length > 0 && onAccountFilter && (
+          <select
+            value={selectedAccountId || ''}
+            onChange={(e) => onAccountFilter(e.target.value || null)}
+            className="input text-sm py-1.5 px-3 max-w-[180px]"
+          >
+            <option value="">Todos os perfis</option>
+            {socialAccounts.map((acc) => (
+              <option key={acc.id} value={acc.id}>
+                {acc.platform === 'instagram' ? 'IG' : 'TT'} @{acc.username}
+              </option>
+            ))}
+          </select>
+        )}
 
         {/* New Post Button */}
         <button

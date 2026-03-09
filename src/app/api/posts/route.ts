@@ -36,6 +36,7 @@ export async function GET(request: NextRequest) {
       where,
       include: {
         contentPillar: true,
+        socialAccount: { select: { id: true, platform: true, username: true, displayName: true } },
       },
       orderBy: search ? { updatedAt: 'desc' } : { scheduledDate: 'asc' },
       ...(search ? { take: 20 } : {}),
@@ -78,9 +79,11 @@ export async function POST(request: Request) {
         purpose: body.purpose || null,
         audience: body.audience || null,
         onlyIvan: body.onlyIvan || false,
+        socialAccountId: body.socialAccountId || null,
       },
       include: {
         contentPillar: true,
+        socialAccount: { select: { id: true, platform: true, username: true, displayName: true } },
       },
     });
 
