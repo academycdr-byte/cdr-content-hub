@@ -480,13 +480,13 @@ export default function PostBuilderPage({ params }: PostBuilderPageProps) {
           <div className="card p-6 space-y-4">
             <div>
               <label htmlFor="post-caption" className="text-label text-text-secondary mb-1.5 block">
-                Caption
+                Legenda
               </label>
               <textarea
                 id="post-caption"
                 value={caption}
                 onChange={(e) => setCaption(e.target.value)}
-                placeholder="Caption do post para o Instagram..."
+                placeholder="Legenda do post para o Instagram..."
                 className="input min-h-[100px] resize-y"
               />
             </div>
