@@ -121,10 +121,10 @@ export default function NotificationBell() {
           ref={panelRef}
           className="absolute left-0 top-full mt-2 w-[340px] z-50 animate-scale-in"
           style={{
-            background: 'var(--bg-card)',
-            border: '1px solid var(--border)',
+            background: 'var(--sidebar-bg, #0a0a0a)',
+            border: '1px solid var(--sidebar-border)',
             borderRadius: 'var(--radius-xl)',
-            boxShadow: 'var(--shadow-xl)',
+            boxShadow: '0 8px 32px rgba(0,0,0,0.6)',
           }}
         >
           {/* Header */}
