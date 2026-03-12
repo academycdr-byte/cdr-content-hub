@@ -527,6 +527,32 @@ export default function PostBuilderPage({ params }: PostBuilderPageProps) {
             </div>
           </div>
 
+          {/* Reference Link */}
+          <div className="card p-6">
+            <div className="flex items-center gap-2 mb-3">
+              <h3 className="text-heading-3 text-text-primary">Link de Referência</h3>
+              <span className="text-[11px] text-text-tertiary">Opcional</span>
+            </div>
+            <input
+              id="post-reference-link"
+              type="url"
+              value={referenceLink}
+              onChange={(e) => setReferenceLink(e.target.value)}
+              placeholder="https://exemplo.com/conteudo-para-modelar"
+              className="input w-full"
+            />
+            {referenceLink && (
+              <a
+                href={referenceLink}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center gap-1 text-xs text-accent hover:underline mt-2"
+              >
+                Abrir link ↗
+              </a>
+            )}
+          </div>
+
           {/* Script & Production Notes */}
           <div className="card p-6 space-y-4">
             <h3 className="text-heading-3 text-text-primary">Roteiro & Produção</h3>
@@ -722,12 +748,7 @@ export default function PostBuilderPage({ params }: PostBuilderPageProps) {
 
         {/* Right: Preview & Sidebar */}
         <div className="space-y-6">
-          <PostSidebar
-            post={post}
-            pillar={pillar}
-            referenceLink={referenceLink}
-            onReferenceLinkChange={setReferenceLink}
-          />
+          <PostSidebar post={post} pillar={pillar} />
 
           <ContentPreview
             framework={framework}
