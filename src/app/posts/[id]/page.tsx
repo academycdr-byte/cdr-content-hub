@@ -531,7 +531,6 @@ export default function PostBuilderPage({ params }: PostBuilderPageProps) {
           <div className="card p-6">
             <div className="flex items-center gap-2 mb-3">
               <h3 className="text-heading-3 text-text-primary">Link de Referência</h3>
-              <span className="text-[11px] text-text-tertiary">Opcional</span>
             </div>
             <input
               id="post-reference-link"
