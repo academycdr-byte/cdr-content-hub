@@ -14,6 +14,7 @@ import {
   LogOut,
   Search,
   Sparkles,
+  Layers,
 } from 'lucide-react';
 import { signOut } from 'next-auth/react';
 import { cn } from '@/lib/utils';
@@ -34,6 +35,7 @@ const NAV_ITEMS: NavItem[] = [
   { label: 'Ideação', href: '/ideation', icon: <Sparkles size={20} /> },
   { label: 'Métricas', href: '/metrics', icon: <BarChart3 size={20} /> },
   { label: 'Metas', href: '/goals', icon: <Target size={20} /> },
+  { label: 'Séries', href: '/series', icon: <Layers size={20} /> },
   { label: 'Comissões', href: '/commissions', icon: <DollarSign size={20} /> },
   { label: 'Social', href: '/social', icon: <Share2 size={20} /> },
   { label: 'Configurações', href: '/settings/pillars', icon: <Settings size={20} /> },

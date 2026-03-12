@@ -1,7 +1,7 @@
 'use client';
 
 import { memo } from 'react';
-import { Film, LayoutGrid, Image, MessageCircle, AlertTriangle, Calendar } from 'lucide-react';
+import { Film, LayoutGrid, Image, MessageCircle, AlertTriangle, Calendar, FileText, Layers } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import type { Post, PostFormat } from '@/types';
 
@@ -56,12 +56,24 @@ const PipelineCard = memo(function PipelineCard({ post, daysInColumn, onClick, i
         </span>
 
         {/* Format icon */}
-        <span
-          className="flex items-center gap-1 text-[10px] text-text-tertiary"
-        >
+        <span className="flex items-center gap-1 text-[10px] text-text-tertiary">
           {FORMAT_ICONS[post.format as PostFormat]}
         </span>
 
+        {/* Script ready indicator */}
+        {post.script && (
+          <span className="flex items-center gap-0.5 text-[10px] text-accent">
+            <FileText size={10} />
+          </span>
+        )}
+
+        {/* Series badge */}
+        {post.series && (
+          <span className="flex items-center gap-0.5 text-[10px] text-text-tertiary">
+            <Layers size={10} />
+            <span>{post.series.name}</span>
+          </span>
+        )}
       </div>
 
       {/* Bottom row: scheduled date + days in column */}

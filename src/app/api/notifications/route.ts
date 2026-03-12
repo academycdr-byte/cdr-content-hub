@@ -159,20 +159,14 @@ export async function GET() {
       }
     }
 
-    // 3. Posts parados no mesmo status ha mais de 3 dias
-    const threeDaysAgo = new Date(now.getTime() - 3 * 24 * 60 * 60 * 1000);
+    // 3. Posts parados no mesmo status ha mais de 5 dias (pipeline_stuck)
+    const fiveDaysAgo = new Date(now.getTime() - 5 * 24 * 60 * 60 * 1000);
     const stalePosts = await prisma.post.findMany({
       where: {
-        updatedAt: {
-          lt: threeDaysAgo,
-        },
-        status: {
-          notIn: ['PUBLISHED', 'IDEA'],
-        },
+        updatedAt: { lt: fiveDaysAgo },
+        status: { notIn: ['PUBLISHED', 'IDEA'] },
       },
-      include: {
-        contentPillar: true,
-      },
+      include: { contentPillar: true },
       orderBy: { updatedAt: 'asc' },
       take: 10,
     });
@@ -183,12 +177,100 @@ export async function GET() {
       );
       notifications.push({
         id: `stale-${post.id}`,
-        type: 'info',
-        title: 'Post parado',
+        type: daysStale > 7 ? 'warning' : 'info',
+        title: 'Post parado no pipeline',
         message: `"${post.title}" esta no status ${post.status} ha ${daysStale} dias sem atualizacao.`,
         createdAt: now.toISOString(),
         read: false,
       });
+    }
+
+    // 4. Goals at risk (< 50% progress na metade do periodo)
+    const activeGoals = await prisma.goal.findMany({
+      where: { status: 'active', socialAccount: { userId } },
+      include: { socialAccount: { select: { displayName: true, followersCount: true } } },
+    });
+
+    for (const goal of activeGoals) {
+      const startDate = new Date(goal.startDate);
+      const endDate = new Date(goal.endDate);
+      const totalMs = endDate.getTime() - startDate.getTime();
+      const elapsedMs = now.getTime() - startDate.getTime();
+      const timeProgress = totalMs > 0 ? (elapsedMs / totalMs) * 100 : 0;
+
+      const currentVal = goal.metricType === 'followers' ? goal.socialAccount.followersCount : goal.currentValue;
+      const range = goal.targetValue - goal.startValue;
+      const goalProgress = range > 0 ? ((currentVal - goal.startValue) / range) * 100 : 0;
+
+      if (timeProgress > 50 && goalProgress < 50) {
+        notifications.push({
+          id: `goal-risk-${goal.id}`,
+          type: 'warning',
+          title: 'Meta em risco',
+          message: `Meta de ${goal.metricType} (${goal.socialAccount.displayName}): ${Math.round(goalProgress)}% progresso com ${Math.round(timeProgress)}% do tempo.`,
+          createdAt: now.toISOString(),
+          read: false,
+        });
+      }
+    }
+
+    // 5. Series overdue
+    const activeSeries = await prisma.contentSeries.findMany({
+      where: { isActive: true, socialAccount: { userId } },
+      include: {
+        socialAccount: { select: { displayName: true } },
+        posts: {
+          where: { status: 'PUBLISHED' },
+          orderBy: { updatedAt: 'desc' },
+          take: 1,
+          select: { updatedAt: true, scheduledDate: true },
+        },
+      },
+    });
+
+    const FREQ_DAYS: Record<string, number> = { weekly: 7, biweekly: 14, monthly: 30, variable: 60 };
+    for (const s of activeSeries) {
+      const lastPost = s.posts[0];
+      if (!lastPost) continue;
+      const lastDate = lastPost.scheduledDate || lastPost.updatedAt;
+      const daysSince = (now.getTime() - lastDate.getTime()) / (1000 * 60 * 60 * 24);
+      const maxDays = (FREQ_DAYS[s.frequency] || 30) * 1.5;
+      if (daysSince > maxDays) {
+        notifications.push({
+          id: `series-overdue-${s.id}`,
+          type: 'warning',
+          title: 'Serie atrasada',
+          message: `"${s.name}": ultimo episodio publicado ha ${Math.round(daysSince)} dias.`,
+          createdAt: now.toISOString(),
+          read: false,
+        });
+      }
+    }
+
+    // 6. Posting gap (> 3 dias sem publicar em algum perfil)
+    const accounts = await prisma.socialAccount.findMany({
+      where: { userId, isActive: true },
+      select: { id: true, displayName: true, username: true },
+    });
+    for (const acc of accounts) {
+      const lastPublished = await prisma.post.findFirst({
+        where: { socialAccountId: acc.id, status: 'PUBLISHED' },
+        orderBy: { updatedAt: 'desc' },
+        select: { updatedAt: true },
+      });
+      if (lastPublished) {
+        const daysSince = (now.getTime() - lastPublished.updatedAt.getTime()) / (1000 * 60 * 60 * 24);
+        if (daysSince > 3) {
+          notifications.push({
+            id: `gap-${acc.id}`,
+            type: daysSince > 5 ? 'error' : 'warning',
+            title: 'Gap de postagem',
+            message: `Faz ${Math.round(daysSince)} dias sem postar no @${acc.username}.`,
+            createdAt: now.toISOString(),
+            read: false,
+          });
+        }
+      }
     }
 
     // Sort: errors first, then warnings, then info

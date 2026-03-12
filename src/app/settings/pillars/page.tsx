@@ -4,21 +4,42 @@ import { useEffect, useState } from 'react';
 import { Save, Loader2, AlertCircle } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useToastStore } from '@/stores/toast-store';
-import type { ContentPillar } from '@/types';
+import type { ContentPillar, SocialAccount } from '@/types';
 
 export default function PillarsSettingsPage() {
   const [pillars, setPillars] = useState<ContentPillar[]>([]);
+  const [accounts, setAccounts] = useState<SocialAccount[]>([]);
+  const [selectedAccountId, setSelectedAccountId] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const { addToast } = useToastStore();
 
   useEffect(() => {
-    fetchPillars();
-  }, []);
+    Promise.all([fetchAccounts(), fetchPillars()]);
+  }, []); // load on mount
 
-  async function fetchPillars() {
+  useEffect(() => {
+    if (selectedAccountId) {
+      fetchPillars(selectedAccountId);
+    }
+  }, [selectedAccountId]); // refetch when account changes
+
+  async function fetchAccounts() {
     try {
-      const res = await fetch('/api/pillars');
+      const res = await fetch('/api/social/accounts');
+      if (!res.ok) return;
+      const data = await res.json() as SocialAccount[];
+      setAccounts(data);
+      if (data.length > 0 && !selectedAccountId) {
+        setSelectedAccountId(data[0].id);
+      }
+    } catch { /* ignore */ }
+  }
+
+  async function fetchPillars(accountId?: string) {
+    try {
+      const url = accountId ? `/api/pillars?accountId=${accountId}` : '/api/pillars';
+      const res = await fetch(url);
       if (!res.ok) throw new Error('Failed to fetch');
       const data = await res.json() as ContentPillar[];
       setPillars(data);
@@ -109,6 +130,29 @@ export default function PillarsSettingsPage() {
           )}
         </button>
       </div>
+
+      {/* Account Selector */}
+      {accounts.length > 1 && (
+        <div className="mb-6">
+          <label className="text-label text-text-tertiary mb-2 block">Perfil</label>
+          <div className="flex gap-2">
+            {accounts.map((acc) => (
+              <button
+                key={acc.id}
+                onClick={() => setSelectedAccountId(acc.id)}
+                className={cn(
+                  'rounded-lg border px-4 py-2 text-sm font-medium transition-all',
+                  selectedAccountId === acc.id
+                    ? 'border-accent bg-accent-surface text-accent'
+                    : 'border-border-default bg-bg-primary text-text-secondary hover:border-border-strong'
+                )}
+              >
+                {acc.platform === 'instagram' ? 'IG' : 'TT'} @{acc.username}
+              </button>
+            ))}
+          </div>
+        </div>
+      )}
 
       {/* Percentage Total */}
       <div
@@ -209,10 +253,16 @@ export default function PillarsSettingsPage() {
             Checklists
           </a>
           <a
+            href="/settings/dm-keywords"
+            className="badge bg-bg-secondary text-text-secondary hover:bg-bg-hover transition-colors cursor-pointer"
+          >
+            DM Keywords
+          </a>
+          <a
             href="/settings/appearance"
             className="badge bg-bg-secondary text-text-secondary hover:bg-bg-hover transition-colors cursor-pointer"
           >
-            Aparencia
+            Aparência
           </a>
         </div>
       </div>

@@ -83,6 +83,41 @@ interface TopPostItem {
   accountName: string;
 }
 
+interface GoalProgressItem {
+  metricType: string;
+  accountName: string;
+  accountId: string;
+  target: number;
+  current: number;
+  progress: number;
+  onTrack: boolean;
+}
+
+interface ContentMixComparisonItem {
+  name: string;
+  targetPct: number;
+  actualPct: number;
+  deviation: number;
+  status: 'ok' | 'warning' | 'critical';
+}
+
+interface PostingPace {
+  targetPerWeek: number;
+  actualThisWeek: number;
+  status: 'ahead' | 'on_track' | 'behind';
+  weeklyTrend: number[];
+}
+
+interface SeriesStatusItem {
+  id: string;
+  name: string;
+  lastEpisode: number;
+  lastPublished: string | null;
+  nextDue: string | null;
+  status: 'on_track' | 'overdue' | 'paused';
+  color: string;
+}
+
 interface DashboardStats {
   postsThisMonth: number;
   monthlyGoal: number;
@@ -97,6 +132,10 @@ interface DashboardStats {
   platformBreakdown: PlatformBreakdown[];
   profileBreakdown: ProfileBreakdown[];
   topPosts: TopPostItem[];
+  goalsProgress: GoalProgressItem[];
+  contentMixComparison: ContentMixComparisonItem[];
+  postingPace: PostingPace;
+  seriesStatus: SeriesStatusItem[];
 }
 
 // ===== Constants =====
@@ -240,6 +279,8 @@ export async function GET(request: NextRequest) {
       metricsInRange,
       socialAccounts,
       cpmConfigs,
+      activeGoals,
+      activeSeries,
     ] = await Promise.all([
       // Posts published in the selected range
       prisma.post.count({
@@ -322,6 +363,23 @@ export async function GET(request: NextRequest) {
       }),
       // CPM configs for value calculation
       prisma.commissionConfig.findMany(),
+      // Active goals
+      prisma.goal.findMany({
+        where: { status: 'active', socialAccount: { userId } },
+        include: { socialAccount: { select: { id: true, displayName: true, username: true, followersCount: true } } },
+      }),
+      // Active series
+      prisma.contentSeries.findMany({
+        where: { isActive: true, socialAccount: { userId } },
+        include: {
+          posts: {
+            where: { status: 'PUBLISHED' },
+            orderBy: { seriesEpisode: 'desc' },
+            take: 1,
+            select: { seriesEpisode: true, scheduledDate: true, updatedAt: true },
+          },
+        },
+      }),
     ]);
 
     // ===== Existing calculations =====
@@ -471,6 +529,107 @@ export async function GET(request: NextRequest) {
       0
     );
 
+    // ===== Goals Progress =====
+    const goalsProgress: GoalProgressItem[] = activeGoals.map((goal) => {
+      const current = goal.metricType === 'followers' ? goal.socialAccount.followersCount : goal.currentValue;
+      const range = goal.targetValue - goal.startValue;
+      const progress = range > 0 ? Math.min(Math.round(((current - goal.startValue) / range) * 100), 100) : 0;
+
+      const endDate = new Date(goal.endDate);
+      const startDate = new Date(goal.startDate);
+      const totalDays = Math.max((endDate.getTime() - startDate.getTime()) / (1000 * 60 * 60 * 24), 1);
+      const elapsedDays = Math.max((now.getTime() - startDate.getTime()) / (1000 * 60 * 60 * 24), 0);
+      const expectedProgress = (elapsedDays / totalDays) * 100;
+      const onTrack = progress >= expectedProgress * 0.8;
+
+      return {
+        metricType: goal.metricType,
+        accountName: goal.socialAccount.displayName || goal.socialAccount.username,
+        accountId: goal.socialAccountId,
+        target: goal.targetValue,
+        current,
+        progress: Math.max(0, progress),
+        onTrack,
+      };
+    });
+
+    // ===== Content Mix Comparison =====
+    const contentMixComparison: ContentMixComparisonItem[] = contentMix.map((pillar) => {
+      const deviation = pillar.percentage - pillar.targetPercentage;
+      let status: 'ok' | 'warning' | 'critical' = 'ok';
+      if (Math.abs(deviation) > 20) status = 'critical';
+      else if (Math.abs(deviation) > 10) status = 'warning';
+      return {
+        name: pillar.name,
+        targetPct: pillar.targetPercentage,
+        actualPct: pillar.percentage,
+        deviation,
+        status,
+      };
+    });
+
+    // ===== Posting Pace =====
+    const weekStart = new Date(now);
+    weekStart.setDate(now.getDate() - now.getDay());
+    weekStart.setHours(0, 0, 0, 0);
+    const postsThisWeek = allPosts.filter((p) => {
+      const d = p.scheduledDate || p.updatedAt;
+      return p.status === 'PUBLISHED' && d >= weekStart && d <= now;
+    }).length;
+
+    const weeklyTrend: number[] = [];
+    for (let i = 3; i >= 0; i--) {
+      const wStart = new Date(weekStart);
+      wStart.setDate(wStart.getDate() - i * 7);
+      const wEnd = new Date(wStart);
+      wEnd.setDate(wEnd.getDate() + 7);
+      const count = allPosts.filter((p) => {
+        const d = p.scheduledDate || p.updatedAt;
+        return p.status === 'PUBLISHED' && d >= wStart && d < wEnd;
+      }).length;
+      weeklyTrend.push(count);
+    }
+
+    const targetPerWeek = 3;
+    const postingPace: PostingPace = {
+      targetPerWeek,
+      actualThisWeek: postsThisWeek,
+      status: postsThisWeek >= targetPerWeek ? 'on_track' : postsThisWeek >= targetPerWeek - 1 ? 'on_track' : 'behind',
+      weeklyTrend,
+    };
+
+    // ===== Series Status =====
+    const FREQUENCY_DAYS: Record<string, number> = { weekly: 7, biweekly: 14, monthly: 30, variable: 60 };
+
+    const seriesStatus: SeriesStatusItem[] = activeSeries.map((s) => {
+      const lastPost = s.posts[0];
+      const lastEpisode = lastPost?.seriesEpisode || s.currentEpisode;
+      const lastPublished = lastPost ? (lastPost.scheduledDate || lastPost.updatedAt).toISOString() : null;
+
+      let status: 'on_track' | 'overdue' | 'paused' = 'on_track';
+      if (lastPublished) {
+        const daysSince = (now.getTime() - new Date(lastPublished).getTime()) / (1000 * 60 * 60 * 24);
+        const maxDays = (FREQUENCY_DAYS[s.frequency] || 30) * 1.5;
+        if (daysSince > maxDays) status = 'overdue';
+      } else {
+        status = 'paused';
+      }
+
+      const nextDue = lastPublished
+        ? new Date(new Date(lastPublished).getTime() + (FREQUENCY_DAYS[s.frequency] || 30) * 24 * 60 * 60 * 1000).toISOString()
+        : null;
+
+      return {
+        id: s.id,
+        name: s.name,
+        lastEpisode,
+        lastPublished,
+        nextDue,
+        status,
+        color: s.color,
+      };
+    });
+
     // ===== Build Response =====
 
     const stats: DashboardStats = {
@@ -491,6 +650,10 @@ export async function GET(request: NextRequest) {
       platformBreakdown: Object.values(platformAcc).sort((a, b) => b.views - a.views),
       profileBreakdown: Object.values(profileAcc).sort((a, b) => b.views - a.views),
       topPosts,
+      goalsProgress,
+      contentMixComparison,
+      postingPace,
+      seriesStatus,
     };
 
     return NextResponse.json(stats);

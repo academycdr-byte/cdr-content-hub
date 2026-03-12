@@ -80,10 +80,18 @@ export async function POST(request: Request) {
         audience: body.audience || null,
         onlyIvan: body.onlyIvan || false,
         socialAccountId: body.socialAccountId || null,
+        script: body.script || null,
+        scriptMethod: body.scriptMethod || null,
+        ctaKeyword: body.ctaKeyword || null,
+        seriesId: body.seriesId || null,
+        seriesEpisode: body.seriesEpisode || null,
+        crossPostId: body.crossPostId || null,
+        productionNotes: body.productionNotes || null,
       },
       include: {
         contentPillar: true,
         socialAccount: { select: { id: true, platform: true, username: true, displayName: true } },
+        series: true,
       },
     });
 

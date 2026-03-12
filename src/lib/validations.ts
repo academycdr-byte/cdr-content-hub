@@ -13,6 +13,14 @@ export const createPostSchema = z.object({
   audience: z.string().max(1000).nullable().optional(),
   onlyIvan: z.boolean().optional(),
   socialAccountId: z.string().nullable().optional(),
+  // Novos campos
+  script: z.string().max(50000).nullable().optional(),
+  scriptMethod: z.string().max(100).nullable().optional(),
+  ctaKeyword: z.string().max(100).nullable().optional(),
+  seriesId: z.string().nullable().optional(),
+  seriesEpisode: z.number().int().min(1).nullable().optional(),
+  crossPostId: z.string().nullable().optional(),
+  productionNotes: z.string().max(50000).nullable().optional(),
 });
 
 export const updatePostSchema = z.object({
@@ -29,6 +37,14 @@ export const updatePostSchema = z.object({
   audience: z.string().max(1000).nullable().optional(),
   onlyIvan: z.boolean().optional(),
   socialAccountId: z.string().nullable().optional(),
+  // Novos campos
+  script: z.string().max(50000).nullable().optional(),
+  scriptMethod: z.string().max(100).nullable().optional(),
+  ctaKeyword: z.string().max(100).nullable().optional(),
+  seriesId: z.string().nullable().optional(),
+  seriesEpisode: z.number().int().min(1).nullable().optional(),
+  crossPostId: z.string().nullable().optional(),
+  productionNotes: z.string().max(50000).nullable().optional(),
 });
 
 export const patchPostSchema = z.object({
@@ -70,16 +86,18 @@ export const suggestHookSchema = z.object({
 });
 
 // ─── Goals ──────────────────────────────────────────────────────
+const VALID_METRIC_TYPES = ['followers', 'engagement_rate', 'avg_views', 'avg_saves', 'dm_leads', 'posts_per_week', 'consistency_score'] as const;
+
 export const createGoalSchema = z.object({
   socialAccountId: z.string().min(1, 'socialAccountId é obrigatório'),
-  metricType: z.string().optional(),
-  targetValue: z.number().int().positive('targetValue deve ser positivo'),
+  metricType: z.enum(VALID_METRIC_TYPES).optional().default('followers'),
+  targetValue: z.number().positive('targetValue deve ser positivo'),
   period: z.string().min(1, 'period é obrigatório'),
   endDate: z.string().min(1, 'endDate é obrigatório'),
 });
 
 export const updateGoalSchema = z.object({
-  targetValue: z.number().int().positive().optional(),
+  targetValue: z.number().positive().optional(),
   period: z.string().optional(),
   endDate: z.string().optional(),
   status: z.string().optional(),
@@ -172,6 +190,40 @@ export const generateIdeasSchema = z.object({
 
 export const expandIdeaSchema = z.object({
   text: z.string().min(1, 'Texto da ideia é obrigatório').max(5000),
+});
+
+// ─── Series ─────────────────────────────────────────────────────
+export const createSeriesSchema = z.object({
+  name: z.string().min(1, 'Nome é obrigatório').max(200),
+  slug: z.string().min(1, 'Slug é obrigatório').max(100),
+  description: z.string().max(2000).optional(),
+  socialAccountId: z.string().min(1, 'socialAccountId é obrigatório'),
+  frequency: z.string().optional().default('weekly'),
+  totalEpisodes: z.number().int().positive().nullable().optional(),
+  color: z.string().max(20).optional(),
+  icon: z.string().max(10).nullable().optional(),
+});
+
+export const updateSeriesSchema = z.object({
+  name: z.string().min(1).max(200).optional(),
+  description: z.string().max(2000).optional(),
+  frequency: z.string().optional(),
+  totalEpisodes: z.number().int().positive().nullable().optional(),
+  color: z.string().max(20).optional(),
+  icon: z.string().max(10).nullable().optional(),
+  isActive: z.boolean().optional(),
+});
+
+// ─── DM Keywords ────────────────────────────────────────────────
+export const createDmKeywordSchema = z.object({
+  keyword: z.string().min(1, 'Keyword é obrigatória').max(100),
+  description: z.string().max(500).optional(),
+  socialAccountId: z.string().min(1, 'socialAccountId é obrigatório'),
+});
+
+export const updateDmKeywordSchema = z.object({
+  description: z.string().max(500).optional(),
+  isActive: z.boolean().optional(),
 });
 
 // ─── Ideation ───────────────────────────────────────────────────

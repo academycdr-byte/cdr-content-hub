@@ -20,7 +20,7 @@ import dynamic from 'next/dynamic';
 import type { CreatePostData } from '@/components/posts/create-post-modal';
 
 const CreatePostModal = dynamic(() => import('@/components/posts/create-post-modal'), { ssr: false });
-import type { Post, SocialAccount } from '@/types';
+import type { Post, SocialAccount, ContentSeries } from '@/types';
 
 export default function CalendarPage() {
   const {
@@ -43,6 +43,7 @@ export default function CalendarPage() {
   const [selectedDate, setSelectedDate] = useState<Date | null>(null);
   const [activePost, setActivePost] = useState<Post | null>(null);
   const [socialAccounts, setSocialAccounts] = useState<SocialAccount[]>([]);
+  const [seriesList, setSeriesList] = useState<ContentSeries[]>([]);
   const [filterAccountId, setFilterAccountId] = useState<string | null>(null);
 
   const sensors = useSensors(
@@ -60,6 +61,10 @@ export default function CalendarPage() {
     fetch('/api/social/accounts')
       .then((res) => (res.ok ? res.json() : []))
       .then((data: SocialAccount[]) => setSocialAccounts(data))
+      .catch(() => {});
+    fetch('/api/series')
+      .then((res) => (res.ok ? res.json() : []))
+      .then((data: ContentSeries[]) => setSeriesList(data))
       .catch(() => {});
   }, [fetchPillars, fetchPosts, currentYear, currentMonth]);
 
@@ -303,6 +308,7 @@ export default function CalendarPage() {
         pillars={pillars}
         defaultDate={selectedDate}
         socialAccounts={socialAccounts}
+        series={seriesList}
       />
     </div>
   );

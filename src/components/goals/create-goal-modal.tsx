@@ -3,8 +3,8 @@
 import { useState, useCallback, useEffect } from 'react';
 import { Target, Plus, X } from 'lucide-react';
 import { cn } from '@/lib/utils';
-import { GOAL_PERIOD_LABELS } from '@/types';
-import type { GoalPeriod, SocialAccount } from '@/types';
+import { GOAL_PERIOD_LABELS, GOAL_METRIC_TYPES, GOAL_METRIC_UNITS } from '@/types';
+import type { GoalPeriod, GoalMetricType, SocialAccount } from '@/types';
 import { formatFollowerCount, getPlatformLabel, getEndDateForPeriod } from './helpers';
 
 interface CreateGoalModalProps {
@@ -12,6 +12,7 @@ interface CreateGoalModalProps {
   onClose: () => void;
   onCreate: (data: {
     socialAccountId: string;
+    metricType: string;
     targetValue: number;
     period: string;
     endDate: string;
@@ -20,6 +21,7 @@ interface CreateGoalModalProps {
 
 export function CreateGoalModal({ accounts, onClose, onCreate }: CreateGoalModalProps) {
   const [selectedAccountId, setSelectedAccountId] = useState(accounts[0]?.id || '');
+  const [metricType, setMetricType] = useState<GoalMetricType>('followers');
   const [targetValue, setTargetValue] = useState('');
   const [period, setPeriod] = useState<GoalPeriod>('monthly');
   const [endDate, setEndDate] = useState(() => getEndDateForPeriod('monthly'));
@@ -58,7 +60,8 @@ export function CreateGoalModal({ accounts, onClose, onCreate }: CreateGoalModal
     setSubmitting(true);
     onCreate({
       socialAccountId: selectedAccountId,
-      targetValue: parseInt(targetValue, 10),
+      metricType,
+      targetValue: parseFloat(targetValue),
       period,
       endDate,
     });
@@ -122,23 +125,27 @@ export function CreateGoalModal({ accounts, onClose, onCreate }: CreateGoalModal
             )}
           </div>
 
-          {/* Metric Type (locked to followers for now) */}
+          {/* Metric Type */}
           <div>
-            <label className="text-label text-text-secondary block mb-1.5">
+            <label htmlFor="goal-metric-type" className="text-label text-text-secondary block mb-1.5">
               Métrica
             </label>
-            <div className="input bg-bg-secondary text-text-secondary cursor-not-allowed">
-              Seguidores
-            </div>
-            <p className="text-[11px] text-text-tertiary mt-1">
-              Views e engagement em breve
-            </p>
+            <select
+              id="goal-metric-type"
+              value={metricType}
+              onChange={(e) => setMetricType(e.target.value as GoalMetricType)}
+              className="input"
+            >
+              {(Object.entries(GOAL_METRIC_TYPES) as [GoalMetricType, string][]).map(([key, label]) => (
+                <option key={key} value={key}>{label}</option>
+              ))}
+            </select>
           </div>
 
           {/* Target Value */}
           <div>
             <label htmlFor="goal-target" className="text-label text-text-secondary block mb-1.5">
-              Meta de Seguidores
+              Meta {GOAL_METRIC_UNITS[metricType] ? `(${GOAL_METRIC_UNITS[metricType]})` : ''}
             </label>
             <input
               id="goal-target"

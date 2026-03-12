@@ -18,7 +18,7 @@ import PipelineColumn from '@/components/pipeline/pipeline-column';
 import PipelineCard from '@/components/pipeline/pipeline-card';
 import CreatePostModal from '@/components/posts/create-post-modal';
 import type { CreatePostData } from '@/components/posts/create-post-modal';
-import type { Post, PostStatus, ContentPillar } from '@/types';
+import type { Post, PostStatus, ContentPillar, ContentSeries, SocialAccount } from '@/types';
 import { STATUS_ORDER, STATUS_LABELS } from '@/types';
 
 const STATUS_COLORS: Record<PostStatus, string> = {
@@ -33,6 +33,8 @@ const STATUS_COLORS: Record<PostStatus, string> = {
 export default function PipelinePage() {
   const [posts, setPosts] = useState<Post[]>([]);
   const [pillars, setPillars] = useState<ContentPillar[]>([]);
+  const [seriesList, setSeriesList] = useState<ContentSeries[]>([]);
+  const [socialAccounts, setSocialAccounts] = useState<SocialAccount[]>([]);
   const [loading, setLoading] = useState(true);
   const [activePost, setActivePost] = useState<Post | null>(null);
 
@@ -54,9 +56,11 @@ export default function PipelinePage() {
   const fetchData = useCallback(async () => {
     setLoading(true);
     try {
-      const [postsRes, pillarsRes] = await Promise.all([
+      const [postsRes, pillarsRes, seriesRes, accountsRes] = await Promise.all([
         fetch('/api/posts'),
         fetch('/api/pillars'),
+        fetch('/api/series'),
+        fetch('/api/social/accounts'),
       ]);
 
       if (!postsRes.ok) throw new Error('Failed to fetch posts');
@@ -67,6 +71,15 @@ export default function PipelinePage() {
 
       setPosts(postsData);
       setPillars(pillarsData);
+
+      if (seriesRes.ok) {
+        const seriesData = await seriesRes.json() as ContentSeries[];
+        setSeriesList(seriesData);
+      }
+      if (accountsRes.ok) {
+        const accountsData = await accountsRes.json() as SocialAccount[];
+        setSocialAccounts(accountsData);
+      }
     } catch (error) {
       console.error('Failed to fetch pipeline data:', error instanceof Error ? error.message : 'Unknown');
       addToast('Erro ao carregar pipeline', 'error');
@@ -385,6 +398,8 @@ export default function PipelinePage() {
         onClose={() => setShowCreateModal(false)}
         onSubmit={handleCreatePost}
         pillars={pillars}
+        socialAccounts={socialAccounts}
+        series={seriesList}
       />
     </div>
   );

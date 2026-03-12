@@ -55,6 +55,8 @@ export interface ContentPillar {
   description: string;
   isActive: boolean;
   order: number;
+  socialAccountId: string | null;
+  socialAccount?: SocialAccount;
 }
 
 export interface Post {
@@ -72,10 +74,20 @@ export interface Post {
   audience: string | null;
   onlyIvan: boolean;
   socialAccountId: string | null;
+  // Novos campos
+  script: string | null;
+  scriptMethod: string | null;
+  ctaKeyword: string | null;
+  seriesId: string | null;
+  seriesEpisode: number | null;
+  crossPostId: string | null;
+  productionNotes: string | null;
   createdAt: string;
   updatedAt: string;
   pillar?: ContentPillar;
   socialAccount?: SocialAccount;
+  series?: ContentSeries;
+  crossPost?: Post;
 }
 
 export interface Hook {
@@ -185,6 +197,12 @@ export interface PostMetrics {
   likes: number;
   comments: number;
   shares: number;
+  saves: number;
+  reach: number;
+  impressions: number;
+  profileVisits: number;
+  follows: number;
+  engagementRate: number | null;
   postUrl: string;
   thumbnailUrl: string;
   caption: string | null;
@@ -277,6 +295,99 @@ export interface GoalWithProgress extends Goal {
   progress: number;
   daysRemaining: number;
 }
+
+// ===== Content Series =====
+
+export interface ContentSeries {
+  id: string;
+  name: string;
+  slug: string;
+  description: string;
+  socialAccountId: string;
+  frequency: string;
+  totalEpisodes: number | null;
+  currentEpisode: number;
+  color: string;
+  icon: string | null;
+  isActive: boolean;
+  createdAt: string;
+  updatedAt: string;
+  socialAccount?: SocialAccount;
+  posts?: Post[];
+}
+
+// ===== DM Keywords =====
+
+export interface DmKeyword {
+  id: string;
+  keyword: string;
+  description: string;
+  socialAccountId: string;
+  totalReceived: number;
+  lastReceivedAt: string | null;
+  isActive: boolean;
+  createdAt: string;
+  updatedAt: string;
+  socialAccount?: SocialAccount;
+}
+
+// ===== Notifications =====
+
+export const NotificationPriority = {
+  HIGH: 'high',
+  MEDIUM: 'medium',
+  LOW: 'low',
+} as const;
+export type NotificationPriority = (typeof NotificationPriority)[keyof typeof NotificationPriority];
+
+export interface Notification {
+  id: string;
+  userId: string;
+  type: string;
+  title: string;
+  message: string;
+  priority: NotificationPriority;
+  isRead: boolean;
+  actionUrl: string | null;
+  createdAt: string;
+}
+
+// ===== Goal Metric Types =====
+
+export const GOAL_METRIC_TYPES = {
+  followers: 'Seguidores',
+  engagement_rate: 'Taxa de Engajamento',
+  avg_views: 'Views Medio por Post',
+  avg_saves: 'Saves Medio por Post',
+  dm_leads: 'Leads por DM/mes',
+  posts_per_week: 'Posts por Semana',
+  consistency_score: 'Score de Consistencia',
+} as const;
+export type GoalMetricType = keyof typeof GOAL_METRIC_TYPES;
+
+export const GOAL_METRIC_UNITS: Record<GoalMetricType, string> = {
+  followers: '',
+  engagement_rate: '%',
+  avg_views: '',
+  avg_saves: '',
+  dm_leads: '',
+  posts_per_week: 'posts/sem',
+  consistency_score: '%',
+};
+
+export const SCRIPT_METHODS = {
+  'brendan-kane': 'Brendan Kane (Hook Mastery)',
+  'paulo-cuenca': 'Paulo Cuenca (Narrativa)',
+  'leandro-ladeira': 'Leandro Ladeira (Copy Direta)',
+  'custom': 'Custom',
+} as const;
+
+export const SERIES_FREQUENCIES = {
+  weekly: 'Semanal',
+  biweekly: 'Quinzenal',
+  monthly: 'Mensal',
+  variable: 'Variavel',
+} as const;
 
 // ===== Calendar Entry Types =====
 
@@ -450,6 +561,41 @@ export interface TopPostItem {
   accountName: string;
 }
 
+export interface GoalProgressItem {
+  metricType: string;
+  accountName: string;
+  accountId: string;
+  target: number;
+  current: number;
+  progress: number;
+  onTrack: boolean;
+}
+
+export interface ContentMixComparisonItem {
+  name: string;
+  targetPct: number;
+  actualPct: number;
+  deviation: number;
+  status: 'ok' | 'warning' | 'critical';
+}
+
+export interface PostingPace {
+  targetPerWeek: number;
+  actualThisWeek: number;
+  status: 'ahead' | 'on_track' | 'behind';
+  weeklyTrend: number[];
+}
+
+export interface SeriesStatusItem {
+  id: string;
+  name: string;
+  lastEpisode: number;
+  lastPublished: string | null;
+  nextDue: string | null;
+  status: 'on_track' | 'overdue' | 'paused';
+  color: string;
+}
+
 export interface DashboardStats {
   postsThisMonth: number;
   monthlyGoal: number;
@@ -464,4 +610,9 @@ export interface DashboardStats {
   platformBreakdown: PlatformBreakdown[];
   profileBreakdown: ProfileBreakdown[];
   topPosts: TopPostItem[];
+  // Novos campos
+  goalsProgress: GoalProgressItem[];
+  contentMixComparison: ContentMixComparisonItem[];
+  postingPace: PostingPace;
+  seriesStatus: SeriesStatusItem[];
 }

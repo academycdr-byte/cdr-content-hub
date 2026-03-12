@@ -183,16 +183,23 @@ model Commission {
 model ContentPillar {
   id               String          @id
   name             String
-  slug             String          @unique
+  slug             String
   color            String
   targetPercentage Int             @map("target_percentage")
   description      String          @default("")
   isActive         Boolean         @default(true) @map("is_active")
   order            Int             @default(0)
+
+  // Pilar pertence a um perfil especifico (null = global/backward compat)
+  socialAccountId  String?         @map("social_account_id")
+  socialAccount    SocialAccount?  @relation(fields: [socialAccountId], references: [id])
+
   hooks            Hook[]
   posts            Post[]
   ideationIdeas    IdeationIdea[]
 
+  @@unique([slug, socialAccountId])
+  @@index([socialAccountId])
   @@map("content_pillars")
 }
 
@@ -229,6 +236,12 @@ model PostMetrics {
   likes           Int            @default(0)
   comments        Int            @default(0)
   shares          Int            @default(0)
+  saves           Int            @default(0)
+  reach           Int            @default(0)
+  impressions     Int            @default(0)
+  profileVisits   Int            @default(0) @map("profile_visits")
+  follows         Int            @default(0)
+  engagementRate  Float?         @map("engagement_rate")
   postUrl         String         @default("") @map("post_url")
   thumbnailUrl    String        @default("") @map("thumbnail_url")
   caption         String?
@@ -264,6 +277,16 @@ model Post {
   audience             String?
   onlyIvan             Boolean               @default(false) @map("only_ivan")
   socialAccountId      String?               @map("social_account_id")
+
+  // Novos campos: roteiro, serie, cross-post
+  script               String?               @db.Text
+  scriptMethod         String?               @map("script_method")
+  ctaKeyword           String?               @map("cta_keyword")
+  seriesId             String?               @map("series_id")
+  seriesEpisode        Int?                  @map("series_episode")
+  crossPostId          String?               @unique @map("cross_post_id")
+  productionNotes      String?               @map("production_notes") @db.Text
+
   createdAt            DateTime              @default(now()) @map("created_at")
   updatedAt            DateTime              @updatedAt @map("updated_at")
   batchSessionPosts    BatchSessionPost[]
@@ -272,6 +295,9 @@ model Post {
   user                 User?                 @relation(fields: [createdById], references: [id], onDelete: SetNull)
   contentPillar        ContentPillar         @relation(fields: [pillarId], references: [id])
   socialAccount        SocialAccount?        @relation(fields: [socialAccountId], references: [id], onDelete: SetNull)
+  series               ContentSeries?        @relation(fields: [seriesId], references: [id], onDelete: SetNull)
+  crossPost            Post?                 @relation("CrossPost", fields: [crossPostId], references: [id], onDelete: SetNull)
+  crossPostOf          Post?                 @relation("CrossPost")
 
   @@index([createdById])
   @@index([pillarId])
@@ -279,6 +305,7 @@ model Post {
   @@index([status])
   @@index([format])
   @@index([socialAccountId])
+  @@index([seriesId])
   @@map("posts")
 }
 
@@ -319,6 +346,9 @@ model SocialAccount {
   syncLogs          SyncLog[]
   goals             Goal[]
   followerSnapshots FollowerSnapshot[]
+  contentPillars    ContentPillar[]
+  contentSeries     ContentSeries[]
+  dmKeywords        DmKeyword[]
   user              User               @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@unique([platform, username])
@@ -330,9 +360,9 @@ model Goal {
   id              String        @id @default(cuid())
   socialAccountId String        @map("social_account_id")
   metricType      String        @map("metric_type")
-  targetValue     Int           @map("target_value")
-  currentValue    Int           @default(0) @map("current_value")
-  startValue      Int           @default(0) @map("start_value")
+  targetValue     Float         @map("target_value")
+  currentValue    Float         @default(0) @map("current_value")
+  startValue      Float         @default(0) @map("start_value")
   period          GoalPeriod
   startDate       DateTime      @default(now()) @map("start_date")
   endDate         DateTime      @map("end_date")
@@ -393,6 +423,67 @@ model IdeationIdea {
   @@map("ideation_ideas")
 }
 
+// ===== New Models =====
+
+model ContentSeries {
+  id              String        @id @default(cuid())
+  name            String
+  slug            String        @unique
+  description     String        @default("")
+  socialAccountId String        @map("social_account_id")
+  frequency       String        @default("weekly") // weekly | biweekly | monthly | variable
+  totalEpisodes   Int?          @map("total_episodes")
+  currentEpisode  Int           @default(0) @map("current_episode")
+  color           String        @default("#6E6E73")
+  icon            String?
+  isActive        Boolean       @default(true) @map("is_active")
+  createdAt       DateTime      @default(now()) @map("created_at")
+  updatedAt       DateTime      @updatedAt @map("updated_at")
+
+  socialAccount   SocialAccount @relation(fields: [socialAccountId], references: [id], onDelete: Cascade)
+  posts           Post[]
+
+  @@index([socialAccountId])
+  @@map("content_series")
+}
+
+model DmKeyword {
+  id              String        @id @default(cuid())
+  keyword         String
+  description     String        @default("")
+  socialAccountId String        @map("social_account_id")
+  totalReceived   Int           @default(0) @map("total_received")
+  lastReceivedAt  DateTime?     @map("last_received_at")
+  isActive        Boolean       @default(true) @map("is_active")
+  createdAt       DateTime      @default(now()) @map("created_at")
+  updatedAt       DateTime      @updatedAt @map("updated_at")
+
+  socialAccount   SocialAccount @relation(fields: [socialAccountId], references: [id], onDelete: Cascade)
+
+  @@unique([keyword, socialAccountId])
+  @@index([socialAccountId])
+  @@map("dm_keywords")
+}
+
+model Notification {
+  id          String   @id @default(cuid())
+  userId      String   @map("user_id")
+  type        String   // posting_gap | pillar_imbalance | series_overdue | pipeline_stuck | goal_at_risk | engagement_drop | post_scheduled_today | batch_session_reminder
+  title       String
+  message     String
+  priority    String   @default("medium") // high | medium | low
+  isRead      Boolean  @default(false) @map("is_read")
+  actionUrl   String?  @map("action_url")
+  createdAt   DateTime @default(now()) @map("created_at")
+
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([userId, isRead])
+  @@index([createdAt])
+  @@map("notifications")
+}
+
 model User {
   id             String          @id
   name           String
@@ -406,6 +497,7 @@ model User {
   commissions    Commission[]
   posts          Post[]
   socialAccounts SocialAccount[]
+  notifications  Notification[]
 
   @@map("users")
 }

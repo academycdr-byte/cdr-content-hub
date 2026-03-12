@@ -3,7 +3,7 @@
 import { useState, useEffect, type FormEvent } from 'react';
 import { X, Loader2 } from 'lucide-react';
 import { cn, formatDateISO } from '@/lib/utils';
-import type { ContentPillar, PostFormat, SocialAccount } from '@/types';
+import type { ContentPillar, PostFormat, SocialAccount, ContentSeries } from '@/types';
 import { FORMAT_LABELS } from '@/types';
 
 interface CreatePostModalProps {
@@ -13,6 +13,7 @@ interface CreatePostModalProps {
   pillars: ContentPillar[];
   defaultDate?: Date | null;
   socialAccounts?: SocialAccount[];
+  series?: ContentSeries[];
 }
 
 export interface CreatePostData {
@@ -24,6 +25,9 @@ export interface CreatePostData {
   audience: string | null;
   onlyIvan: boolean;
   socialAccountId: string | null;
+  seriesId: string | null;
+  seriesEpisode: number | null;
+  ctaKeyword: string | null;
 }
 
 const FORMATS: PostFormat[] = ['REEL', 'CAROUSEL', 'STATIC', 'STORY'];
@@ -35,6 +39,7 @@ export default function CreatePostModal({
   pillars,
   defaultDate,
   socialAccounts = [],
+  series = [],
 }: CreatePostModalProps) {
   const [title, setTitle] = useState('');
   const [format, setFormat] = useState<PostFormat>('REEL');
@@ -46,8 +51,21 @@ export default function CreatePostModal({
   const [audience, setAudience] = useState('');
   const [onlyIvan, setOnlyIvan] = useState(false);
   const [socialAccountId, setSocialAccountId] = useState<string | null>(null);
+  const [seriesId, setSeriesId] = useState<string | null>(null);
+  const [seriesEpisode, setSeriesEpisode] = useState<number | null>(null);
+  const [ctaKeyword, setCtaKeyword] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
+
+  // Filter pillars by selected social account
+  const filteredPillars = socialAccountId
+    ? pillars.filter((p) => p.socialAccountId === socialAccountId || !p.socialAccountId)
+    : pillars;
+
+  // Filter series by selected social account
+  const filteredSeries = socialAccountId
+    ? series.filter((s) => s.socialAccountId === socialAccountId)
+    : series;
 
   // Sync scheduledDate when modal opens with a new defaultDate
   useEffect(() => {
@@ -90,6 +108,9 @@ export default function CreatePostModal({
         audience: audience.trim() || null,
         onlyIvan,
         socialAccountId,
+        seriesId,
+        seriesEpisode,
+        ctaKeyword: ctaKeyword.trim() || null,
       });
       // Reset form
       setTitle('');
@@ -100,6 +121,9 @@ export default function CreatePostModal({
       setAudience('');
       setOnlyIvan(false);
       setSocialAccountId(null);
+      setSeriesId(null);
+      setSeriesEpisode(null);
+      setCtaKeyword('');
       onClose();
     } catch {
       setError('Erro ao criar post. Tente novamente.');
@@ -182,7 +206,7 @@ export default function CreatePostModal({
                 Pilar de Conteúdo
               </label>
               <div className="grid grid-cols-1 gap-2">
-                {pillars.map((p) => (
+                {filteredPillars.map((p) => (
                   <button
                     key={p.id}
                     type="button"
@@ -281,6 +305,55 @@ export default function CreatePostModal({
                 </select>
               </div>
             )}
+
+            {/* Series */}
+            {filteredSeries.length > 0 && (
+              <div>
+                <label htmlFor="post-series" className="text-label text-text-secondary mb-2 block">
+                  Serie
+                </label>
+                <div className="flex gap-2">
+                  <select
+                    id="post-series"
+                    value={seriesId || ''}
+                    onChange={(e) => setSeriesId(e.target.value || null)}
+                    className="input flex-1"
+                  >
+                    <option value="">Nenhuma serie</option>
+                    {filteredSeries.map((s) => (
+                      <option key={s.id} value={s.id}>
+                        {s.name}
+                      </option>
+                    ))}
+                  </select>
+                  {seriesId && (
+                    <input
+                      type="number"
+                      min={1}
+                      value={seriesEpisode || ''}
+                      onChange={(e) => setSeriesEpisode(parseInt(e.target.value) || null)}
+                      placeholder="EP#"
+                      className="input w-20 text-center"
+                    />
+                  )}
+                </div>
+              </div>
+            )}
+
+            {/* CTA Keyword */}
+            <div>
+              <label htmlFor="post-cta" className="text-label text-text-secondary mb-2 block">
+                DM Keyword (CTA)
+              </label>
+              <input
+                id="post-cta"
+                type="text"
+                value={ctaKeyword}
+                onChange={(e) => setCtaKeyword(e.target.value.toUpperCase())}
+                placeholder="Ex: DIAGNOSTICO, CHECKLIST"
+                className="input"
+              />
+            </div>
 
             {/* Date */}
             <div>

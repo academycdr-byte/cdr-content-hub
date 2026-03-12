@@ -191,6 +191,8 @@ export default function PostBuilderPage({ params }: PostBuilderPageProps) {
           purpose: purpose || null,
           audience: audience || null,
           onlyIvan,
+          script: post.script || null,
+          productionNotes: post.productionNotes || null,
         }),
       });
 
@@ -519,6 +521,39 @@ export default function PostBuilderPage({ params }: PostBuilderPageProps) {
                   ))}
                 </div>
               )}
+            </div>
+          </div>
+
+          {/* Script & Production Notes */}
+          <div className="card p-6 space-y-4">
+            <h3 className="text-heading-3 text-text-primary">Roteiro & Produção</h3>
+
+            <div>
+              <label htmlFor="post-script" className="text-label text-text-secondary mb-1.5 block">
+                Roteiro
+              </label>
+              <textarea
+                id="post-script"
+                value={post.script || ''}
+                onChange={(e) => setPost((p) => p ? { ...p, script: e.target.value } : p)}
+                placeholder="Cole ou escreva o roteiro aqui..."
+                className="input min-h-[120px] resize-y font-mono text-sm"
+                rows={5}
+              />
+            </div>
+
+            <div>
+              <label htmlFor="post-production-notes" className="text-label text-text-secondary mb-1.5 block">
+                Notas de Produção
+              </label>
+              <textarea
+                id="post-production-notes"
+                value={post.productionNotes || ''}
+                onChange={(e) => setPost((p) => p ? { ...p, productionNotes: e.target.value } : p)}
+                placeholder="Locação, equipamentos, figurino, props..."
+                className="input min-h-[60px] resize-y"
+                rows={2}
+              />
             </div>
           </div>
 

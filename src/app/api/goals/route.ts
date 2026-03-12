@@ -49,7 +49,12 @@ export async function GET(request: NextRequest) {
     // Calculate progress and days remaining for each goal
     const now = new Date();
     const goalsWithProgress = goals.map((goal) => {
-      const currentValue = goal.socialAccount.followersCount;
+      // Determine currentValue based on metricType
+      let currentValue = goal.currentValue;
+      if (goal.metricType === 'followers') {
+        currentValue = goal.socialAccount.followersCount;
+      }
+
       const range = goal.targetValue - goal.startValue;
       const progress = range > 0
         ? Math.min(Math.round(((currentValue - goal.startValue) / range) * 100), 100)
@@ -110,13 +115,17 @@ export async function POST(request: Request) {
       );
     }
 
+    // Set startValue based on metricType
+    const metricType = body.metricType || 'followers';
+    const startValue = metricType === 'followers' ? account.followersCount : 0;
+
     const goal = await prisma.goal.create({
       data: {
         socialAccountId: body.socialAccountId,
-        metricType: body.metricType || 'followers',
+        metricType,
         targetValue: body.targetValue,
-        currentValue: account.followersCount,
-        startValue: account.followersCount,
+        currentValue: startValue,
+        startValue,
         period: body.period as GoalPeriod,
         endDate: new Date(body.endDate),
         status: 'active',

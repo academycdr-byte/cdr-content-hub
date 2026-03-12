@@ -131,6 +131,7 @@ export default function GoalsPage() {
   // Handlers
   const handleCreate = useCallback(async (data: {
     socialAccountId: string;
+    metricType: string;
     targetValue: number;
     period: string;
     endDate: string;
@@ -191,7 +192,7 @@ export default function GoalsPage() {
             <h1 className="text-heading-1 text-text-primary">Metas</h1>
           </div>
           <p className="text-sm text-text-secondary">
-            Defina e acompanhe suas metas de seguidores por perfil.
+            Defina e acompanhe suas metas por perfil.
           </p>
         </div>
         <button

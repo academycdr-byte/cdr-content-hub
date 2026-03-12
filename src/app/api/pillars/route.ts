@@ -3,12 +3,21 @@ import { prisma } from '@/lib/prisma';
 import { requireAuth } from '@/lib/auth';
 import { updatePillarsSchema, parseBody } from '@/lib/validations';
 
-export async function GET() {
+export async function GET(request: Request) {
   try {
     const auth = await requireAuth();
     if (auth.error) return auth.error;
+
+    const { searchParams } = new URL(request.url);
+    const accountId = searchParams.get('accountId');
+
+    const where: Record<string, unknown> = { isActive: true };
+    if (accountId) {
+      where.socialAccountId = accountId;
+    }
+
     const pillars = await prisma.contentPillar.findMany({
-      where: { isActive: true },
+      where,
       orderBy: { order: 'asc' },
     });
 

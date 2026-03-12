@@ -60,8 +60,15 @@ export async function PUT(request: Request, context: RouteContext) {
         ...(body.audience !== undefined && { audience: body.audience }),
         ...(body.onlyIvan !== undefined && { onlyIvan: body.onlyIvan }),
         ...(body.socialAccountId !== undefined && { socialAccountId: body.socialAccountId }),
+        ...(body.script !== undefined && { script: body.script }),
+        ...(body.scriptMethod !== undefined && { scriptMethod: body.scriptMethod }),
+        ...(body.ctaKeyword !== undefined && { ctaKeyword: body.ctaKeyword }),
+        ...(body.seriesId !== undefined && { seriesId: body.seriesId }),
+        ...(body.seriesEpisode !== undefined && { seriesEpisode: body.seriesEpisode }),
+        ...(body.crossPostId !== undefined && { crossPostId: body.crossPostId }),
+        ...(body.productionNotes !== undefined && { productionNotes: body.productionNotes }),
       },
-      include: { contentPillar: true, socialAccount: { select: { id: true, platform: true, username: true, displayName: true } } },
+      include: { contentPillar: true, socialAccount: { select: { id: true, platform: true, username: true, displayName: true } }, series: true },
     });
 
     return NextResponse.json(post);

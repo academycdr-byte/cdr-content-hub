@@ -16,7 +16,7 @@ import {
   Award,
   ExternalLink,
 } from 'lucide-react';
-import { formatDate } from '@/lib/utils';
+import { formatDate, cn } from '@/lib/utils';
 import { PLATFORM_COLORS } from '@/lib/constants';
 import { STATUS_LABELS, type DashboardStats } from '@/types';
 import ContentMixChart from '@/components/dashboard/content-mix-chart';
@@ -584,6 +584,181 @@ export default function DashboardPage() {
                 )}
               </div>
             </div>
+
+            {/* ===== GOALS PROGRESS + CONTENT MIX COMPARISON ===== */}
+            {(stats.goalsProgress.length > 0 || stats.contentMixComparison.length > 0) && (
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+                {/* Goals Progress */}
+                {stats.goalsProgress.length > 0 && (
+                  <div className="card p-6">
+                    <div className="flex items-center justify-between mb-4">
+                      <p className="text-label text-text-tertiary">Metas em Andamento</p>
+                      <Link
+                        href="/goals"
+                        className="flex h-8 w-8 items-center justify-center rounded-lg bg-accent-surface hover:bg-accent-surface-hover transition-colors"
+                      >
+                        <ArrowRight size={16} className="text-accent" />
+                      </Link>
+                    </div>
+                    <div className="space-y-3">
+                      {stats.goalsProgress.map((g) => (
+                        <div key={`${g.accountId}-${g.metricType}`}>
+                          <div className="flex items-center justify-between mb-1">
+                            <span className="text-sm text-text-primary font-medium">{g.accountName}</span>
+                            <span className={cn(
+                              'text-xs font-semibold',
+                              g.onTrack ? 'text-success' : 'text-warning'
+                            )}>
+                              {Math.round(g.progress)}%
+                            </span>
+                          </div>
+                          <div className="h-2 w-full rounded-full bg-bg-hover overflow-hidden">
+                            <div
+                              className="h-full rounded-full transition-all duration-300"
+                              style={{
+                                width: `${Math.min(g.progress, 100)}%`,
+                                backgroundColor: g.onTrack ? 'var(--success)' : 'var(--warning)',
+                              }}
+                            />
+                          </div>
+                          <p className="text-[10px] text-text-tertiary mt-0.5">
+                            {g.metricType}: {formatMetricNumber(g.current)} / {formatMetricNumber(g.target)}
+                          </p>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
+
+                {/* Content Mix: Meta vs Realizado */}
+                {stats.contentMixComparison.length > 0 && (
+                  <div className="card p-6">
+                    <p className="text-label text-text-tertiary mb-4">Mix de Conteúdo: Meta vs Realizado</p>
+                    <div className="space-y-3">
+                      {stats.contentMixComparison.map((item) => (
+                        <div key={item.name}>
+                          <div className="flex items-center justify-between mb-1">
+                            <span className="text-sm text-text-primary font-medium">{item.name}</span>
+                            <span className={cn(
+                              'text-[10px] font-semibold px-1.5 py-0.5 rounded',
+                              item.status === 'ok' && 'bg-success-surface text-success',
+                              item.status === 'warning' && 'bg-warning-surface text-warning',
+                              item.status === 'critical' && 'bg-error-surface text-error',
+                            )}>
+                              {item.deviation > 0 ? '+' : ''}{item.deviation}pp
+                            </span>
+                          </div>
+                          <div className="flex items-center gap-3">
+                            <div className="flex-1">
+                              <div className="h-4 bg-bg-hover rounded overflow-hidden relative">
+                                {/* Target line */}
+                                <div
+                                  className="absolute top-0 bottom-0 w-0.5 bg-text-tertiary z-10"
+                                  style={{ left: `${item.targetPct}%` }}
+                                />
+                                {/* Actual bar */}
+                                <div
+                                  className="h-full rounded transition-all duration-300"
+                                  style={{
+                                    width: `${Math.min(item.actualPct, 100)}%`,
+                                    backgroundColor: item.status === 'ok' ? 'var(--success)' : item.status === 'warning' ? 'var(--warning)' : 'var(--error)',
+                                  }}
+                                />
+                              </div>
+                            </div>
+                            <span className="text-[10px] text-text-tertiary w-20 text-right shrink-0">
+                              {item.actualPct}% / {item.targetPct}%
+                            </span>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
+              </div>
+            )}
+
+            {/* ===== POSTING PACE + SERIES STATUS ===== */}
+            {(stats.postingPace || stats.seriesStatus.length > 0) && (
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+                {/* Posting Pace */}
+                {stats.postingPace && (
+                  <div className="card p-6">
+                    <p className="text-label text-text-tertiary mb-4">Ritmo de Postagem</p>
+                    <div className="flex items-baseline gap-2 mb-3">
+                      <p className="text-3xl font-bold text-text-primary">{stats.postingPace.actualThisWeek}</p>
+                      <p className="text-sm text-text-secondary">/ {stats.postingPace.targetPerWeek} esta semana</p>
+                    </div>
+                    <span className={cn(
+                      'text-xs font-semibold px-2 py-1 rounded',
+                      stats.postingPace.status === 'ahead' && 'bg-success-surface text-success',
+                      stats.postingPace.status === 'on_track' && 'bg-accent-surface text-accent',
+                      stats.postingPace.status === 'behind' && 'bg-warning-surface text-warning',
+                    )}>
+                      {stats.postingPace.status === 'ahead' ? 'Adiantado' : stats.postingPace.status === 'on_track' ? 'No ritmo' : 'Atrasado'}
+                    </span>
+                    {stats.postingPace.weeklyTrend.length > 0 && (
+                      <div className="flex items-end gap-1 mt-4 h-10">
+                        {stats.postingPace.weeklyTrend.map((count, i) => {
+                          const max = Math.max(...stats.postingPace.weeklyTrend, 1);
+                          const height = Math.max((count / max) * 100, 8);
+                          return (
+                            <div
+                              key={i}
+                              className="flex-1 rounded-t transition-all duration-300"
+                              style={{
+                                height: `${height}%`,
+                                backgroundColor: i === stats.postingPace.weeklyTrend.length - 1 ? 'var(--accent)' : 'var(--bg-hover)',
+                              }}
+                              title={`Semana ${i + 1}: ${count} posts`}
+                            />
+                          );
+                        })}
+                      </div>
+                    )}
+                  </div>
+                )}
+
+                {/* Series Status */}
+                {stats.seriesStatus.length > 0 && (
+                  <div className="card p-6">
+                    <div className="flex items-center justify-between mb-4">
+                      <p className="text-label text-text-tertiary">Séries de Conteúdo</p>
+                      <Link
+                        href="/series"
+                        className="flex h-8 w-8 items-center justify-center rounded-lg bg-accent-surface hover:bg-accent-surface-hover transition-colors"
+                      >
+                        <ArrowRight size={16} className="text-accent" />
+                      </Link>
+                    </div>
+                    <div className="space-y-3">
+                      {stats.seriesStatus.map((s) => (
+                        <div key={s.id} className="flex items-center gap-3">
+                          <div
+                            className="h-3 w-3 rounded-full shrink-0"
+                            style={{ backgroundColor: s.color }}
+                          />
+                          <div className="flex-1 min-w-0">
+                            <p className="text-sm font-medium text-text-primary truncate">{s.name}</p>
+                            <p className="text-[10px] text-text-tertiary">
+                              EP {s.lastEpisode} {s.lastPublished ? `· ${new Date(s.lastPublished).toLocaleDateString('pt-BR', { day: '2-digit', month: 'short' })}` : ''}
+                            </p>
+                          </div>
+                          <span className={cn(
+                            'text-[10px] font-semibold px-1.5 py-0.5 rounded',
+                            s.status === 'on_track' && 'bg-success-surface text-success',
+                            s.status === 'overdue' && 'bg-error-surface text-error',
+                            s.status === 'paused' && 'bg-bg-hover text-text-tertiary',
+                          )}>
+                            {s.status === 'on_track' ? 'Em dia' : s.status === 'overdue' ? 'Atrasada' : 'Pausada'}
+                          </span>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
+              </div>
+            )}
 
             {/* ===== FORMAT SIGNATURE ===== */}
             <div className="mb-6">

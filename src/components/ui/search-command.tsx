@@ -8,18 +8,7 @@ import { cn } from '@/lib/utils';
 import type { Post } from '@/types';
 import { FORMAT_LABELS, STATUS_LABELS } from '@/types';
 
-interface SearchResult extends Post {
-  pillar?: {
-    id: string;
-    name: string;
-    color: string;
-    slug: string;
-    targetPercentage: number;
-    description: string;
-    isActive: boolean;
-    order: number;
-  };
-}
+type SearchResult = Post;
 
 export default function SearchCommand() {
   const { isOpen, close } = useSearchStore();
