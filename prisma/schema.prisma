@@ -279,6 +279,7 @@ model Post {
   socialAccountId      String?               @map("social_account_id")
 
   // Novos campos: roteiro, serie, cross-post
+  referenceLink        String?               @map("reference_link")
   script               String?               @db.Text
   scriptMethod         String?               @map("script_method")
   ctaKeyword           String?               @map("cta_keyword")

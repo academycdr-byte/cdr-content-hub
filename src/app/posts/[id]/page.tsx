@@ -43,6 +43,7 @@ export default function PostBuilderPage({ params }: PostBuilderPageProps) {
   const [purpose, setPurpose] = useState('');
   const [audience, setAudience] = useState('');
   const [onlyIvan, setOnlyIvan] = useState(false);
+  const [referenceLink, setReferenceLink] = useState('');
 
   // AI analysis
   const [aiAnalysis, setAiAnalysis] = useState<{
@@ -84,6 +85,7 @@ export default function PostBuilderPage({ params }: PostBuilderPageProps) {
       setPurpose(postData.purpose || '');
       setAudience(postData.audience || '');
       setOnlyIvan(postData.onlyIvan || false);
+      setReferenceLink(postData.referenceLink || '');
 
       // Parse body as framework values
       if (postData.body) {
@@ -149,7 +151,7 @@ export default function PostBuilderPage({ params }: PostBuilderPageProps) {
 
   // Auto-save every 30 seconds
   useEffect(() => {
-    const currentData = JSON.stringify({ title, caption, hashtags, frameworkValues, purpose, audience, onlyIvan });
+    const currentData = JSON.stringify({ title, caption, hashtags, frameworkValues, purpose, audience, onlyIvan, referenceLink });
 
     if (lastSavedRef.current === currentData || !post) return;
 
@@ -167,7 +169,7 @@ export default function PostBuilderPage({ params }: PostBuilderPageProps) {
         clearTimeout(autoSaveTimerRef.current);
       }
     };
-  }, [title, caption, hashtags, frameworkValues, purpose, audience, onlyIvan, post]);
+  }, [title, caption, hashtags, frameworkValues, purpose, audience, onlyIvan, referenceLink, post]);
 
   // Save post
   const savePost = useCallback(async (isAutoSave = false) => {
@@ -191,6 +193,7 @@ export default function PostBuilderPage({ params }: PostBuilderPageProps) {
           purpose: purpose || null,
           audience: audience || null,
           onlyIvan,
+          referenceLink: referenceLink || null,
           script: post.script || null,
           productionNotes: post.productionNotes || null,
         }),
@@ -211,7 +214,7 @@ export default function PostBuilderPage({ params }: PostBuilderPageProps) {
     } finally {
       if (!isAutoSave) setSaving(false);
     }
-  }, [post, title, caption, hashtags, frameworkValues, purpose, audience, onlyIvan, addToast]);
+  }, [post, title, caption, hashtags, frameworkValues, purpose, audience, onlyIvan, referenceLink, addToast]);
 
   // Advance status
   const advanceStatus = useCallback(async () => {
@@ -719,7 +722,12 @@ export default function PostBuilderPage({ params }: PostBuilderPageProps) {
 
         {/* Right: Preview & Sidebar */}
         <div className="space-y-6">
-          <PostSidebar post={post} pillar={pillar} />
+          <PostSidebar
+            post={post}
+            pillar={pillar}
+            referenceLink={referenceLink}
+            onReferenceLinkChange={setReferenceLink}
+          />
 
           <ContentPreview
             framework={framework}

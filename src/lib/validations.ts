@@ -14,6 +14,7 @@ export const createPostSchema = z.object({
   onlyIvan: z.boolean().optional(),
   socialAccountId: z.string().nullable().optional(),
   // Novos campos
+  referenceLink: z.string().url().nullable().optional().or(z.literal('').transform(() => null)),
   script: z.string().max(50000).nullable().optional(),
   scriptMethod: z.string().max(100).nullable().optional(),
   ctaKeyword: z.string().max(100).nullable().optional(),
@@ -38,6 +39,7 @@ export const updatePostSchema = z.object({
   onlyIvan: z.boolean().optional(),
   socialAccountId: z.string().nullable().optional(),
   // Novos campos
+  referenceLink: z.string().url().nullable().optional().or(z.literal('').transform(() => null)),
   script: z.string().max(50000).nullable().optional(),
   scriptMethod: z.string().max(100).nullable().optional(),
   ctaKeyword: z.string().max(100).nullable().optional(),

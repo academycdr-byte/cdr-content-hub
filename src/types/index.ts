@@ -75,6 +75,7 @@ export interface Post {
   onlyIvan: boolean;
   socialAccountId: string | null;
   // Novos campos
+  referenceLink: string | null;
   script: string | null;
   scriptMethod: string | null;
   ctaKeyword: string | null;

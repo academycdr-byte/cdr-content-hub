@@ -67,6 +67,7 @@ export async function PUT(request: Request, context: RouteContext) {
         ...(body.seriesEpisode !== undefined && { seriesEpisode: body.seriesEpisode }),
         ...(body.crossPostId !== undefined && { crossPostId: body.crossPostId }),
         ...(body.productionNotes !== undefined && { productionNotes: body.productionNotes }),
+        ...(body.referenceLink !== undefined && { referenceLink: body.referenceLink }),
       },
       include: { contentPillar: true, socialAccount: { select: { id: true, platform: true, username: true, displayName: true } }, series: true },
     });
