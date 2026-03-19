@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useState, useCallback } from 'react';
+import { createPortal } from 'react-dom';
 import {
   DndContext,
   DragOverlay,
@@ -296,17 +297,23 @@ export default function CalendarPage() {
               onDeletePost={handleDeletePost}
             />
 
-            <DragOverlay dropAnimation={null}>
-              {activePost ? (
-                <div className="w-[160px]">
-                  <CalendarPostCard
-                    post={activePost}
-                    onClick={() => {}}
-                    isDragging
-                  />
-                </div>
-              ) : null}
-            </DragOverlay>
+            {/* Portal to document.body ensures position:fixed is always
+                relative to the viewport, regardless of ancestor CSS
+                (backdrop-filter, transform, etc. break fixed positioning) */}
+            {typeof document !== 'undefined' && createPortal(
+              <DragOverlay dropAnimation={null}>
+                {activePost ? (
+                  <div className="w-[160px]">
+                    <CalendarPostCard
+                      post={activePost}
+                      onClick={() => {}}
+                      isDragging
+                    />
+                  </div>
+                ) : null}
+              </DragOverlay>,
+              document.body
+            )}
           </DndContext>
         )}
       </div>
