@@ -37,7 +37,7 @@ const CalendarPostCard = memo(function CalendarPostCard({
   return (
     <div
       className={cn(
-        'group/card relative w-full flex items-center gap-1.5 rounded-md px-2 py-1 text-left text-[11px] font-medium transition-all',
+        'group/card relative w-full flex items-center gap-1.5 rounded-md px-2 py-1 text-left text-[11px] font-medium transition-[opacity,box-shadow]',
         'hover:ring-1 hover:ring-border-strong',
         isDragging && 'opacity-50 ring-2 ring-accent'
       )}
@@ -75,7 +75,8 @@ const CalendarPostCard = memo(function CalendarPostCard({
             e.stopPropagation();
             onDelete();
           }}
-          className="shrink-0 hidden group-hover/card:flex items-center justify-center h-4 w-4 rounded-sm bg-error/10 text-error hover:bg-error/20 transition-colors"
+          onPointerDown={(e) => e.stopPropagation()}
+          className="absolute right-1 top-1/2 -translate-y-1/2 hidden group-hover/card:flex items-center justify-center h-4 w-4 rounded-sm bg-error/10 text-error hover:bg-error/20 transition-colors z-10"
           title="Remover post"
         >
           <X size={10} />

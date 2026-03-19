@@ -222,6 +222,7 @@ function DraggablePost({ post, onPostClick, onDeletePost }: DraggablePostProps) 
       ref={setNodeRef}
       {...(isPublished ? {} : listeners)}
       {...(isPublished ? {} : attributes)}
+      style={isPublished ? undefined : { touchAction: 'none' }}
       className={cn(
         isPublished && 'cursor-default',
         !isPublished && 'cursor-grab active:cursor-grabbing',
