@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState, useCallback } from 'react';
+import { useEffect, useState, useCallback, useRef } from 'react';
 import { createPortal } from 'react-dom';
 import {
   DndContext,
@@ -48,6 +48,10 @@ export default function CalendarPage() {
   const [socialAccounts, setSocialAccounts] = useState<SocialAccount[]>([]);
   const [seriesList, setSeriesList] = useState<ContentSeries[]>([]);
   const [filterAccountId, setFilterAccountId] = useState<string | null>(null);
+
+  // Custom pointer-following overlay (bypasses dnd-kit's positioning entirely)
+  const [pointerPos, setPointerPos] = useState<{ x: number; y: number } | null>(null);
+  const grabOffsetRef = useRef({ x: 0, y: 0 });
 
   const sensors = useSensors(
     useSensor(PointerSensor, {
@@ -140,8 +144,31 @@ export default function CalendarPage() {
 
   const handleDragStart = useCallback((event: DragStartEvent) => {
     const post = posts.find((p) => p.id === event.active.id);
-    if (post) setActivePost(post);
+    if (!post) return;
+
+    // Capture grab offset: distance from pointer to element top-left
+    const pe = event.activatorEvent as PointerEvent;
+    const rect = event.active.rect.current.initial;
+    if (rect && pe) {
+      grabOffsetRef.current = { x: pe.clientX - rect.left, y: pe.clientY - rect.top };
+      setPointerPos({ x: pe.clientX, y: pe.clientY });
+    }
+
+    setActivePost(post);
   }, [posts]);
+
+  // Track pointer position during drag
+  useEffect(() => {
+    if (!activePost) {
+      setPointerPos(null);
+      return;
+    }
+    const onPointerMove = (e: PointerEvent) => {
+      setPointerPos({ x: e.clientX, y: e.clientY });
+    };
+    window.addEventListener('pointermove', onPointerMove);
+    return () => window.removeEventListener('pointermove', onPointerMove);
+  }, [activePost]);
 
   const handleDragEnd = useCallback(async (event: DragEndEvent) => {
     setActivePost(null);
@@ -297,23 +324,11 @@ export default function CalendarPage() {
               onDeletePost={handleDeletePost}
             />
 
-            {/* Portal to document.body ensures position:fixed is always
-                relative to the viewport, regardless of ancestor CSS
-                (backdrop-filter, transform, etc. break fixed positioning) */}
-            {typeof document !== 'undefined' && createPortal(
-              <DragOverlay dropAnimation={null}>
-                {activePost ? (
-                  <div className="w-[160px]">
-                    <CalendarPostCard
-                      post={activePost}
-                      onClick={() => {}}
-                      isDragging
-                    />
-                  </div>
-                ) : null}
-              </DragOverlay>,
-              document.body
-            )}
+            {/* Keep DragOverlay mounted (invisible) so dnd-kit knows we use
+                the overlay pattern and doesn't move the original element */}
+            <DragOverlay dropAnimation={null} style={{ opacity: 0 }}>
+              {activePost ? <div /> : null}
+            </DragOverlay>
           </DndContext>
         )}
       </div>
@@ -322,6 +337,28 @@ export default function CalendarPage() {
       <div className="mt-6 md:hidden max-w-full">
         <MobileWeeklyList posts={filteredPosts} onPostClick={handlePostClick} />
       </div>
+
+      {/* Custom pointer-following drag overlay — bypasses dnd-kit positioning
+          which can be offset in some environments (Windows scaling, backdrop-filter, etc.) */}
+      {activePost && pointerPos && typeof document !== 'undefined' && createPortal(
+        <div
+          style={{
+            position: 'fixed',
+            left: pointerPos.x - grabOffsetRef.current.x,
+            top: pointerPos.y - grabOffsetRef.current.y,
+            width: 160,
+            pointerEvents: 'none',
+            zIndex: 9999,
+          }}
+        >
+          <CalendarPostCard
+            post={activePost}
+            onClick={() => {}}
+            isDragging
+          />
+        </div>,
+        document.body
+      )}
 
       {/* Create Post Modal rendered outside animate-fade-in to prevent transform breaking fixed positioning */}
       <CreatePostModal
