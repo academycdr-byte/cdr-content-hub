@@ -219,59 +219,64 @@ export default function CalendarPage() {
   };
 
   return (
-    <div className="max-w-full animate-fade-in">
-      <CalendarHeader
-        year={currentYear}
-        month={currentMonth}
-        posts={filteredPosts}
-        pillars={pillars}
-        socialAccounts={socialAccounts}
-        selectedAccountId={filterAccountId}
-        onAccountFilter={setFilterAccountId}
-        onPrevMonth={handlePrevMonth}
-        onNextMonth={handleNextMonth}
-        onToday={handleToday}
-        onNewPost={handleNewPost}
-      />
+    <>
+      <div className="max-w-full animate-fade-in">
+        <CalendarHeader
+          year={currentYear}
+          month={currentMonth}
+          posts={filteredPosts}
+          pillars={pillars}
+          socialAccounts={socialAccounts}
+          selectedAccountId={filterAccountId}
+          onAccountFilter={setFilterAccountId}
+          onPrevMonth={handlePrevMonth}
+          onNextMonth={handleNextMonth}
+          onToday={handleToday}
+          onNewPost={handleNewPost}
+        />
 
-      {/* Planning Summary */}
-      <div className="mt-4 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-        <div className="flex items-center gap-4 flex-wrap">
-          <span className="text-sm text-text-secondary">
-            <span className="font-semibold text-text-primary">{totalPlanned}</span> post{totalPlanned !== 1 ? 's' : ''} planejado{totalPlanned !== 1 ? 's' : ''} no mês
-          </span>
-          {Object.entries(byFormat).length > 0 && (
-            <div className="flex items-center gap-2">
-              {Object.entries(byFormat).map(([format, count]) => (
+        {/* Planning Summary */}
+        <div className="mt-4 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+          <div className="flex items-center gap-4 flex-wrap">
+            <span className="text-sm text-text-secondary">
+              <span className="font-semibold text-text-primary">{totalPlanned}</span> post{totalPlanned !== 1 ? 's' : ''} planejado{totalPlanned !== 1 ? 's' : ''} no mês
+            </span>
+            {Object.entries(byFormat).length > 0 && (
+              <div className="flex items-center gap-2">
+                {Object.entries(byFormat).map(([format, count]) => (
+                  <span
+                    key={format}
+                    className="badge text-[10px] bg-bg-secondary text-text-secondary"
+                  >
+                    {FORMAT_LABELS[format] || format}: {count}
+                  </span>
+                ))}
+              </div>
+            )}
+          </div>
+          {Object.entries(byPillar).length > 0 && (
+            <div className="flex items-center gap-2 flex-wrap">
+              {Object.values(byPillar).map((p) => (
                 <span
-                  key={format}
-                  className="badge text-[10px] bg-bg-secondary text-text-secondary"
+                  key={p.name}
+                  className="badge text-[10px]"
+                  style={{
+                    backgroundColor: `${p.color}15`,
+                    color: p.color,
+                  }}
                 >
-                  {FORMAT_LABELS[format] || format}: {count}
+                  {p.name}: {p.count}
                 </span>
               ))}
             </div>
           )}
         </div>
-        {Object.entries(byPillar).length > 0 && (
-          <div className="flex items-center gap-2 flex-wrap">
-            {Object.values(byPillar).map((p) => (
-              <span
-                key={p.name}
-                className="badge text-[10px]"
-                style={{
-                  backgroundColor: `${p.color}15`,
-                  color: p.color,
-                }}
-              >
-                {p.name}: {p.count}
-              </span>
-            ))}
-          </div>
-        )}
       </div>
 
-      <div className="mt-4">
+      {/* DndContext rendered OUTSIDE animate-fade-in to prevent transform
+          breaking DragOverlay's position:fixed positioning.
+          See: hooks/page.tsx, results/page.tsx for same pattern. */}
+      <div className="mt-4 max-w-full">
         {loading ? (
           <CalendarSkeleton />
         ) : (
@@ -291,7 +296,7 @@ export default function CalendarPage() {
               onDeletePost={handleDeletePost}
             />
 
-            <DragOverlay>
+            <DragOverlay dropAnimation={null}>
               {activePost ? (
                 <div className="w-[160px]">
                   <CalendarPostCard
@@ -307,11 +312,11 @@ export default function CalendarPage() {
       </div>
 
       {/* Mobile: Weekly Planning List */}
-      <div className="mt-6 md:hidden">
+      <div className="mt-6 md:hidden max-w-full">
         <MobileWeeklyList posts={filteredPosts} onPostClick={handlePostClick} />
       </div>
 
-      {/* Create Post Modal */}
+      {/* Create Post Modal rendered outside animate-fade-in to prevent transform breaking fixed positioning */}
       <CreatePostModal
         isOpen={showCreateModal}
         onClose={() => setShowCreateModal(false)}
@@ -321,7 +326,7 @@ export default function CalendarPage() {
         socialAccounts={socialAccounts}
         series={seriesList}
       />
-    </div>
+    </>
   );
 }
 
