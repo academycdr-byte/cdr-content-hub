@@ -20,6 +20,7 @@ import dynamic from 'next/dynamic';
 import type { CreatePostData } from '@/components/posts/create-post-modal';
 
 const CreatePostModal = dynamic(() => import('@/components/posts/create-post-modal'), { ssr: false });
+import { utcDateKey, formatDateISO } from '@/lib/utils';
 import type { Post, SocialAccount, ContentSeries } from '@/types';
 
 export default function CalendarPage() {
@@ -362,12 +363,7 @@ function MobileWeeklyList({
       {weekDays.map((date, i) => {
         const dayPosts = posts.filter((p) => {
           if (!p.scheduledDate) return false;
-          const pDate = new Date(p.scheduledDate);
-          return (
-            pDate.getDate() === date.getDate() &&
-            pDate.getMonth() === date.getMonth() &&
-            pDate.getFullYear() === date.getFullYear()
-          );
+          return utcDateKey(p.scheduledDate) === formatDateISO(date);
         });
 
         return (

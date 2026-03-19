@@ -2,7 +2,7 @@
 
 import { useMemo } from 'react';
 import { Plus } from 'lucide-react';
-import { cn, getMonthDays, isSameDay, isToday } from '@/lib/utils';
+import { cn, getMonthDays, isSameDayUTC, isToday } from '@/lib/utils';
 import type { Post } from '@/types';
 import CalendarPostCard from '@/components/calendar/calendar-post-card';
 
@@ -28,7 +28,7 @@ export default function CalendarGrid({
   const getPostsForDay = (date: Date): Post[] => {
     return posts.filter((post) => {
       if (!post.scheduledDate) return false;
-      return isSameDay(new Date(post.scheduledDate), date);
+      return isSameDayUTC(post.scheduledDate, date);
     });
   };
 

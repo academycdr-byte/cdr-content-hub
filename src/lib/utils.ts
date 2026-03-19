@@ -11,6 +11,7 @@ export function formatDate(date: Date | string): string {
     day: '2-digit',
     month: 'short',
     year: 'numeric',
+    timeZone: 'UTC',
   });
 }
 
@@ -19,6 +20,16 @@ export function formatDateISO(date: Date): string {
   const month = String(date.getMonth() + 1).padStart(2, '0');
   const day = String(date.getDate()).padStart(2, '0');
   return `${year}-${month}-${day}`;
+}
+
+/**
+ * Extract YYYY-MM-DD from a UTC date string or Date object using UTC methods.
+ * Use this for dates stored as UTC midnight (scheduledDate, publishedAt)
+ * to avoid timezone shift (e.g. "2026-03-23T00:00:00Z" → "2026-03-22" in UTC-3).
+ */
+export function utcDateKey(date: Date | string): string {
+  const d = typeof date === 'string' ? new Date(date) : date;
+  return d.toISOString().split('T')[0];
 }
 
 export function getMonthDays(year: number, month: number): Date[] {
@@ -53,6 +64,15 @@ export function isSameDay(a: Date, b: Date): boolean {
     a.getMonth() === b.getMonth() &&
     a.getDate() === b.getDate()
   );
+}
+
+/**
+ * Check if a UTC date string (scheduledDate/publishedAt from DB) falls on the
+ * same calendar day as a local Date. Compares the UTC date part of `utcDate`
+ * against the local date part of `localDate`.
+ */
+export function isSameDayUTC(utcDate: Date | string, localDate: Date): boolean {
+  return utcDateKey(utcDate) === formatDateISO(localDate);
 }
 
 export function isToday(date: Date): boolean {

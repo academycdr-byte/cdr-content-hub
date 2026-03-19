@@ -242,7 +242,7 @@ function calculateConsistencyScore(
     for (const post of publishedPosts) {
       const postDate = post.scheduledDate || post.updatedAt;
       if (postDate >= weekStart && postDate <= weekEnd) {
-        const dayKey = `${postDate.getFullYear()}-${postDate.getMonth()}-${postDate.getDate()}`;
+        const dayKey = `${postDate.getUTCFullYear()}-${postDate.getUTCMonth()}-${postDate.getUTCDate()}`;
         daysWithPosts.add(dayKey);
       }
     }

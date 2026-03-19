@@ -24,8 +24,9 @@ export async function GET(request: NextRequest) {
 
     if (month) {
       const [year, m] = month.split('-').map(Number);
-      const startDate = new Date(year, m - 1, 1);
-      const endDate = new Date(year, m, 0);
+      // Use UTC dates to match scheduledDate stored as UTC midnight
+      const startDate = new Date(Date.UTC(year, m - 1, 1));
+      const endDate = new Date(Date.UTC(year, m, 0, 23, 59, 59, 999));
       where.scheduledDate = {
         gte: startDate,
         lte: endDate,

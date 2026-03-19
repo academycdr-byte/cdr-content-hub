@@ -16,9 +16,9 @@ export async function GET(request: NextRequest) {
     const platformFilter = searchParams.get('platform') as SocialPlatform | null;
     const accountIdFilter = searchParams.get('accountId');
 
-    // Date range for the month (with buffer for calendar display)
-    const startDate = new Date(year, month - 1, 1);
-    const endDate = new Date(year, month, 0, 23, 59, 59, 999);
+    // Date range for the month using UTC to match dates stored as UTC midnight
+    const startDate = new Date(Date.UTC(year, month - 1, 1));
+    const endDate = new Date(Date.UTC(year, month, 0, 23, 59, 59, 999));
 
     // Fetch internal posts (scheduled in this month)
     const internalPosts = await prisma.post.findMany({
@@ -174,8 +174,8 @@ export async function GET(request: NextRequest) {
 }
 
 function formatDateKey(date: Date): string {
-  const y = date.getFullYear();
-  const m = String(date.getMonth() + 1).padStart(2, '0');
-  const d = String(date.getDate()).padStart(2, '0');
+  const y = date.getUTCFullYear();
+  const m = String(date.getUTCMonth() + 1).padStart(2, '0');
+  const d = String(date.getUTCDate()).padStart(2, '0');
   return `${y}-${m}-${d}`;
 }

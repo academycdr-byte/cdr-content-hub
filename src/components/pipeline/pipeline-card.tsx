@@ -24,7 +24,7 @@ const PipelineCard = memo(function PipelineCard({ post, daysInColumn, onClick, i
   const isOverdue = daysInColumn > 3;
 
   const scheduledLabel = post.scheduledDate
-    ? new Date(post.scheduledDate).toLocaleDateString('pt-BR', { day: '2-digit', month: 'short' })
+    ? new Date(post.scheduledDate).toLocaleDateString('pt-BR', { day: '2-digit', month: 'short', timeZone: 'UTC' })
     : null;
 
   return (

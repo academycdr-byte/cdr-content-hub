@@ -111,7 +111,8 @@ export async function GET() {
     }
 
     // 2. Posts com scheduledDate hoje ou atrasados e status != PUBLISHED
-    const todayStart = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+    // Use UTC dates to match scheduledDate stored as UTC midnight
+    const todayStart = new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate()));
     const todayEnd = new Date(todayStart.getTime() + 24 * 60 * 60 * 1000);
 
     const overdueOrTodayPosts = await prisma.post.findMany({
@@ -143,7 +144,7 @@ export async function GET() {
           id: `overdue-${post.id}`,
           type: 'error',
           title: 'Post atrasado',
-          message: `"${post.title}" estava agendado para ${post.scheduledDate.toLocaleDateString('pt-BR')} e ainda nao foi publicado.`,
+          message: `"${post.title}" estava agendado para ${post.scheduledDate.toLocaleDateString('pt-BR', { timeZone: 'UTC' })} e ainda nao foi publicado.`,
           createdAt: now.toISOString(),
           read: false,
         });

@@ -27,6 +27,7 @@ export default function PostSidebar({ post, pillar }: PostSidebarProps) {
         day: '2-digit',
         month: 'long',
         year: 'numeric',
+        timeZone: 'UTC',
       })
     : 'Não agendado';
 

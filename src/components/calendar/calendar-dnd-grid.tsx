@@ -3,7 +3,7 @@
 import { useMemo, useState } from 'react';
 import { useDroppable, useDraggable } from '@dnd-kit/core';
 import { Plus, ChevronDown, ChevronUp } from 'lucide-react';
-import { cn, getMonthDays, isSameDay, isToday, formatDateISO } from '@/lib/utils';
+import { cn, getMonthDays, isSameDayUTC, isToday, formatDateISO } from '@/lib/utils';
 import type { Post, CalendarEntry } from '@/types';
 import CalendarPostCard from '@/components/calendar/calendar-post-card';
 import CalendarSocialCard from '@/components/calendar/calendar-social-card';
@@ -36,7 +36,7 @@ export default function CalendarDndGrid({
   const getPostsForDay = (date: Date): Post[] => {
     return posts.filter((post) => {
       if (!post.scheduledDate) return false;
-      return isSameDay(new Date(post.scheduledDate), date);
+      return isSameDayUTC(post.scheduledDate, date);
     });
   };
 

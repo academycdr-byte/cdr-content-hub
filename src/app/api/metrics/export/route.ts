@@ -53,7 +53,7 @@ export async function GET(request: NextRequest) {
       // Escape CSV values that may contain commas or quotes
       const safeTitle = `"${postTitle.replace(/"/g, '""')}"`;
       const platformLabel = m.socialAccount?.platform || m.platform;
-      const date = new Date(m.publishedAt).toLocaleDateString('pt-BR');
+      const date = new Date(m.publishedAt).toLocaleDateString('pt-BR', { timeZone: 'UTC' });
       return `${safeTitle},${platformLabel},${m.views},${m.likes},${m.comments},${m.shares},${date}`;
     });
 
