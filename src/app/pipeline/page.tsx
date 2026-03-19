@@ -254,7 +254,7 @@ export default function PipelinePage() {
           )}
         >
           <option value="">Todos os pilares</option>
-          {pillars.map((p) => (
+          {pillars.filter((p, i, arr) => arr.findIndex((x) => x.name === p.name) === i).map((p) => (
             <option key={p.id} value={p.id}>
               {p.name}
             </option>

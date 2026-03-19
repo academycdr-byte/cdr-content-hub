@@ -33,7 +33,7 @@ export async function GET(request: NextRequest) {
       };
     }
 
-    const posts = await prisma.post.findMany({
+    const raw = await prisma.post.findMany({
       where,
       include: {
         contentPillar: true,
@@ -42,6 +42,9 @@ export async function GET(request: NextRequest) {
       orderBy: search ? { updatedAt: 'desc' } : { scheduledDate: 'asc' },
       ...(search ? { take: 20 } : {}),
     });
+
+    // Map contentPillar → pillar to match frontend type
+    const posts = raw.map(({ contentPillar, ...rest }) => ({ ...rest, pillar: contentPillar }));
 
     return NextResponse.json(posts);
   } catch (error) {

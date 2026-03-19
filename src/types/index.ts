@@ -472,8 +472,8 @@ export const FORMAT_LABELS: Record<PostFormat, string> = {
 export const STATUS_LABELS: Record<PostStatus, string> = {
   IDEA: 'Ideia',
   SCRIPT: 'Script',
-  PRODUCTION: 'Gravacao',
-  REVIEW: 'Edicao',
+  PRODUCTION: 'Gravação',
+  REVIEW: 'Edição',
   SCHEDULED: 'Agendado',
   PUBLISHED: 'Publicado',
 } as const;

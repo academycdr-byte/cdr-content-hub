@@ -22,7 +22,8 @@ export async function GET(_request: Request, context: RouteContext) {
       return NextResponse.json({ error: 'Post not found' }, { status: 404 });
     }
 
-    return NextResponse.json(post);
+    const { contentPillar, ...rest } = post;
+    return NextResponse.json({ ...rest, pillar: contentPillar });
   } catch (error) {
     console.error('Failed to fetch post:', error instanceof Error ? error.message : 'Unknown');
     return NextResponse.json({ error: 'Failed to fetch post' }, { status: 500 });
@@ -72,7 +73,8 @@ export async function PUT(request: Request, context: RouteContext) {
       include: { contentPillar: true, socialAccount: { select: { id: true, platform: true, username: true, displayName: true } }, series: true },
     });
 
-    return NextResponse.json(post);
+    const { contentPillar: cp, ...putRest } = post;
+    return NextResponse.json({ ...putRest, pillar: cp });
   } catch (error) {
     console.error('Failed to update post:', error instanceof Error ? error.message : 'Unknown');
     return NextResponse.json({ error: 'Failed to update post' }, { status: 500 });
@@ -107,7 +109,8 @@ export async function PATCH(request: Request, context: RouteContext) {
       include: { contentPillar: true, socialAccount: { select: { id: true, platform: true, username: true, displayName: true } } },
     });
 
-    return NextResponse.json(post);
+    const { contentPillar: patchCp, ...patchRest } = post;
+    return NextResponse.json({ ...patchRest, pillar: patchCp });
   } catch (error) {
     console.error('Failed to patch post:', error instanceof Error ? error.message : 'Unknown');
     return NextResponse.json({ error: 'Failed to patch post' }, { status: 500 });

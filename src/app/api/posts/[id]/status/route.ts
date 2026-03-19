@@ -23,10 +23,11 @@ export async function PATCH(request: Request, context: RouteContext) {
     const post = await prisma.post.update({
       where: { id },
       data: { status: parsed.data.status as PostStatus },
-      include: { contentPillar: true },
+      include: { contentPillar: true, socialAccount: { select: { id: true, platform: true, username: true, displayName: true } } },
     });
 
-    return NextResponse.json(post);
+    const { contentPillar, ...rest } = post;
+    return NextResponse.json({ ...rest, pillar: contentPillar });
   } catch (error) {
     console.error('Failed to update post status:', error instanceof Error ? error.message : 'Unknown');
     return NextResponse.json(

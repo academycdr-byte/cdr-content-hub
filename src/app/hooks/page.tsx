@@ -243,7 +243,7 @@ export default function HooksPage() {
               >
                 Todos
               </button>
-              {pillars.map((pillar) => (
+              {pillars.filter((p, i, arr) => arr.findIndex((x) => x.name === p.name) === i).map((pillar) => (
                 <button
                   key={pillar.id}
                   onClick={() => setSelectedPillar(pillar.id)}
