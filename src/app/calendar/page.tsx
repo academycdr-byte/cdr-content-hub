@@ -5,6 +5,7 @@ import {
   DndContext,
   DragOverlay,
   PointerSensor,
+  pointerWithin,
   useSensor,
   useSensors,
   type DragStartEvent,
@@ -157,16 +158,24 @@ export default function CalendarPage() {
       return;
     }
 
-    const newDate = over.id as string; // format: YYYY-MM-DD
+    const targetDateKey = over.id as string; // format: YYYY-MM-DD
+
+    // Skip if dropped on the same day
+    if (post.scheduledDate && utcDateKey(post.scheduledDate) === targetDateKey) {
+      return;
+    }
+
+    // Build explicit UTC midnight ISO string to avoid timezone ambiguity
+    const newDateISO = `${targetDateKey}T00:00:00.000Z`;
 
     // Optimistic update
-    updatePost(postId, { scheduledDate: newDate });
+    updatePost(postId, { scheduledDate: newDateISO });
 
     try {
       const res = await fetch(`/api/posts/${postId}`, {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ scheduledDate: newDate }),
+        body: JSON.stringify({ scheduledDate: newDateISO }),
       });
 
       if (!res.ok) {
@@ -268,6 +277,7 @@ export default function CalendarPage() {
         ) : (
           <DndContext
             sensors={sensors}
+            collisionDetection={pointerWithin}
             onDragStart={handleDragStart}
             onDragEnd={handleDragEnd}
           >
