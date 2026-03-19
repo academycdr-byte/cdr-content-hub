@@ -18,6 +18,7 @@ interface CalendarDndGridProps {
   onDayClick: (date: Date) => void;
   onPostClick: (post: Post) => void;
   onDeletePost?: (post: Post) => void;
+  onTogglePublished?: (post: Post) => void;
 }
 
 const WEEKDAYS = ['Dom', 'Seg', 'Ter', 'Qua', 'Qui', 'Sex', 'Sab'];
@@ -30,6 +31,7 @@ export default function CalendarDndGrid({
   onDayClick,
   onPostClick,
   onDeletePost,
+  onTogglePublished,
 }: CalendarDndGridProps) {
   const days = useMemo(() => getMonthDays(year, month), [year, month]);
 
@@ -77,6 +79,7 @@ export default function CalendarDndGrid({
               onDayClick={onDayClick}
               onPostClick={onPostClick}
               onDeletePost={onDeletePost}
+              onTogglePublished={onTogglePublished}
             />
           );
         })}
@@ -93,6 +96,7 @@ interface DroppableDayProps {
   onDayClick: (date: Date) => void;
   onPostClick: (post: Post) => void;
   onDeletePost?: (post: Post) => void;
+  onTogglePublished?: (post: Post) => void;
 }
 
 function DroppableDay({
@@ -103,6 +107,7 @@ function DroppableDay({
   onDayClick,
   onPostClick,
   onDeletePost,
+  onTogglePublished,
 }: DroppableDayProps) {
   const dateId = formatDateISO(date);
   const today = isToday(date);
@@ -168,6 +173,7 @@ function DroppableDay({
             post={post}
             onPostClick={onPostClick}
             onDeletePost={onDeletePost}
+            onTogglePublished={onTogglePublished}
           />
         ))}
 
@@ -207,9 +213,10 @@ interface DraggablePostProps {
   post: Post;
   onPostClick: (post: Post) => void;
   onDeletePost?: (post: Post) => void;
+  onTogglePublished?: (post: Post) => void;
 }
 
-function DraggablePost({ post, onPostClick, onDeletePost }: DraggablePostProps) {
+function DraggablePost({ post, onPostClick, onDeletePost, onTogglePublished }: DraggablePostProps) {
   const isPublished = post.status === 'PUBLISHED';
 
   const { attributes, listeners, setNodeRef, isDragging } = useDraggable({
@@ -233,6 +240,7 @@ function DraggablePost({ post, onPostClick, onDeletePost }: DraggablePostProps) 
         post={post}
         onClick={() => onPostClick(post)}
         onDelete={onDeletePost ? () => onDeletePost(post) : undefined}
+        onTogglePublished={onTogglePublished ? () => onTogglePublished(post) : undefined}
         isDragging={isDragging}
       />
     </div>

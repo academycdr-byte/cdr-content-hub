@@ -22,7 +22,7 @@ import dynamic from 'next/dynamic';
 import type { CreatePostData } from '@/components/posts/create-post-modal';
 
 const CreatePostModal = dynamic(() => import('@/components/posts/create-post-modal'), { ssr: false });
-import { utcDateKey, formatDateISO } from '@/lib/utils';
+import { cn, utcDateKey, formatDateISO } from '@/lib/utils';
 import type { Post, SocialAccount, ContentSeries } from '@/types';
 
 export default function CalendarPage() {
@@ -36,6 +36,7 @@ export default function CalendarPage() {
     fetchPosts,
     fetchPillars,
     updatePost,
+    updatePostStatus,
     removePost,
   } = usePostsStore();
 
@@ -219,6 +220,19 @@ export default function CalendarPage() {
     }
   }, [posts, updatePost, addToast]);
 
+  const handleTogglePublished = useCallback(async (post: Post) => {
+    const newStatus = post.status === 'PUBLISHED' ? 'SCHEDULED' : 'PUBLISHED';
+    const ok = await updatePostStatus(post.id, newStatus);
+    if (ok) {
+      addToast(
+        newStatus === 'PUBLISHED' ? 'Post marcado como postado!' : 'Post desmarcado',
+        'success'
+      );
+    } else {
+      addToast('Erro ao atualizar status. Tente novamente.', 'error');
+    }
+  }, [updatePostStatus, addToast]);
+
   // Filter posts by selected account
   const filteredPosts = filterAccountId
     ? posts.filter((p) => p.socialAccountId === filterAccountId)
@@ -226,6 +240,8 @@ export default function CalendarPage() {
 
   // Planning summary stats
   const totalPlanned = filteredPosts.length;
+  const totalPublished = filteredPosts.filter((p) => p.status === 'PUBLISHED').length;
+  const adherencePercent = totalPlanned > 0 ? Math.round((totalPublished / totalPlanned) * 100) : 0;
   const byFormat: Record<string, number> = {};
   const byPillar: Record<string, { name: string; color: string; count: number }> = {};
 
@@ -267,8 +283,21 @@ export default function CalendarPage() {
         <div className="mt-4 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
           <div className="flex items-center gap-4 flex-wrap">
             <span className="text-sm text-text-secondary">
-              <span className="font-semibold text-text-primary">{totalPlanned}</span> post{totalPlanned !== 1 ? 's' : ''} planejado{totalPlanned !== 1 ? 's' : ''} no mês
+              <span className="font-semibold text-text-primary">{totalPlanned}</span> planejado{totalPlanned !== 1 ? 's' : ''}
+              {totalPublished > 0 && (
+                <> · <span className="font-semibold text-success">{totalPublished}</span> postado{totalPublished !== 1 ? 's' : ''}</>
+              )}
             </span>
+            {totalPlanned > 0 && (
+              <span className={cn(
+                'badge text-[10px] font-semibold',
+                adherencePercent >= 80 ? 'bg-success/15 text-success' :
+                adherencePercent >= 50 ? 'bg-warning/15 text-warning' :
+                'bg-bg-secondary text-text-tertiary'
+              )}>
+                {adherencePercent}% aderência
+              </span>
+            )}
             {Object.entries(byFormat).length > 0 && (
               <div className="flex items-center gap-2">
                 {Object.entries(byFormat).map(([format, count]) => (
@@ -322,6 +351,7 @@ export default function CalendarPage() {
               onDayClick={handleDayClick}
               onPostClick={handlePostClick}
               onDeletePost={handleDeletePost}
+              onTogglePublished={handleTogglePublished}
             />
 
             {/* Keep DragOverlay mounted (invisible) so dnd-kit knows we use

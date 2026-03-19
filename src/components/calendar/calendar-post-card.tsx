@@ -1,7 +1,7 @@
 'use client';
 
 import { memo } from 'react';
-import { Film, LayoutGrid, Image, MessageCircle, X, Instagram } from 'lucide-react';
+import { Film, LayoutGrid, Image, MessageCircle, X, Instagram, Check } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import type { Post, PostFormat } from '@/types';
 
@@ -9,6 +9,7 @@ interface CalendarPostCardProps {
   post: Post;
   onClick: () => void;
   onDelete?: () => void;
+  onTogglePublished?: () => void;
   isDragging?: boolean;
 }
 
@@ -30,22 +31,45 @@ const CalendarPostCard = memo(function CalendarPostCard({
   post,
   onClick,
   onDelete,
+  onTogglePublished,
   isDragging,
 }: CalendarPostCardProps) {
   const pillarColor = post.pillar?.color || '#6E6E73';
+  const isPublished = post.status === 'PUBLISHED';
 
   return (
     <div
       className={cn(
         'group/card relative w-full flex items-center gap-1.5 rounded-md px-2 py-1 text-left text-[11px] font-medium transition-[opacity,box-shadow]',
         'hover:ring-1 hover:ring-border-strong',
-        isDragging && 'opacity-50 ring-2 ring-accent'
+        isDragging && 'opacity-50 ring-2 ring-accent',
+        isPublished && 'opacity-60'
       )}
       style={{
         backgroundColor: `${pillarColor}12`,
         borderLeft: `3px solid ${pillarColor}`,
       }}
     >
+      {/* Check button — toggle published */}
+      {onTogglePublished && (
+        <button
+          onClick={(e) => {
+            e.stopPropagation();
+            onTogglePublished();
+          }}
+          onPointerDown={(e) => e.stopPropagation()}
+          className={cn(
+            'shrink-0 flex items-center justify-center h-3.5 w-3.5 rounded-full border transition-colors',
+            isPublished
+              ? 'bg-success border-success text-white'
+              : 'border-text-tertiary hover:border-success hover:bg-success/10'
+          )}
+          title={isPublished ? 'Desmarcar como postado' : 'Marcar como postado'}
+        >
+          {isPublished && <Check size={8} strokeWidth={3} />}
+        </button>
+      )}
+
       <button
         onClick={onClick}
         className="flex items-center gap-1.5 min-w-0 flex-1"
@@ -53,7 +77,7 @@ const CalendarPostCard = memo(function CalendarPostCard({
         <span className="shrink-0" style={{ color: pillarColor }}>
           {FORMAT_ICONS[post.format as PostFormat]}
         </span>
-        <span className="truncate text-text-primary">{post.title}</span>
+        <span className={cn('truncate text-text-primary', isPublished && 'line-through text-text-tertiary')}>{post.title}</span>
         <span className="shrink-0 text-[9px] font-normal text-text-tertiary">
           {FORMAT_LABELS[post.format as PostFormat]}
         </span>
@@ -69,7 +93,7 @@ const CalendarPostCard = memo(function CalendarPostCard({
         )}
       </button>
 
-      {onDelete && (
+      {onDelete && !isPublished && (
         <button
           onClick={(e) => {
             e.stopPropagation();
