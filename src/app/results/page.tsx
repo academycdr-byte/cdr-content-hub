@@ -198,7 +198,7 @@ export default function ResultsPage() {
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-6">
         <div>
-          <h1 className="text-display text-text-primary">Resultados</h1>
+          <h1 className="text-2xl font-semibold text-text-primary">Resultados</h1>
           <p className="text-sm text-text-secondary mt-1">
             {total} case{total !== 1 ? 's' : ''} de sucesso cadastrado{total !== 1 ? 's' : ''}
           </p>
@@ -273,7 +273,7 @@ export default function ResultsPage() {
       {results.length === 0 ? (
         <div className="card p-12 sm:p-16 flex flex-col items-center justify-center text-center">
           <div className="flex h-16 w-16 items-center justify-center rounded-2xl mb-4"
-            style={{ backgroundColor: 'rgba(184, 255, 0, 0.12)' }}
+            style={{ backgroundColor: 'var(--accent-surface)' }}
           >
             <Trophy size={28} className="text-accent" />
           </div>

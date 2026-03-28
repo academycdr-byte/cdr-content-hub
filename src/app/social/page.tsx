@@ -132,7 +132,7 @@ export default function SocialPage() {
       {/* Header */}
       <div className="flex items-start justify-between mb-6">
         <div>
-          <h1 className="text-heading-1 text-text-primary mb-1">
+          <h1 className="text-2xl font-semibold text-text-primary mb-1">
             Contas Sociais
           </h1>
           <p className="text-sm text-text-secondary">

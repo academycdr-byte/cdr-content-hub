@@ -127,8 +127,8 @@ export default function MetricsChart({ metrics, loading }: MetricsChartProps) {
         <AreaChart data={chartData} margin={{ top: 5, right: 5, left: -20, bottom: 0 }}>
           <defs>
             <linearGradient id="igGradient" x1="0" y1="0" x2="0" y2="1">
-              <stop offset="0%" stopColor="#E1306C" stopOpacity={0.3} />
-              <stop offset="100%" stopColor="#E1306C" stopOpacity={0} />
+              <stop offset="0%" stopColor="#A8D600" stopOpacity={0.3} />
+              <stop offset="100%" stopColor="#A8D600" stopOpacity={0} />
             </linearGradient>
             <linearGradient id="tkGradient" x1="0" y1="0" x2="0" y2="1">
               <stop offset="0%" stopColor="#6E6E73" stopOpacity={0.3} />
@@ -160,7 +160,7 @@ export default function MetricsChart({ metrics, loading }: MetricsChartProps) {
             type="monotone"
             dataKey="instagram"
             name="Instagram"
-            stroke="#E1306C"
+            stroke="#A8D600"
             strokeWidth={2}
             fill="url(#igGradient)"
           />

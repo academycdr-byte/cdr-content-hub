@@ -23,10 +23,10 @@ export const CATEGORY_LABELS: Record<string, string> = {
 };
 
 export const CATEGORY_COLORS: Record<string, { bg: string; text: string }> = {
-  QUESTION: { bg: 'rgba(48, 176, 199, 0.12)', text: '#30B0C7' },
-  STATISTIC: { bg: 'rgba(52, 199, 89, 0.12)', text: '#34C759' },
-  CONTRARIAN: { bg: 'rgba(255, 69, 58, 0.12)', text: '#FF453A' },
-  STORY_HOOK: { bg: 'rgba(191, 90, 242, 0.12)', text: '#BF5AF2' },
-  CHALLENGE: { bg: 'rgba(255, 159, 10, 0.12)', text: '#FF9F0A' },
-  COMPETITOR: { bg: 'rgba(100, 210, 255, 0.12)', text: '#64D2FF' },
+  QUESTION: { bg: 'var(--info-surface)', text: 'var(--info)' },
+  STATISTIC: { bg: 'var(--success-surface)', text: 'var(--success)' },
+  CONTRARIAN: { bg: 'var(--error-surface)', text: 'var(--error)' },
+  STORY_HOOK: { bg: 'var(--pillar-education-surface)', text: 'var(--pillar-education)' },
+  CHALLENGE: { bg: 'var(--warning-surface)', text: 'var(--warning)' },
+  COMPETITOR: { bg: 'var(--info-surface)', text: 'var(--info)' },
 };

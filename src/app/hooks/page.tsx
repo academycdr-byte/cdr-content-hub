@@ -194,7 +194,7 @@ export default function HooksPage() {
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-6">
         <div>
-          <h1 className="text-display text-text-primary">Banco de Ideias</h1>
+          <h1 className="text-2xl font-semibold text-text-primary">Banco de Ideias</h1>
           <p className="text-sm text-text-secondary mt-1">
             {filteredHooks.length} ideia{filteredHooks.length !== 1 ? 's' : ''} encontrada{filteredHooks.length !== 1 ? 's' : ''}
           </p>
@@ -367,7 +367,7 @@ export default function HooksPage() {
         <div className="card p-12 sm:p-16 flex flex-col items-center justify-center text-center">
           <div
             className="flex h-16 w-16 items-center justify-center rounded-2xl mb-4"
-            style={{ backgroundColor: 'rgba(184, 255, 0, 0.12)' }}
+            style={{ backgroundColor: 'var(--accent-surface)' }}
           >
             <Lightbulb size={28} className="text-accent" />
           </div>

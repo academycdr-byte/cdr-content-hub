@@ -45,7 +45,7 @@ export default function LoginPage() {
         <div className="mb-10 text-center">
           <div
             className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-2xl text-xl font-bold"
-            style={{ backgroundColor: '#B8FF00', color: '#1D1D1F' }}
+            style={{ backgroundColor: 'var(--accent)', color: 'var(--text-inverted)' }}
           >
             CH
           </div>

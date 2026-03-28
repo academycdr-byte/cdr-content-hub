@@ -36,7 +36,7 @@ export function HookDetailModal({ hook, pillars, pillarColor, pillarName, onClos
   const [editFormat, setEditFormat] = useState(hook.format);
   const [editCategory, setEditCategory] = useState(hook.category);
   const [editPillarId, setEditPillarId] = useState<string | null>(hook.pillarId);
-  const catColors = CATEGORY_COLORS[hook.category] || { bg: 'rgba(142, 142, 147, 0.12)', text: '#8E8E93' };
+  const catColors = CATEGORY_COLORS[hook.category] || { bg: 'var(--bg-secondary)', text: 'var(--text-tertiary)' };
 
   const handleCopy = async () => {
     await onCopy(hook);
@@ -249,7 +249,7 @@ export function HookDetailModal({ hook, pillars, pillarColor, pillarName, onClos
                     <label className="text-xs font-semibold text-text-secondary mb-2 block">Categoria</label>
                     <div className="flex flex-wrap gap-2">
                       {CATEGORIES.filter((c) => c !== 'ALL').map((c) => {
-                        const colors = CATEGORY_COLORS[c] || { bg: 'rgba(142, 142, 147, 0.12)', text: '#8E8E93' };
+                        const colors = CATEGORY_COLORS[c] || { bg: 'var(--bg-secondary)', text: 'var(--text-tertiary)' };
                         return (
                           <button
                             key={c}
@@ -391,7 +391,7 @@ export function HookDetailModal({ hook, pillars, pillarColor, pillarName, onClos
                     <div className="rounded-xl bg-bg-secondary p-3 flex items-center gap-3">
                       <div
                         className="flex h-8 w-8 items-center justify-center rounded-lg"
-                        style={{ backgroundColor: 'rgba(184, 255, 0, 0.12)' }}
+                        style={{ backgroundColor: 'var(--accent-surface)' }}
                       >
                         <Hash size={14} className="text-accent" />
                       </div>

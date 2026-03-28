@@ -110,12 +110,12 @@ export default function AppShell({ children }: AppShellProps) {
         <div className="flex flex-col items-center gap-4">
           <div
             className="h-10 w-10 rounded-xl flex items-center justify-center font-bold"
-            style={{ backgroundColor: '#B8FF00', color: '#1D1D1F' }}
+            style={{ backgroundColor: 'var(--accent)', color: 'var(--text-inverted)' }}
           >
             CH
           </div>
           <div className="h-1 w-24 overflow-hidden rounded-full bg-bg-hover">
-            <div className="h-full w-1/2 rounded-full animate-[shimmer_1s_ease-in-out_infinite]" style={{ backgroundColor: '#B8FF00' }} />
+            <div className="h-full w-1/2 rounded-full animate-[shimmer_1s_ease-in-out_infinite]" style={{ backgroundColor: 'var(--accent)' }} />
           </div>
         </div>
       </div>
@@ -138,7 +138,7 @@ export default function AppShell({ children }: AppShellProps) {
       </div>
 
       {/* Main content */}
-      <main className="flex-1 md:ml-[240px] p-4 md:p-8 pb-20 md:pb-8">
+      <main className="flex-1 md:ml-[280px] p-4 md:p-8 pb-20 md:pb-8">
         {children}
       </main>
 

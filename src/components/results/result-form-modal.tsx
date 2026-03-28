@@ -154,7 +154,7 @@ export default function ResultFormModal({ isOpen, onClose, onSubmit, editingResu
         <div className="sticky top-0 z-10 flex items-center gap-3 p-4 sm:p-5 border-b border-border-default bg-bg-modal rounded-t-2xl">
           <div
             className="flex h-9 w-9 items-center justify-center rounded-xl shrink-0"
-            style={{ backgroundColor: 'rgba(184, 255, 0, 0.12)' }}
+            style={{ backgroundColor: 'var(--accent-surface)' }}
           >
             <Trophy size={18} className="text-accent" />
           </div>

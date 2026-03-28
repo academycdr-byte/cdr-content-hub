@@ -14,7 +14,7 @@ interface HookCardProps {
 }
 
 export const HookCard = memo(function HookCard({ hook, index, pillarColor, pillarName, onCopy, onClick }: HookCardProps) {
-  const catColors = CATEGORY_COLORS[hook.category] || { bg: 'rgba(142, 142, 147, 0.12)', text: '#8E8E93' };
+  const catColors = CATEGORY_COLORS[hook.category] || { bg: 'var(--bg-secondary)', text: 'var(--text-tertiary)' };
 
   return (
     <div
@@ -57,8 +57,8 @@ export const HookCard = memo(function HookCard({ hook, index, pillarColor, pilla
             <span
               className="badge text-[11px]"
               style={{
-                backgroundColor: 'rgba(184, 255, 0, 0.12)',
-                color: '#B8FF00',
+                backgroundColor: 'var(--accent-surface)',
+                color: 'var(--accent)',
               }}
             >
               Score {hook.performanceScore}

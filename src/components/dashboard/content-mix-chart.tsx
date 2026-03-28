@@ -72,7 +72,7 @@ export default function ContentMixChart({ data, compact = false }: ContentMixCha
           <ResponsiveContainer width="100%" height="100%">
             <PieChart>
               <Pie
-                data={chartData.length > 0 ? chartData : [{ name: 'Vazio', count: 1, color: '#E5E5EA' }]}
+                data={chartData.length > 0 ? chartData : [{ name: 'Vazio', count: 1, color: 'var(--border)' }]}
                 cx="50%"
                 cy="50%"
                 innerRadius={35}
@@ -81,7 +81,7 @@ export default function ContentMixChart({ data, compact = false }: ContentMixCha
                 nameKey="name"
                 stroke="none"
               >
-                {(chartData.length > 0 ? chartData : [{ color: '#E5E5EA' }]).map((entry, index) => (
+                {(chartData.length > 0 ? chartData : [{ color: 'var(--border)' }]).map((entry, index) => (
                   <Cell key={`cell-${index}`} fill={entry.color} />
                 ))}
               </Pie>
@@ -114,7 +114,7 @@ export default function ContentMixChart({ data, compact = false }: ContentMixCha
           <ResponsiveContainer width="100%" height="100%">
             <PieChart>
               <Pie
-                data={chartData.length > 0 ? chartData : [{ name: 'Vazio', count: 1, color: '#E5E5EA' }]}
+                data={chartData.length > 0 ? chartData : [{ name: 'Vazio', count: 1, color: 'var(--border)' }]}
                 cx="50%"
                 cy="50%"
                 innerRadius={50}
@@ -123,7 +123,7 @@ export default function ContentMixChart({ data, compact = false }: ContentMixCha
                 nameKey="name"
                 stroke="none"
               >
-                {(chartData.length > 0 ? chartData : [{ color: '#E5E5EA' }]).map((entry, index) => (
+                {(chartData.length > 0 ? chartData : [{ color: 'var(--border)' }]).map((entry, index) => (
                   <Cell key={`cell-${index}`} fill={entry.color} />
                 ))}
               </Pie>

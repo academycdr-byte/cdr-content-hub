@@ -2,9 +2,10 @@
 
 /* ========================================
    Tailwind v4 Theme -- Maps CSS variables to utility classes
-   CDR Content Hub Design System
-   Academia Lendaria -- Full Extraction Applied
-   Dark premium + Light premium, glassmorphism both modes
+   CDR Content Hub Design System v2.0
+   Based on CDR App Design System (docs/design-system/cdr-app-design-system.md)
+   Reference: "Metrics" by Pixelz (Dribbble)
+   Clean SaaS aesthetic, light-first, solid cards, no glassmorphism
    ======================================== */
 @theme {
   /* Background colors */
@@ -16,10 +17,6 @@
   --color-bg-active: var(--bg-active);
   --color-bg-input: var(--bg-input);
   --color-bg-modal: var(--bg-modal);
-
-  /* Glass */
-  --color-glass-bg: var(--glass-bg);
-  --color-glass-border: var(--glass-border);
 
   /* Border colors */
   --color-border-default: var(--border);
@@ -79,81 +76,76 @@
 }
 
 /* ========================================
-   DARK MODE (DEFAULT)
-   Academia Lendaria — pure black, glass surfaces,
-   rgba overlays, premium depth
+   LIGHT MODE (DEFAULT)
+   CDR App Design System — clean, solid cards,
+   #F5F7FA background, white surfaces, green accent
    ======================================== */
 :root {
-  /* Backgrounds */
-  --bg-primary: #000000;
-  --bg-secondary: rgb(22, 22, 22);
-  --bg-card: rgba(255, 255, 255, 0.08);
-  --bg-elevated: rgb(36, 36, 36);
-  --bg-hover: rgba(255, 255, 255, 0.04);
-  --bg-active: rgba(255, 255, 255, 0.1);
-  --bg-input: rgba(255, 255, 255, 0.05);
-  --bg-modal: #1C1C1E;
+  /* Backgrounds — clean solid surfaces */
+  --bg-primary: #F5F7FA;
+  --bg-secondary: #EEF0F4;
+  --bg-card: #FFFFFF;
+  --bg-elevated: #FFFFFF;
+  --bg-hover: #F9FBF0;
+  --bg-active: #F2F9D6;
+  --bg-input: #FFFFFF;
+  --bg-modal: #FFFFFF;
 
-  /* Glass */
-  --glass-bg: rgba(255, 255, 255, 0.08);
-  --glass-border: rgba(255, 255, 255, 0.08);
-  --glass-blur: 12px;
+  /* Borders — subtle solid */
+  --border: #E5E7EB;
+  --border-strong: #D1D5DB;
+  --border-subtle: #F3F4F6;
+  --border-focus: rgba(168, 214, 0, 0.5);
 
-  /* Borders */
-  --border: rgba(255, 255, 255, 0.08);
-  --border-strong: rgba(255, 255, 255, 0.12);
-  --border-subtle: rgba(255, 255, 255, 0.04);
-  --border-focus: rgba(184, 255, 0, 0.5);
+  /* Text — dark hierarchy */
+  --text-primary: #111114;
+  --text-secondary: #6B7280;
+  --text-tertiary: #9CA3AF;
+  --text-inverted: #FFFFFF;
 
-  /* Text */
-  --text-primary: #FFFFFF;
-  --text-secondary: rgba(255, 255, 255, 0.7);
-  --text-tertiary: rgba(255, 255, 255, 0.5);
-  --text-inverted: #000000;
-
-  /* Accent — CDR #B8FF00 lime green */
-  --accent: #B8FF00;
-  --accent-hover: #A3E600;
-  --accent-muted: rgba(184, 255, 0, 0.3);
-  --accent-surface: rgba(184, 255, 0, 0.1);
-  --accent-surface-hover: rgba(184, 255, 0, 0.18);
+  /* Accent — CDR Green #A8D600 */
+  --accent: #A8D600;
+  --accent-hover: #C2F000;
+  --accent-muted: rgba(168, 214, 0, 0.3);
+  --accent-surface: #F2F9D6;
+  --accent-surface-hover: rgba(168, 214, 0, 0.18);
 
   /* Semantic */
-  --success: #30D158;
-  --success-surface: rgba(48, 209, 88, 0.1);
-  --warning: #FFD60A;
-  --warning-surface: rgba(255, 214, 10, 0.1);
-  --error: #FF453A;
-  --error-surface: rgba(255, 69, 58, 0.1);
-  --info: #64D2FF;
-  --info-surface: rgba(100, 210, 255, 0.1);
+  --success: #10B981;
+  --success-surface: #ECFDF5;
+  --warning: #F59E0B;
+  --warning-surface: #FFFBEB;
+  --error: #EF4444;
+  --error-surface: #FEF2F2;
+  --info: #3B82F6;
+  --info-surface: rgba(59, 130, 246, 0.08);
 
   /* Content Pillar Colors */
-  --pillar-cases: #60A5FA;
-  --pillar-cases-surface: rgba(96, 165, 250, 0.1);
-  --pillar-education: #A78BFA;
-  --pillar-education-surface: rgba(167, 139, 250, 0.1);
-  --pillar-backstage: #FB923C;
-  --pillar-backstage-surface: rgba(251, 146, 60, 0.1);
-  --pillar-authority: #FACC15;
-  --pillar-authority-surface: rgba(250, 204, 21, 0.1);
-  --pillar-personal: #F472B6;
-  --pillar-personal-surface: rgba(244, 114, 182, 0.1);
+  --pillar-cases: #3B82F6;
+  --pillar-cases-surface: rgba(59, 130, 246, 0.08);
+  --pillar-education: #8B5CF6;
+  --pillar-education-surface: rgba(139, 92, 246, 0.08);
+  --pillar-backstage: #F97316;
+  --pillar-backstage-surface: rgba(249, 115, 22, 0.08);
+  --pillar-authority: #EAB308;
+  --pillar-authority-surface: rgba(234, 179, 8, 0.08);
+  --pillar-personal: #EC4899;
+  --pillar-personal-surface: rgba(236, 72, 153, 0.08);
 
-  /* Sidebar — always dark */
-  --sidebar-bg: #000000;
-  --sidebar-border: rgba(255, 255, 255, 0.06);
-  --sidebar-text: rgba(255, 255, 255, 0.6);
-  --sidebar-text-active: #FFFFFF;
-  --sidebar-hover: rgba(255, 255, 255, 0.08);
+  /* Sidebar — themed, white in light mode */
+  --sidebar-bg: #FFFFFF;
+  --sidebar-border: #E5E7EB;
+  --sidebar-text: #6B7280;
+  --sidebar-text-active: #A8D600;
+  --sidebar-hover: #F9FBF0;
 
-  /* Shadows — deep for dark */
-  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.3);
-  --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.4);
-  --shadow-lg: 0 8px 24px rgba(0, 0, 0, 0.5);
-  --shadow-xl: 0 16px 48px rgba(0, 0, 0, 0.6);
+  /* Shadows — ultra-subtle for light mode */
+  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.05);
+  --shadow-md: 0 4px 6px rgba(0, 0, 0, 0.05), 0 1px 3px rgba(0, 0, 0, 0.04);
+  --shadow-lg: 0 10px 15px rgba(0, 0, 0, 0.06), 0 4px 6px rgba(0, 0, 0, 0.04);
+  --shadow-xl: 0 20px 25px rgba(0, 0, 0, 0.08), 0 8px 10px rgba(0, 0, 0, 0.04);
 
-  /* Border Radius — Academia scale */
+  /* Border Radius */
   --radius-sm: 8px;
   --radius-md: 10px;
   --radius-lg: 16px;
@@ -173,171 +165,164 @@
   --space-16: 64px;
   --space-24: 96px;
 
-  /* Motion — Academia timings */
+  /* Motion */
   --duration-fast: 0.15s;
   --duration-normal: 0.3s;
   --duration-slow: 0.44s;
   --duration-glacial: 0.8s;
 
   /* Scrollbar */
-  --scrollbar-bg: #0A0A0A;
-  --scrollbar-thumb: #2C2C2E;
-  --scrollbar-hover: #3A3A3C;
-
-  color-scheme: dark;
-}
-
-/* ========================================
-   DARK MODE (EXPLICIT)
-   Identical to :root with subtle refinements
-   ======================================== */
-[data-theme="dark"] {
-  --bg-primary: #000000;
-  --bg-secondary: #0A0A0A;
-  --bg-card: rgba(255, 255, 255, 0.06);
-  --bg-elevated: rgb(28, 28, 30);
-  --bg-hover: rgba(255, 255, 255, 0.04);
-  --bg-active: rgba(255, 255, 255, 0.1);
-  --bg-input: rgba(255, 255, 255, 0.05);
-  --bg-modal: #1C1C1E;
-
-  --glass-bg: rgba(255, 255, 255, 0.06);
-  --glass-border: rgba(255, 255, 255, 0.06);
-
-  --border: rgba(255, 255, 255, 0.08);
-  --border-strong: rgba(255, 255, 255, 0.12);
-  --border-subtle: rgba(255, 255, 255, 0.04);
-  --border-focus: rgba(184, 255, 0, 0.5);
-
-  --text-primary: #FFFFFF;
-  --text-secondary: rgba(255, 255, 255, 0.7);
-  --text-tertiary: rgba(255, 255, 255, 0.5);
-  --text-inverted: #000000;
-
-  --accent: #B8FF00;
-  --accent-hover: #A3E600;
-  --accent-muted: rgba(184, 255, 0, 0.3);
-  --accent-surface: rgba(184, 255, 0, 0.1);
-  --accent-surface-hover: rgba(184, 255, 0, 0.18);
-
-  --success: #30D158;
-  --success-surface: rgba(48, 209, 88, 0.1);
-  --warning: #FFD60A;
-  --warning-surface: rgba(255, 214, 10, 0.1);
-  --error: #FF453A;
-  --error-surface: rgba(255, 69, 58, 0.1);
-  --info: #64D2FF;
-  --info-surface: rgba(100, 210, 255, 0.1);
-
-  --pillar-cases: #60A5FA;
-  --pillar-cases-surface: rgba(96, 165, 250, 0.1);
-  --pillar-education: #A78BFA;
-  --pillar-education-surface: rgba(167, 139, 250, 0.1);
-  --pillar-backstage: #FB923C;
-  --pillar-backstage-surface: rgba(251, 146, 60, 0.1);
-  --pillar-authority: #FACC15;
-  --pillar-authority-surface: rgba(250, 204, 21, 0.1);
-  --pillar-personal: #F472B6;
-  --pillar-personal-surface: rgba(244, 114, 182, 0.1);
-
-  --sidebar-bg: #000000;
-  --sidebar-border: rgba(255, 255, 255, 0.06);
-  --sidebar-text: rgba(255, 255, 255, 0.6);
-  --sidebar-text-active: #FFFFFF;
-  --sidebar-hover: rgba(255, 255, 255, 0.08);
-
-  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.3);
-  --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.4);
-  --shadow-lg: 0 8px 24px rgba(0, 0, 0, 0.5);
-  --shadow-xl: 0 16px 48px rgba(0, 0, 0, 0.6);
-
-  --scrollbar-bg: #0A0A0A;
-  --scrollbar-thumb: #2C2C2E;
-  --scrollbar-hover: #3A3A3C;
-
-  color-scheme: dark;
-}
-
-/* ========================================
-   LIGHT MODE — Academia Lendaria Premium Light
-   Frosted glass, rgba surfaces, subtle depth,
-   premium feel with translucent cards
-   ======================================== */
-[data-theme="light"] {
-  /* Backgrounds — warm off-white + frosted glass */
-  --bg-primary: #F8F8FA;
-  --bg-secondary: #F0F0F5;
-  --bg-card: rgba(255, 255, 255, 0.72);
-  --bg-elevated: rgba(255, 255, 255, 0.9);
-  --bg-hover: rgba(0, 0, 0, 0.025);
-  --bg-active: rgba(0, 0, 0, 0.05);
-  --bg-input: rgba(255, 255, 255, 0.6);
-  --bg-modal: #FFFFFF;
-
-  /* Glass — frosted white */
-  --glass-bg: rgba(255, 255, 255, 0.65);
-  --glass-border: rgba(255, 255, 255, 0.4);
-
-  /* Borders — ultra-subtle dark alpha */
-  --border: rgba(0, 0, 0, 0.06);
-  --border-strong: rgba(0, 0, 0, 0.1);
-  --border-subtle: rgba(0, 0, 0, 0.03);
-  --border-focus: rgba(90, 140, 0, 0.4);
-
-  /* Text — near-black + alpha variants */
-  --text-primary: #0A0A0A;
-  --text-secondary: rgba(0, 0, 0, 0.55);
-  --text-tertiary: rgba(0, 0, 0, 0.35);
-  --text-inverted: #FFFFFF;
-
-  /* Accent — darker lime for light mode contrast */
-  --accent: #5A8C00;
-  --accent-hover: #4A7600;
-  --accent-muted: rgba(90, 140, 0, 0.25);
-  --accent-surface: rgba(90, 140, 0, 0.06);
-  --accent-surface-hover: rgba(90, 140, 0, 0.12);
-
-  /* Semantic — deeper for light bg contrast */
-  --success: #16A34A;
-  --success-surface: rgba(22, 163, 74, 0.06);
-  --warning: #D97706;
-  --warning-surface: rgba(217, 119, 6, 0.06);
-  --error: #DC2626;
-  --error-surface: rgba(220, 38, 38, 0.06);
-  --info: #2563EB;
-  --info-surface: rgba(37, 99, 235, 0.06);
-
-  /* Pillar Colors — deeper for light */
-  --pillar-cases: #2563EB;
-  --pillar-cases-surface: rgba(37, 99, 235, 0.06);
-  --pillar-education: #7C3AED;
-  --pillar-education-surface: rgba(124, 58, 237, 0.06);
-  --pillar-backstage: #EA580C;
-  --pillar-backstage-surface: rgba(234, 88, 12, 0.06);
-  --pillar-authority: #CA8A04;
-  --pillar-authority-surface: rgba(202, 138, 4, 0.06);
-  --pillar-personal: #DB2777;
-  --pillar-personal-surface: rgba(219, 39, 119, 0.06);
-
-  /* Sidebar — stays dark (Academia pattern) */
-  --sidebar-bg: #000000;
-  --sidebar-border: rgba(255, 255, 255, 0.06);
-  --sidebar-text: rgba(255, 255, 255, 0.6);
-  --sidebar-text-active: #FFFFFF;
-  --sidebar-hover: rgba(255, 255, 255, 0.08);
-
-  /* Shadows — delicate, tinted */
-  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.04), 0 1px 1px rgba(0, 0, 0, 0.02);
-  --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.06), 0 2px 4px rgba(0, 0, 0, 0.03);
-  --shadow-lg: 0 8px 24px rgba(0, 0, 0, 0.08), 0 4px 8px rgba(0, 0, 0, 0.04);
-  --shadow-xl: 0 16px 48px rgba(0, 0, 0, 0.1), 0 8px 16px rgba(0, 0, 0, 0.05);
-
-  /* Scrollbar */
-  --scrollbar-bg: #F0F0F2;
-  --scrollbar-thumb: #C7C7CC;
-  --scrollbar-hover: #AEAEB2;
+  --scrollbar-bg: #F3F4F6;
+  --scrollbar-thumb: #D1D5DB;
+  --scrollbar-hover: #9CA3AF;
 
   color-scheme: light;
+}
+
+/* ========================================
+   LIGHT MODE (EXPLICIT)
+   Same as :root
+   ======================================== */
+[data-theme="light"] {
+  --bg-primary: #F5F7FA;
+  --bg-secondary: #EEF0F4;
+  --bg-card: #FFFFFF;
+  --bg-elevated: #FFFFFF;
+  --bg-hover: #F9FBF0;
+  --bg-active: #F2F9D6;
+  --bg-input: #FFFFFF;
+  --bg-modal: #FFFFFF;
+
+  --border: #E5E7EB;
+  --border-strong: #D1D5DB;
+  --border-subtle: #F3F4F6;
+  --border-focus: rgba(168, 214, 0, 0.5);
+
+  --text-primary: #111114;
+  --text-secondary: #6B7280;
+  --text-tertiary: #9CA3AF;
+  --text-inverted: #FFFFFF;
+
+  --accent: #A8D600;
+  --accent-hover: #C2F000;
+  --accent-muted: rgba(168, 214, 0, 0.3);
+  --accent-surface: #F2F9D6;
+  --accent-surface-hover: rgba(168, 214, 0, 0.18);
+
+  --success: #10B981;
+  --success-surface: #ECFDF5;
+  --warning: #F59E0B;
+  --warning-surface: #FFFBEB;
+  --error: #EF4444;
+  --error-surface: #FEF2F2;
+  --info: #3B82F6;
+  --info-surface: rgba(59, 130, 246, 0.08);
+
+  --pillar-cases: #3B82F6;
+  --pillar-cases-surface: rgba(59, 130, 246, 0.08);
+  --pillar-education: #8B5CF6;
+  --pillar-education-surface: rgba(139, 92, 246, 0.08);
+  --pillar-backstage: #F97316;
+  --pillar-backstage-surface: rgba(249, 115, 22, 0.08);
+  --pillar-authority: #EAB308;
+  --pillar-authority-surface: rgba(234, 179, 8, 0.08);
+  --pillar-personal: #EC4899;
+  --pillar-personal-surface: rgba(236, 72, 153, 0.08);
+
+  --sidebar-bg: #FFFFFF;
+  --sidebar-border: #E5E7EB;
+  --sidebar-text: #6B7280;
+  --sidebar-text-active: #A8D600;
+  --sidebar-hover: #F9FBF0;
+
+  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.05);
+  --shadow-md: 0 4px 6px rgba(0, 0, 0, 0.05), 0 1px 3px rgba(0, 0, 0, 0.04);
+  --shadow-lg: 0 10px 15px rgba(0, 0, 0, 0.06), 0 4px 6px rgba(0, 0, 0, 0.04);
+  --shadow-xl: 0 20px 25px rgba(0, 0, 0, 0.08), 0 8px 10px rgba(0, 0, 0, 0.04);
+
+  --scrollbar-bg: #F3F4F6;
+  --scrollbar-thumb: #D1D5DB;
+  --scrollbar-hover: #9CA3AF;
+
+  color-scheme: light;
+}
+
+/* ========================================
+   DARK MODE
+   CDR App Design System — #06060A base,
+   #111114 surface, solid cards, CDR green accent
+   ======================================== */
+[data-theme="dark"] {
+  /* Backgrounds — solid dark surfaces */
+  --bg-primary: #06060A;
+  --bg-secondary: #0A0A0E;
+  --bg-card: #111114;
+  --bg-elevated: #111114;
+  --bg-hover: #1A1A1E;
+  --bg-active: rgba(168, 214, 0, 0.08);
+  --bg-input: #111114;
+  --bg-modal: #151518;
+
+  /* Borders */
+  --border: #1C1C20;
+  --border-strong: #2A2A2E;
+  --border-subtle: #151518;
+  --border-focus: rgba(168, 214, 0, 0.5);
+
+  /* Text */
+  --text-primary: #FFFFFF;
+  --text-secondary: #9CA3AF;
+  --text-tertiary: #6B7280;
+  --text-inverted: #06060A;
+
+  /* Accent — same CDR green, bright on dark */
+  --accent: #A8D600;
+  --accent-hover: #C2F000;
+  --accent-muted: rgba(168, 214, 0, 0.3);
+  --accent-surface: rgba(168, 214, 0, 0.10);
+  --accent-surface-hover: rgba(168, 214, 0, 0.18);
+
+  /* Semantic — brighter for dark mode legibility */
+  --success: #34D399;
+  --success-surface: rgba(16, 185, 129, 0.12);
+  --warning: #FBBF24;
+  --warning-surface: rgba(245, 158, 11, 0.12);
+  --error: #F87171;
+  --error-surface: rgba(239, 68, 68, 0.12);
+  --info: #60A5FA;
+  --info-surface: rgba(59, 130, 246, 0.12);
+
+  /* Content Pillar Colors — brighter for dark mode */
+  --pillar-cases: #60A5FA;
+  --pillar-cases-surface: rgba(96, 165, 250, 0.12);
+  --pillar-education: #A78BFA;
+  --pillar-education-surface: rgba(167, 139, 250, 0.12);
+  --pillar-backstage: #FB923C;
+  --pillar-backstage-surface: rgba(251, 146, 60, 0.12);
+  --pillar-authority: #FACC15;
+  --pillar-authority-surface: rgba(250, 204, 21, 0.12);
+  --pillar-personal: #F472B6;
+  --pillar-personal-surface: rgba(244, 114, 182, 0.12);
+
+  /* Sidebar — dark themed */
+  --sidebar-bg: #0A0A0E;
+  --sidebar-border: #1C1C20;
+  --sidebar-text: #6B7280;
+  --sidebar-text-active: #A8D600;
+  --sidebar-hover: #1A1A1E;
+
+  /* Shadows — stronger for dark mode */
+  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.3);
+  --shadow-md: 0 4px 6px rgba(0, 0, 0, 0.3), 0 1px 3px rgba(0, 0, 0, 0.2);
+  --shadow-lg: 0 10px 15px rgba(0, 0, 0, 0.4), 0 4px 6px rgba(0, 0, 0, 0.2);
+  --shadow-xl: 0 20px 25px rgba(0, 0, 0, 0.5), 0 8px 10px rgba(0, 0, 0, 0.3);
+
+  /* Scrollbar */
+  --scrollbar-bg: #0A0A0E;
+  --scrollbar-thumb: #2A2A2E;
+  --scrollbar-hover: #3A3A3E;
+
+  color-scheme: dark;
 }
 
 /* ===== BASE ===== */
@@ -350,13 +335,7 @@ body {
   font-feature-settings: "ss01", "ss02";
 }
 
-/* Light mode subtle gradient background — makes glass effects visible */
-[data-theme="light"] body {
-  background: linear-gradient(165deg, #F8F8FA 0%, #EEEEF3 40%, #F4F4F8 70%, #F8F8FA 100%);
-  background-attachment: fixed;
-}
-
-/* ===== GLOBAL TRANSITIONS — Academia Lendaria motion ===== */
+/* ===== GLOBAL TRANSITIONS ===== */
 *,
 *::before,
 *::after {
@@ -391,29 +370,28 @@ a:focus-visible {
   box-shadow: 0 0 0 2px var(--bg-primary), 0 0 0 4px var(--accent);
 }
 
-/* ===== TYPOGRAPHY — Full Academia Lendaria Scale =====
-   Extracted pixel-perfect from academialendaria.ai
-   Inter font, weights 400/500/600/800
+/* ===== TYPOGRAPHY — CDR App Design System Scale =====
+   Inter font, weights 400/500/600/700
    Sizes from 10px to 64px */
 
 /* Display & Hero */
 .text-hero {
   font-size: 64px;
-  font-weight: 600;
+  font-weight: 700;
   line-height: 1.1;
   letter-spacing: -1.28px;
 }
 .text-display {
   font-size: 48px;
-  font-weight: 600;
-  line-height: 1.4;
-  letter-spacing: normal;
+  font-weight: 700;
+  line-height: 1.2;
+  letter-spacing: -0.96px;
 }
 
 /* Headings */
 .text-heading-1 {
   font-size: 32px;
-  font-weight: 600;
+  font-weight: 700;
   line-height: 1.2;
   letter-spacing: -0.32px;
 }
@@ -421,6 +399,7 @@ a:focus-visible {
   font-size: 24px;
   font-weight: 600;
   line-height: 1.3;
+  letter-spacing: -0.24px;
 }
 .text-heading-3 {
   font-size: 18px;
@@ -479,19 +458,19 @@ a:focus-visible {
   line-height: 1.5;
 }
 
-/* Metric — tabular numbers for data display */
+/* Metric — tabular numbers for KPI display */
 .text-metric {
-  font-size: 30px;
+  font-size: 36px;
   font-weight: 700;
-  line-height: 1.2;
-  letter-spacing: -0.75px;
+  line-height: 1.1;
+  letter-spacing: -0.02em;
   font-variant-numeric: tabular-nums;
   font-feature-settings: "tnum", "ss01";
 }
 
 /* Navigation */
 .text-nav-link {
-  font-size: 12px;
+  font-size: 14px;
   font-weight: 500;
   line-height: normal;
 }
@@ -507,16 +486,16 @@ a:focus-visible {
 .text-footer-heading {
   font-size: 12px;
   font-weight: 500;
-  color: rgb(100, 100, 100);
+  color: var(--text-tertiary);
 }
 .text-footer-link {
   font-size: 14px;
   font-weight: 400;
-  opacity: 0.64;
-  transition: opacity var(--duration-normal);
+  color: var(--text-secondary);
+  transition: color var(--duration-normal);
 }
 .text-footer-link:hover {
-  opacity: 1;
+  color: var(--text-primary);
 }
 
 /* ===== SELECTION ===== */
@@ -557,10 +536,6 @@ a:focus-visible {
   from { opacity: 0; }
   to { opacity: 1; }
 }
-@keyframes glowPulse {
-  0%, 100% { box-shadow: 0 0 8px var(--accent-surface); }
-  50% { box-shadow: 0 0 20px var(--accent-surface-hover); }
-}
 
 /* Animation Classes */
 .animate-fade-in { animation: fadeIn 0.3s var(--ease-smooth) both; }
@@ -569,7 +544,6 @@ a:focus-visible {
 .animate-scale-in { animation: scaleIn 0.2s var(--ease-smooth) both; }
 .animate-drawer { animation: slideDrawer 0.3s var(--ease-smooth) both; }
 .animate-backdrop { animation: fadeBackdrop 0.2s var(--ease-smooth) both; }
-.animate-glow { animation: glowPulse 2s ease-in-out infinite; }
 
 /* Staggered children */
 .stagger-children > *:nth-child(1) { animation-delay: 0ms; }
@@ -582,17 +556,14 @@ a:focus-visible {
 .stagger-children > *:nth-child(8) { animation-delay: 350ms; }
 
 /* ===== COMPONENT CLASSES =====
-   @layer components ensures Tailwind utilities can properly override.
-   Academia Lendaria — glassmorphism + premium feel, BOTH modes */
+   CDR App Design System — solid cards, clean SaaS aesthetic */
 @layer components {
 
-  /* ---- Glass Card ---- */
+  /* ---- Card — solid surface with border ---- */
   .card {
     background: var(--bg-card);
     border: 1px solid var(--border);
     border-radius: var(--radius-lg);
-    backdrop-filter: blur(var(--glass-blur));
-    -webkit-backdrop-filter: blur(var(--glass-blur));
     transition: all var(--duration-normal) var(--ease-smooth);
   }
   .card-hover:hover {
@@ -601,7 +572,7 @@ a:focus-visible {
     transform: translateY(-2px);
   }
 
-  /* Solid card variant — opaque elevated surface */
+  /* Solid card variant — same as card in new system */
   .card-solid {
     background: var(--bg-elevated);
     border: 1px solid var(--border);
@@ -617,17 +588,17 @@ a:focus-visible {
     border-radius: var(--radius-md);
   }
 
-  /* ---- Accent Button — CDR lime CTA ---- */
+  /* ---- Accent Button — CDR Green CTA ---- */
   .btn-accent {
     background-color: var(--accent);
     color: var(--text-inverted);
     font-weight: 600;
     font-size: 14px;
     border-radius: var(--radius-md);
-    padding: 12px 24px;
+    padding: 10px 20px;
     border: none;
     cursor: pointer;
-    transition: all var(--duration-slow) var(--ease-smooth);
+    transition: all var(--duration-normal) var(--ease-smooth);
   }
   .btn-accent:hover {
     background-color: var(--accent-hover);
@@ -643,9 +614,9 @@ a:focus-visible {
     transform: none;
   }
 
-  /* ---- Ghost Button — glass effect ---- */
+  /* ---- Ghost Button — subtle bordered ---- */
   .btn-ghost {
-    background: var(--glass-bg);
+    background: transparent;
     color: var(--text-secondary);
     font-weight: 500;
     font-size: 14px;
@@ -653,17 +624,15 @@ a:focus-visible {
     padding: 10px 16px;
     border: 1px solid var(--border);
     cursor: pointer;
-    backdrop-filter: blur(24px) saturate(2.2);
-    -webkit-backdrop-filter: blur(24px) saturate(2.2);
-    transition: transform var(--duration-slow), border-color var(--duration-glacial), background var(--duration-slow);
+    transition: all var(--duration-normal) var(--ease-smooth);
   }
   .btn-ghost:hover {
-    background: var(--bg-active);
+    background: var(--bg-hover);
     color: var(--text-primary);
     border-color: var(--border-strong);
   }
 
-  /* ---- Pill Button — Academia login style ---- */
+  /* ---- Pill Button ---- */
   .btn-pill {
     background: transparent;
     color: var(--text-primary);
@@ -680,15 +649,13 @@ a:focus-visible {
     border-color: var(--border-strong);
   }
 
-  /* ---- Glass Surface — apply to any element ---- */
+  /* ---- Glass Surface — kept for backward compat but simplified ---- */
   .glass-surface {
-    background: var(--glass-bg);
-    border: 1px solid var(--glass-border);
-    backdrop-filter: blur(var(--glass-blur));
-    -webkit-backdrop-filter: blur(var(--glass-blur));
+    background: var(--bg-card);
+    border: 1px solid var(--border);
   }
 
-  /* ---- Glass Input ---- */
+  /* ---- Input ---- */
   .input {
     background: var(--bg-input);
     border: 1px solid var(--border);
@@ -696,8 +663,6 @@ a:focus-visible {
     padding: 10px 14px;
     font-size: 14px;
     color: var(--text-primary);
-    backdrop-filter: blur(8px);
-    -webkit-backdrop-filter: blur(8px);
     width: 100%;
     transition: border-color var(--duration-normal) var(--ease-smooth),
                 box-shadow var(--duration-normal) var(--ease-smooth);
@@ -708,38 +673,36 @@ a:focus-visible {
   .input:focus {
     outline: none;
     border-color: var(--accent);
-    box-shadow: 0 0 0 3px var(--accent-surface);
+    box-shadow: 0 0 0 3px rgba(168, 214, 0, 0.15);
   }
 
-  /* ---- Glass Badge ---- */
+  /* ---- Badge ---- */
   .badge {
     display: inline-flex;
     align-items: center;
-    gap: 4px;
-    padding: 3px 10px;
+    gap: 6px;
+    padding: 4px 12px;
     border-radius: var(--radius-sm);
     font-size: 12px;
     font-weight: 600;
     line-height: 1.4;
-    backdrop-filter: blur(8px);
-    -webkit-backdrop-filter: blur(8px);
   }
 
-  /* ---- Profile Tag — Academia style ---- */
+  /* ---- Profile Tag ---- */
   .profile-tag {
     font-size: 16px;
     font-weight: 500;
-    border-bottom: 1px solid var(--border-strong);
+    border-bottom: 1px solid var(--border);
     padding: 16px 0;
     color: var(--text-primary);
   }
 
-  /* ---- Nav Link — Academia 0.8s transition ---- */
+  /* ---- Nav Link ---- */
   .nav-link {
-    font-size: 12px;
+    font-size: 14px;
     font-weight: 500;
-    color: var(--text-tertiary);
-    transition: color var(--duration-glacial);
+    color: var(--text-secondary);
+    transition: color var(--duration-normal);
   }
   .nav-link:hover {
     color: var(--text-primary);
@@ -750,24 +713,22 @@ a:focus-visible {
     position: fixed;
     bottom: 24px;
     right: 24px;
-    background: var(--bg-elevated);
+    background: var(--bg-card);
     border: 1px solid var(--border);
     border-radius: var(--radius-lg);
-    padding: 12px 20px;
+    padding: 16px 20px;
     box-shadow: var(--shadow-lg);
-    backdrop-filter: blur(16px);
-    -webkit-backdrop-filter: blur(16px);
     z-index: 1000;
     animation: slideUp 0.3s var(--ease-smooth) both;
   }
 
   /* ---- Date Filter Pill ---- */
   .date-pill {
-    font-size: 12px;
+    font-size: 13px;
     font-weight: 500;
     color: var(--text-primary);
     padding: 0 12px;
-    height: 28px;
+    height: 32px;
     display: inline-flex;
     align-items: center;
     background: transparent;
@@ -785,28 +746,30 @@ a:focus-visible {
     background: var(--accent);
   }
 
-  /* ---- Table — Academia data density ---- */
+  /* ---- Table ---- */
   .table-header {
-    font-size: 10px;
-    font-weight: 700;
-    color: var(--text-tertiary);
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--text-secondary);
     text-transform: uppercase;
-    letter-spacing: 0.5px;
-    height: 40px;
-    padding: 1px 16px;
+    letter-spacing: 0.05em;
+    height: 44px;
+    padding: 12px 16px;
+    border-bottom: 1px solid var(--border);
   }
   .table-cell {
-    font-size: 12px;
+    font-size: 14px;
     font-weight: 400;
-    color: var(--text-secondary);
-    padding: 16px;
+    color: var(--text-primary);
+    padding: 14px 16px;
+    border-bottom: 1px solid var(--border-subtle);
   }
 }
 
-/* ===== SELECT DROPDOWN — Dark & Light mode fixes ===== */
+/* ===== SELECT DROPDOWN ===== */
 select.input {
   appearance: none;
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%23999' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%239CA3AF' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
   background-repeat: no-repeat;
   background-position: right 12px center;
   padding-right: 32px;
@@ -820,26 +783,9 @@ select.input option {
 }
 
 /* Dark mode select */
-:root select.input option,
 [data-theme="dark"] select.input option {
-  background: #1C1C1E;
+  background: #151518;
   color: #FFFFFF;
-}
-
-/* Light mode select */
-[data-theme="light"] select.input option {
-  background: #FFFFFF;
-  color: #0A0A0A;
-}
-
-/* ===== LIGHT MODE — Glass component overrides =====
-   In light mode, glass effect uses different opacities */
-[data-theme="light"] .btn-ghost {
-  background: rgba(0, 0, 0, 0.03);
-  border-color: var(--border);
-}
-[data-theme="light"] .btn-ghost:hover {
-  background: rgba(0, 0, 0, 0.06);
 }
 
 /* ===== Drag & Drop ===== */
@@ -852,4 +798,9 @@ select.input option {
 .drop-target {
   border-color: var(--accent) !important;
   background: var(--accent-surface) !important;
+}
+
+/* ===== Dark mode subtle glow on active elements ===== */
+[data-theme="dark"] .sidebar-item-active {
+  text-shadow: 0 0 12px rgba(168, 214, 0, 0.2);
 }

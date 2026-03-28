@@ -189,7 +189,7 @@ export default function GoalsPage() {
         <div>
           <div className="flex items-center gap-2 mb-1">
             <Target size={24} className="text-accent" />
-            <h1 className="text-heading-1 text-text-primary">Metas</h1>
+            <h1 className="text-2xl font-semibold text-text-primary">Metas</h1>
           </div>
           <p className="text-sm text-text-secondary">
             Defina e acompanhe suas metas por perfil.

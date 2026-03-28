@@ -20,11 +20,11 @@ const METRIC_LABELS: Record<MetricType, string> = {
 } as const;
 
 const METRIC_COLORS: Record<MetricType, { bg: string; text: string }> = {
-  ROAS: { bg: 'rgba(52, 199, 89, 0.12)', text: '#34C759' },
-  REVENUE: { bg: 'rgba(184, 255, 0, 0.12)', text: '#B8FF00' },
-  GROWTH: { bg: 'rgba(48, 176, 199, 0.12)', text: '#30B0C7' },
-  CAC: { bg: 'rgba(255, 159, 10, 0.12)', text: '#FF9F0A' },
-  OTHER: { bg: 'rgba(142, 142, 147, 0.12)', text: '#8E8E93' },
+  ROAS: { bg: 'var(--success-surface)', text: 'var(--success)' },
+  REVENUE: { bg: 'var(--accent-surface)', text: 'var(--accent)' },
+  GROWTH: { bg: 'var(--info-surface)', text: 'var(--info)' },
+  CAC: { bg: 'var(--warning-surface)', text: 'var(--warning)' },
+  OTHER: { bg: 'var(--bg-secondary)', text: 'var(--text-tertiary)' },
 } as const;
 
 const ResultCard = memo(function ResultCard({ result, onEdit, onDelete, onTransformToPost }: ResultCardProps) {

@@ -104,7 +104,7 @@ export default function MobileBottomNav() {
             {isActive(item.href) && (
               <div
                 className="h-1 w-1 rounded-full"
-                style={{ backgroundColor: '#B8FF00' }}
+                style={{ backgroundColor: 'var(--accent)' }}
               />
             )}
           </Link>
@@ -125,7 +125,7 @@ export default function MobileBottomNav() {
           {isMoreActive && !showMore && (
             <div
               className="h-1 w-1 rounded-full"
-              style={{ backgroundColor: '#B8FF00' }}
+              style={{ backgroundColor: 'var(--accent)' }}
             />
           )}
         </button>

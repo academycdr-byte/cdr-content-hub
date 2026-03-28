@@ -15,6 +15,8 @@ import {
   DollarSign,
   Award,
   ExternalLink,
+  ChevronDown,
+  MoreHorizontal,
 } from 'lucide-react';
 import { formatDate, cn } from '@/lib/utils';
 import { PLATFORM_COLORS } from '@/lib/constants';
@@ -53,6 +55,7 @@ export default function DashboardPage() {
   const [stats, setStats] = useState<DashboardStats | null>(null);
   const [loading, setLoading] = useState(true);
   const [dateRange, setDateRange] = useState<DateRange>(() => computeDateRange('30d'));
+  const [signalsOpen, setSignalsOpen] = useState(false);
   const isFirstLoad = useRef(true);
 
   const fetchStats = useCallback(async (range: DateRange) => {
@@ -90,13 +93,19 @@ export default function DashboardPage() {
   if (loading && isFirstLoad.current) {
     return (
       <div className="max-w-6xl mx-auto animate-fade-in">
-        <div className="skeleton h-8 w-48 mb-2" />
-        <div className="skeleton h-4 w-72 mb-8" />
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
+        <div className="flex items-center justify-between mb-8">
+          <div>
+            <div className="skeleton h-7 w-40 mb-2" />
+            <div className="skeleton h-4 w-64" />
+          </div>
+          <div className="skeleton h-9 w-48" />
+        </div>
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
           {Array.from({ length: 4 }).map((_, i) => (
-            <div key={i} className="skeleton h-[120px]" />
+            <div key={i} className="skeleton h-[180px]" />
           ))}
         </div>
+        <div className="skeleton h-14 mb-8" />
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
           {Array.from({ length: 6 }).map((_, i) => (
             <div key={i} className="skeleton h-[200px]" />
@@ -140,121 +149,161 @@ export default function DashboardPage() {
   return (
     <div className="max-w-6xl mx-auto animate-fade-in">
       {/* Header */}
-      <div className="mb-6">
-        <h1 className="text-display text-text-primary">Dashboard</h1>
-        <p className="mt-2 text-text-secondary">
-          Visão geral da sua produção de conteúdo.
-        </p>
-      </div>
-
-      {/* Date Range Filter */}
-      <div className="mb-6">
+      <div className="flex items-center justify-between mb-8">
+        <div>
+          <h1 className="text-2xl font-semibold text-text-primary">Dashboard</h1>
+          <p className="mt-1 text-sm text-text-secondary">
+            Visão geral da sua produção de conteúdo
+          </p>
+        </div>
         <DateRangeFilter value={dateRange} onChange={handleDateRangeChange} />
       </div>
-
-      {/* Signals Panel */}
-      <SignalsPanel />
 
       {/* Loading overlay for refetch */}
       <div className={loading ? 'opacity-50 pointer-events-none transition-opacity duration-200' : 'transition-opacity duration-200'}>
         {stats && (
           <>
             {/* ===== HERO KPIs ===== */}
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
               {/* Posts Publicados */}
-              <div className="card p-5">
-                <div className="flex items-center justify-between mb-3">
-                  <p className="text-label text-text-tertiary">Posts Publicados</p>
-                  <div className="flex h-7 w-7 items-center justify-center rounded-lg bg-accent-surface">
-                    <CalendarDays size={14} className="text-accent" />
+              <div className="card p-6">
+                <div className="flex items-center justify-between mb-4">
+                  <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-accent-surface">
+                    <CalendarDays size={18} className="text-accent" />
                   </div>
+                  <button className="flex h-7 w-7 items-center justify-center rounded-lg hover:bg-bg-hover transition-colors">
+                    <MoreHorizontal size={16} className="text-text-tertiary" />
+                  </button>
                 </div>
-                <div className="flex items-baseline gap-2 mb-2">
-                  <p className="text-3xl font-bold text-text-primary">{syncedPostsCount}</p>
-                  <p className="text-sm text-text-secondary">/ {stats.monthlyGoal}</p>
+                <p className="text-sm font-medium text-text-secondary mb-2">Posts Publicados</p>
+                <div className="flex items-baseline gap-2 mb-3">
+                  <p className="text-4xl font-bold text-text-primary tracking-tight">{syncedPostsCount}</p>
+                  <p className="text-sm text-text-tertiary">/ {stats.monthlyGoal}</p>
                 </div>
-                <div className="h-1.5 w-full rounded-full bg-bg-hover overflow-hidden">
+                <div className="h-1.5 w-full rounded-full bg-bg-hover overflow-hidden mb-1.5">
                   <div
                     className="h-full rounded-full transition-all duration-500"
-                    style={{ width: `${progressPercentage}%`, backgroundColor: '#B8FF00' }}
+                    style={{ width: `${progressPercentage}%`, backgroundColor: 'var(--accent)' }}
                   />
                 </div>
-                <p className="text-[11px] text-text-tertiary mt-1.5">{progressPercentage}% da meta</p>
+                <p className="text-[13px] text-text-tertiary">{progressPercentage}% da meta</p>
               </div>
 
               {/* Total Views */}
-              <div className="card p-5">
-                <div className="flex items-center justify-between mb-3">
-                  <p className="text-label text-text-tertiary">Views</p>
-                  <div className="flex h-7 w-7 items-center justify-center rounded-lg bg-accent-surface">
-                    <Eye size={14} className="text-accent" />
+              <div className="card p-6">
+                <div className="flex items-center justify-between mb-4">
+                  <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-accent-surface">
+                    <Eye size={18} className="text-accent" />
                   </div>
+                  <button className="flex h-7 w-7 items-center justify-center rounded-lg hover:bg-bg-hover transition-colors">
+                    <MoreHorizontal size={16} className="text-text-tertiary" />
+                  </button>
                 </div>
-                <p className="text-3xl font-bold text-text-primary">
+                <p className="text-sm font-medium text-text-secondary mb-2">Views</p>
+                <p className="text-4xl font-bold text-text-primary tracking-tight">
                   {stats.metricsSummary ? formatMetricNumber(stats.metricsSummary.views) : '--'}
                 </p>
-                <p className="text-[11px] text-text-tertiary mt-1.5">{periodLabel}</p>
+                <p className="text-[13px] text-text-tertiary mt-1">{periodLabel}</p>
               </div>
 
               {/* Engajamento Total */}
-              <div className="card p-5">
-                <div className="flex items-center justify-between mb-3">
-                  <p className="text-label text-text-tertiary">Engajamento</p>
-                  <div className="flex h-7 w-7 items-center justify-center rounded-lg bg-accent-surface">
-                    <Heart size={14} className="text-accent" />
+              <div className="card p-6">
+                <div className="flex items-center justify-between mb-4">
+                  <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-accent-surface">
+                    <Heart size={18} className="text-accent" />
                   </div>
+                  <button className="flex h-7 w-7 items-center justify-center rounded-lg hover:bg-bg-hover transition-colors">
+                    <MoreHorizontal size={16} className="text-text-tertiary" />
+                  </button>
                 </div>
-                <p className="text-3xl font-bold text-text-primary">
+                <p className="text-sm font-medium text-text-secondary mb-2">Engajamento</p>
+                <p className="text-4xl font-bold text-text-primary tracking-tight">
                   {totalEngagement > 0 ? formatMetricNumber(totalEngagement) : '--'}
                 </p>
-                {stats.metricsSummary && stats.metricsSummary.posts > 0 && (
-                  <p className="text-[11px] text-text-tertiary mt-1.5">
+                {stats.metricsSummary && stats.metricsSummary.posts > 0 ? (
+                  <p className="text-[13px] text-text-tertiary mt-1">
                     {formatMetricNumber(stats.metricsSummary.likes)} likes + {formatMetricNumber(stats.metricsSummary.comments)} coment. + {formatMetricNumber(stats.metricsSummary.shares)} shares
                   </p>
-                )}
-                {(!stats.metricsSummary || stats.metricsSummary.posts === 0) && (
-                  <p className="text-[11px] text-text-tertiary mt-1.5">{periodLabel}</p>
+                ) : (
+                  <p className="text-[13px] text-text-tertiary mt-1">{periodLabel}</p>
                 )}
               </div>
 
               {/* Valor Estimado (CPM) */}
-              <div className="card p-5">
-                <div className="flex items-center justify-between mb-3">
-                  <p className="text-label text-text-tertiary">Valor Estimado</p>
-                  <div className="flex h-7 w-7 items-center justify-center rounded-lg bg-accent-surface">
-                    <DollarSign size={14} className="text-accent" />
+              <div className="card p-6">
+                <div className="flex items-center justify-between mb-4">
+                  <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-accent-surface">
+                    <DollarSign size={18} className="text-accent" />
                   </div>
+                  <button className="flex h-7 w-7 items-center justify-center rounded-lg hover:bg-bg-hover transition-colors">
+                    <MoreHorizontal size={16} className="text-text-tertiary" />
+                  </button>
                 </div>
-                <p className="text-3xl font-bold text-text-primary">
+                <p className="text-sm font-medium text-text-secondary mb-2">Valor Estimado</p>
+                <p className="text-4xl font-bold text-text-primary tracking-tight">
                   {stats.totalCpmValue > 0 ? formatCurrency(stats.totalCpmValue) : '--'}
                 </p>
-                <p className="text-[11px] text-text-tertiary mt-1.5">baseado em CPM</p>
+                <p className="text-[13px] text-text-tertiary mt-1">baseado em CPM</p>
               </div>
+            </div>
+
+            {/* ===== SIGNALS (collapsible) ===== */}
+            <div className="mb-8">
+              <button
+                onClick={() => setSignalsOpen(!signalsOpen)}
+                className="w-full flex items-center justify-between card p-4 mb-0 hover:bg-bg-hover transition-colors"
+              >
+                <div className="flex items-center gap-2.5">
+                  <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-accent-surface">
+                    <TrendingUp size={16} className="text-accent" />
+                  </div>
+                  <div className="text-left">
+                    <p className="text-sm font-semibold text-text-primary">Sinais de Performance</p>
+                    <p className="text-xs text-text-tertiary">Insights e recomendações</p>
+                  </div>
+                </div>
+                <ChevronDown
+                  size={18}
+                  className={cn(
+                    'text-text-tertiary transition-transform duration-200',
+                    signalsOpen && 'rotate-180'
+                  )}
+                />
+              </button>
+              {signalsOpen && (
+                <div className="mt-2">
+                  <SignalsPanel />
+                </div>
+              )}
             </div>
 
             {/* ===== TOP POSTS (Performance Highlights) ===== */}
             {stats.topPosts.length > 0 && (
-              <div className="card p-6 mb-6">
-                <div className="flex items-center justify-between mb-4">
-                  <div className="flex items-center gap-2">
-                    <Award size={18} className="text-accent" />
-                    <h2 className="text-heading-2 text-text-primary">Destaques de Performance</h2>
+              <div className="card p-6 mb-8">
+                <div className="flex items-center justify-between mb-5">
+                  <div className="flex items-center gap-2.5">
+                    <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-accent-surface">
+                      <Award size={16} className="text-accent" />
+                    </div>
+                    <div>
+                      <h2 className="text-base font-semibold text-text-primary">Destaques de Performance</h2>
+                      <span className="text-xs text-text-tertiary">{periodLabel}</span>
+                    </div>
                   </div>
-                  <span className="text-[11px] text-text-tertiary">{periodLabel}</span>
                 </div>
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                   {stats.topPosts.slice(0, 3).map((post, index) => (
                     <div
                       key={post.id}
-                      className="rounded-xl border border-border-default p-4 hover:border-accent transition-colors group"
+                      className="rounded-xl border border-border-default p-5 hover:border-accent transition-colors group"
                     >
                       <div className="flex items-start gap-3">
                         {/* Rank badge */}
                         <div
-                          className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg font-bold text-sm"
+                          className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl font-bold text-sm"
                           style={{
-                            backgroundColor: index === 0 ? '#B8FF0020' : index === 1 ? '#E5E5EA20' : '#CD7F3220',
-                            color: index === 0 ? '#B8FF00' : index === 1 ? '#C0C0C0' : '#CD7F32',
+                            backgroundColor: 'var(--accent-surface)',
+                            color: 'var(--accent)',
                           }}
                         >
                           #{index + 1}
@@ -263,7 +312,7 @@ export default function DashboardPage() {
                           <p className="text-sm font-medium text-text-primary truncate">
                             {post.caption || 'Sem legenda'}
                           </p>
-                          <div className="flex items-center gap-2 mt-1">
+                          <div className="flex items-center gap-2 mt-1.5">
                             <span
                               className="inline-flex items-center gap-1 text-[10px] font-semibold px-1.5 py-0.5 rounded"
                               style={{
@@ -288,20 +337,20 @@ export default function DashboardPage() {
                         )}
                       </div>
                       {/* Metrics row */}
-                      <div className="flex items-center gap-4 mt-3 pt-3 border-t border-border-default">
-                        <div className="flex items-center gap-1">
+                      <div className="flex items-center gap-4 mt-4 pt-4 border-t border-border-default">
+                        <div className="flex items-center gap-1.5">
                           <Eye size={12} className="text-text-tertiary" />
                           <span className="text-xs font-semibold text-text-primary">{formatMetricNumber(post.views)}</span>
                         </div>
-                        <div className="flex items-center gap-1">
+                        <div className="flex items-center gap-1.5">
                           <Heart size={12} className="text-text-tertiary" />
                           <span className="text-xs font-semibold text-text-primary">{formatMetricNumber(post.likes)}</span>
                         </div>
-                        <div className="flex items-center gap-1">
+                        <div className="flex items-center gap-1.5">
                           <MessageCircle size={12} className="text-text-tertiary" />
                           <span className="text-xs font-semibold text-text-primary">{formatMetricNumber(post.comments)}</span>
                         </div>
-                        <div className="flex items-center gap-1">
+                        <div className="flex items-center gap-1.5">
                           <Share2 size={12} className="text-text-tertiary" />
                           <span className="text-xs font-semibold text-text-primary">{formatMetricNumber(post.shares)}</span>
                         </div>
@@ -314,7 +363,7 @@ export default function DashboardPage() {
 
             {/* ===== BREAKDOWNS: Por Rede & Por Perfil ===== */}
             {(stats.platformBreakdown.length > 0 || stats.profileBreakdown.length > 0) && (
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-8">
                 {/* Posts & Valor por Rede */}
                 <div className="card p-6">
                   <p className="text-label text-text-tertiary mb-4">Por Rede {periodLabel}</p>
@@ -420,40 +469,40 @@ export default function DashboardPage() {
 
             {/* ===== SOCIAL METRICS DETAIL ===== */}
             {stats.metricsSummary && stats.metricsSummary.posts > 0 && (
-              <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
-                <div className="card p-4">
-                  <div className="flex items-center gap-2 mb-2">
+              <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
+                <div className="card p-6">
+                  <div className="flex items-center gap-2 mb-3">
                     <Eye size={14} className="text-text-tertiary" />
-                    <p className="text-[11px] text-text-tertiary">Views</p>
+                    <p className="text-xs text-text-tertiary">Views</p>
                   </div>
-                  <p className="text-xl font-bold text-text-primary">
+                  <p className="text-2xl font-bold text-text-primary">
                     {formatMetricNumber(stats.metricsSummary.views)}
                   </p>
                 </div>
-                <div className="card p-4">
-                  <div className="flex items-center gap-2 mb-2">
+                <div className="card p-6">
+                  <div className="flex items-center gap-2 mb-3">
                     <Heart size={14} className="text-text-tertiary" />
-                    <p className="text-[11px] text-text-tertiary">Likes</p>
+                    <p className="text-xs text-text-tertiary">Likes</p>
                   </div>
-                  <p className="text-xl font-bold text-text-primary">
+                  <p className="text-2xl font-bold text-text-primary">
                     {formatMetricNumber(stats.metricsSummary.likes)}
                   </p>
                 </div>
-                <div className="card p-4">
-                  <div className="flex items-center gap-2 mb-2">
+                <div className="card p-6">
+                  <div className="flex items-center gap-2 mb-3">
                     <MessageCircle size={14} className="text-text-tertiary" />
-                    <p className="text-[11px] text-text-tertiary">Comentários</p>
+                    <p className="text-xs text-text-tertiary">Comentários</p>
                   </div>
-                  <p className="text-xl font-bold text-text-primary">
+                  <p className="text-2xl font-bold text-text-primary">
                     {formatMetricNumber(stats.metricsSummary.comments)}
                   </p>
                 </div>
-                <div className="card p-4">
-                  <div className="flex items-center gap-2 mb-2">
+                <div className="card p-6">
+                  <div className="flex items-center gap-2 mb-3">
                     <Share2 size={14} className="text-text-tertiary" />
-                    <p className="text-[11px] text-text-tertiary">Shares</p>
+                    <p className="text-xs text-text-tertiary">Shares</p>
                   </div>
-                  <p className="text-xl font-bold text-text-primary">
+                  <p className="text-2xl font-bold text-text-primary">
                     {formatMetricNumber(stats.metricsSummary.shares)}
                   </p>
                 </div>
@@ -461,7 +510,7 @@ export default function DashboardPage() {
             )}
 
             {/* ===== PRODUCTION: Content Mix + Pipeline + Proximos ===== */}
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mb-6">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mb-8">
               {/* Content Mix */}
               <div className="card p-6">
                 <div className="flex items-center justify-between mb-4">
@@ -587,7 +636,7 @@ export default function DashboardPage() {
 
             {/* ===== GOALS PROGRESS + CONTENT MIX COMPARISON ===== */}
             {(stats.goalsProgress.length > 0 || stats.contentMixComparison.length > 0) && (
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-8">
                 {/* Goals Progress */}
                 {stats.goalsProgress.length > 0 && (
                   <div className="card p-6">
@@ -680,7 +729,7 @@ export default function DashboardPage() {
 
             {/* ===== POSTING PACE + SERIES STATUS ===== */}
             {(stats.postingPace || stats.seriesStatus.length > 0) && (
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-8">
                 {/* Posting Pace */}
                 {stats.postingPace && (
                   <div className="card p-6">
@@ -761,12 +810,12 @@ export default function DashboardPage() {
             )}
 
             {/* ===== FORMAT SIGNATURE ===== */}
-            <div className="mb-6">
+            <div className="mb-8">
               <FormatSignature />
             </div>
 
             {/* ===== RESULTS ===== */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-8">
               {/* Results */}
               <div className="card p-6">
                 <div className="flex items-center justify-between mb-4">

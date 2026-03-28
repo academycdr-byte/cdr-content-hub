@@ -134,7 +134,7 @@ export default function SeriesPage() {
         <div>
           <div className="flex items-center gap-2 mb-1">
             <Layers size={24} className="text-accent" />
-            <h1 className="text-heading-1 text-text-primary">Séries de Conteúdo</h1>
+            <h1 className="text-2xl font-semibold text-text-primary">Séries de Conteúdo</h1>
           </div>
           <p className="text-sm text-text-secondary">
             Organize seu conteúdo em séries recorrentes.
@@ -259,7 +259,7 @@ function SeriesModal({
   const [name, setName] = useState(series?.name || '');
   const [description, setDescription] = useState(series?.description || '');
   const [frequency, setFrequency] = useState(series?.frequency || 'weekly');
-  const [color, setColor] = useState(series?.color || '#B8FF00');
+  const [color, setColor] = useState(series?.color || '#A8D600');
   const [submitting, setSubmitting] = useState(false);
 
   const isEdit = !!series;

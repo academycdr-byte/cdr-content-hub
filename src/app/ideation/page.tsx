@@ -287,12 +287,12 @@ export default function IdeationPage() {
         <div className="flex items-center gap-3 mb-2">
           <div
             className="flex h-10 w-10 items-center justify-center rounded-xl"
-            style={{ backgroundColor: 'rgba(184, 255, 0, 0.12)' }}
+            style={{ backgroundColor: 'var(--accent-surface)' }}
           >
             <Sparkles size={20} className="text-accent" />
           </div>
           <div>
-            <h1 className="text-display text-text-primary">Sessão de Ideação</h1>
+            <h1 className="text-2xl font-semibold text-text-primary">Sessão de Ideação</h1>
             <p className="text-sm text-text-secondary">Planejamento semanal de conteúdo</p>
           </div>
         </div>
@@ -318,8 +318,8 @@ export default function IdeationPage() {
                   <span
                     className="flex h-6 w-6 items-center justify-center rounded-lg text-[10px] font-bold shrink-0"
                     style={{
-                      backgroundColor: index === 0 ? 'rgba(184, 255, 0, 0.15)' : 'var(--bg-secondary)',
-                      color: index === 0 ? '#B8FF00' : 'var(--text-tertiary)',
+                      backgroundColor: index === 0 ? 'var(--accent-surface)' : 'var(--bg-secondary)',
+                      color: index === 0 ? 'var(--accent)' : 'var(--text-tertiary)',
                     }}
                   >
                     #{index + 1}
@@ -596,7 +596,7 @@ export default function IdeationPage() {
                         <div className="flex flex-col items-center">
                           <span
                             className="flex h-6 w-6 items-center justify-center rounded-full text-[10px] font-bold shrink-0"
-                            style={{ backgroundColor: 'rgba(184, 255, 0, 0.15)', color: '#B8FF00' }}
+                            style={{ backgroundColor: 'var(--accent-surface)', color: 'var(--accent)' }}
                           >
                             {step.part}
                           </span>

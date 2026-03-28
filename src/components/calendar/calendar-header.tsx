@@ -60,7 +60,7 @@ export default function CalendarHeader({
           </button>
         </div>
 
-        <h1 className="text-heading-1 text-text-primary">
+        <h1 className="text-2xl font-semibold text-text-primary">
           {MONTH_NAMES[month]} {year}
         </h1>
 

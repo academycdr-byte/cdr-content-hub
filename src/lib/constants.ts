@@ -20,7 +20,7 @@ export const STATUS_COLORS: Record<string, string> = {
   PRODUCTION: '#FF9500',
   REVIEW: '#007AFF',
   SCHEDULED: '#34C759',
-  PUBLISHED: '#B8FF00',
+  PUBLISHED: '#A8D600',
 };
 
 export const MONTHLY_POST_GOAL = 30;

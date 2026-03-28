@@ -61,7 +61,7 @@ export function CreateHookModal({ pillars, onSubmit, onClose }: CreateHookModalP
         <div className="sticky top-0 z-10 flex items-center gap-3 border-b border-border-default p-4 sm:p-5 bg-bg-modal rounded-t-2xl">
           <div
             className="flex h-9 w-9 items-center justify-center rounded-xl shrink-0"
-            style={{ backgroundColor: 'rgba(184, 255, 0, 0.12)' }}
+            style={{ backgroundColor: 'var(--accent-surface)' }}
           >
             <Lightbulb size={18} className="text-accent" />
           </div>
@@ -189,7 +189,7 @@ export function CreateHookModal({ pillars, onSubmit, onClose }: CreateHookModalP
               <label className="text-xs text-text-tertiary mb-1.5 block">Categoria</label>
               <div className="flex flex-wrap gap-2">
                 {CATEGORIES.filter((c) => c !== 'ALL').map((c) => {
-                  const colors = CATEGORY_COLORS[c] || { bg: 'rgba(142, 142, 147, 0.12)', text: '#8E8E93' };
+                  const colors = CATEGORY_COLORS[c] || { bg: 'var(--bg-secondary)', text: 'var(--text-tertiary)' };
                   return (
                     <button
                       key={c}

@@ -650,15 +650,15 @@ export default function PostBuilderPage({ params }: PostBuilderPageProps) {
                     className="flex h-14 w-14 items-center justify-center rounded-xl text-xl font-bold"
                     style={{
                       backgroundColor: aiAnalysis.onlyIvanScore >= 7
-                        ? 'rgba(184, 255, 0, 0.15)'
+                        ? 'var(--accent-surface)'
                         : aiAnalysis.onlyIvanScore >= 4
-                          ? 'rgba(255, 214, 10, 0.15)'
-                          : 'rgba(255, 69, 58, 0.15)',
+                          ? 'var(--warning-surface)'
+                          : 'var(--error-surface)',
                       color: aiAnalysis.onlyIvanScore >= 7
-                        ? '#B8FF00'
+                        ? 'var(--accent)'
                         : aiAnalysis.onlyIvanScore >= 4
-                          ? '#FFD60A'
-                          : '#FF453A',
+                          ? 'var(--warning)'
+                          : 'var(--error)',
                     }}
                   >
                     {aiAnalysis.onlyIvanScore}

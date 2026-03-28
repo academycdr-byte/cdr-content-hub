@@ -16,25 +16,25 @@ const FORMAT_META: Record<string, { label: string; description: string; icon: Re
     label: 'Reels / Video',
     description: 'Vídeos curtos (Reels, TikTok)',
     icon: <Film size={20} />,
-    color: '#E4405F',
+    color: 'var(--error)',
   },
   CAROUSEL: {
     label: 'Carrossel',
     description: 'Posts com múltiplas imagens',
     icon: <Images size={20} />,
-    color: '#7C3AED',
+    color: 'var(--pillar-education)',
   },
   STATIC: {
     label: 'Imagem Estatica',
     description: 'Post com imagem única',
     icon: <Image size={20} />,
-    color: '#2563EB',
+    color: 'var(--pillar-cases)',
   },
   STORY: {
     label: 'Story',
     description: 'Stories temporários (24h)',
     icon: <Clapperboard size={20} />,
-    color: '#D97706',
+    color: 'var(--warning)',
   },
 };
 
@@ -124,8 +124,8 @@ export default function CommissionsPage() {
     <div className="max-w-4xl mx-auto animate-fade-in">
       {/* Header */}
       <div className="mb-6">
-        <h1 className="text-display text-text-primary">Comissões</h1>
-        <p className="mt-2 text-text-secondary">
+        <h1 className="text-2xl font-semibold text-text-primary">Comissões</h1>
+        <p className="text-sm text-text-secondary mt-1">
           Configure o valor CPM (custo por mil views) de cada formato de conteúdo.
         </p>
       </div>

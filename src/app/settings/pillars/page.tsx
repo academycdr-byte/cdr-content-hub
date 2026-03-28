@@ -107,7 +107,7 @@ export default function PillarsSettingsPage() {
       {/* Header */}
       <div className="flex items-center justify-between mb-8">
         <div>
-          <h1 className="text-heading-1 text-text-primary">Pilares de Conteúdo</h1>
+          <h1 className="text-2xl font-semibold text-text-primary">Pilares de Conteúdo</h1>
           <p className="mt-1 text-sm text-text-secondary">
             Configure os pilares e a distribuição percentual do seu mix de conteúdo.
           </p>
