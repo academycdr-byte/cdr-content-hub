@@ -48,7 +48,7 @@ export default function ChecklistsSettingsPage() {
         ti === templateIndex
           ? {
               ...t,
-              items: t.items.map((item, ii) => (ii === itemIndex ? value : item)),
+              items: (t.items || []).map((item, ii) => (ii === itemIndex ? value : item)),
             }
           : t
       )
@@ -59,7 +59,7 @@ export default function ChecklistsSettingsPage() {
     setTemplates((prev) =>
       prev.map((t, ti) =>
         ti === templateIndex
-          ? { ...t, items: [...t.items, ''] }
+          ? { ...t, items: [...(t.items || []), ''] }
           : t
       )
     );
@@ -69,7 +69,7 @@ export default function ChecklistsSettingsPage() {
     setTemplates((prev) =>
       prev.map((t, ti) =>
         ti === templateIndex
-          ? { ...t, items: t.items.filter((_, ii) => ii !== itemIndex) }
+          ? { ...t, items: (t.items || []).filter((_, ii) => ii !== itemIndex) }
           : t
       )
     );
@@ -77,7 +77,7 @@ export default function ChecklistsSettingsPage() {
 
   async function handleSave() {
     // Validate: no empty items
-    const hasEmpty = templates.some((t) => t.items.some((item) => !item.trim()));
+    const hasEmpty = templates.some((t) => (t.items || []).some((item) => !item.trim()));
     if (hasEmpty) {
       addToast('Remova items vazios antes de salvar', 'error');
       return;
@@ -166,14 +166,14 @@ export default function ChecklistsSettingsPage() {
                     {STATUS_LABELS[template.stage as PostStatus] || template.stage}
                   </h3>
                   <p className="text-xs text-text-tertiary">
-                    {template.items.length} item{template.items.length !== 1 ? 's' : ''}
+                    {(template.items || []).length} item{(template.items || []).length !== 1 ? 's' : ''}
                   </p>
                 </div>
               </div>
 
               {/* Items */}
               <div className="space-y-2">
-                {template.items.map((item, itemIndex) => (
+                {(template.items || []).map((item, itemIndex) => (
                   <div key={itemIndex} className="flex items-center gap-2">
                     <div className="flex h-4 w-4 items-center justify-center text-text-tertiary shrink-0">
                       <span className="text-[10px] font-mono">{itemIndex + 1}.</span>
@@ -225,6 +225,12 @@ export default function ChecklistsSettingsPage() {
           <span className="badge bg-accent-surface text-accent">
             Checklists
           </span>
+          <a
+            href="/settings/dm-keywords"
+            className="badge bg-bg-secondary text-text-secondary hover:bg-bg-hover transition-colors cursor-pointer"
+          >
+            DM Keywords
+          </a>
           <a
             href="/settings/appearance"
             className="badge bg-bg-secondary text-text-secondary hover:bg-bg-hover transition-colors cursor-pointer"

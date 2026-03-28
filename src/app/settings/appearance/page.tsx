@@ -111,6 +111,12 @@ export default function AppearanceSettingsPage() {
           >
             Checklists
           </a>
+          <a
+            href="/settings/dm-keywords"
+            className="badge bg-bg-secondary text-text-secondary hover:bg-bg-hover transition-colors cursor-pointer"
+          >
+            DM Keywords
+          </a>
           <span className="badge bg-accent-surface text-accent">
             Aparencia
           </span>
