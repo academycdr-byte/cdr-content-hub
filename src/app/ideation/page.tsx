@@ -292,8 +292,8 @@ export default function IdeationPage() {
             <Sparkles size={20} className="text-accent" />
           </div>
           <div>
-            <h1 className="text-2xl font-semibold text-text-primary">Sessão de Ideação</h1>
-            <p className="text-sm text-text-secondary">Planejamento semanal de conteúdo</p>
+            <h1 className="text-[30px] font-bold leading-tight text-text-primary">Sessão de Ideação</h1>
+            <p className="text-sm text-text-tertiary">Planejamento semanal de conteúdo</p>
           </div>
         </div>
       </div>
@@ -497,7 +497,7 @@ export default function IdeationPage() {
       <div className="card p-6 mb-6">
         <div className="flex items-center gap-2 mb-1">
           <Plus size={16} className="text-accent" />
-          <h2 className="text-heading-3 text-text-primary">Ideias Rapidas</h2>
+          <h2 className="text-heading-3 text-text-primary">Ideias Rápidas</h2>
         </div>
         <p className="text-xs text-text-tertiary mb-4">
           Descreva brevemente sua ideia e a IA monta o plano de execução

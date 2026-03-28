@@ -80,7 +80,7 @@ export function CreateGoalModal({ accounts, onClose, onCreate }: CreateGoalModal
         style={{
           background: 'var(--bg-modal)',
           border: '1px solid var(--border)',
-          borderRadius: 'var(--radius-xl)',
+          borderRadius: 'var(--radius-lg)',
           boxShadow: 'var(--shadow-xl)',
         }}
       >

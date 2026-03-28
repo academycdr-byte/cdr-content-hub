@@ -18,7 +18,7 @@ export const GoalCard = memo(function GoalCard({ goal, onSelect, onDelete }: Goa
 
   return (
     <div
-      className="card p-5 card-hover cursor-pointer group relative"
+      className="card p-6 card-hover cursor-pointer group relative"
       onClick={() => account && onSelect(account.id)}
     >
       {/* Delete button */}

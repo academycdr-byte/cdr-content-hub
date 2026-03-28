@@ -132,10 +132,10 @@ export default function SocialPage() {
       {/* Header */}
       <div className="flex items-start justify-between mb-6">
         <div>
-          <h1 className="text-2xl font-semibold text-text-primary mb-1">
+          <h1 className="text-[30px] font-bold leading-tight text-text-primary mb-1">
             Contas Sociais
           </h1>
-          <p className="text-sm text-text-secondary">
+          <p className="text-sm text-text-tertiary">
             {accounts.length} conta{accounts.length !== 1 ? 's' : ''}{' '}
             conectada{accounts.length !== 1 ? 's' : ''}
             {autoSyncCount > 0 && (
@@ -148,11 +148,11 @@ export default function SocialPage() {
       </div>
 
       {/* Connect Buttons */}
-      <div className="card p-5 mb-8">
+      <div className="card p-6 mb-8">
         <h2 className="text-heading-3 text-text-primary mb-3">
           Conectar Nova Conta
         </h2>
-        <p className="text-sm text-text-secondary mb-4">
+        <p className="text-sm text-text-tertiary mb-4">
           Conecte suas redes sociais para sincronizar conteúdo automaticamente.
         </p>
         <div className="flex items-center gap-3 flex-wrap">
@@ -170,7 +170,7 @@ export default function SocialPage() {
           <h2 className="text-heading-2 text-text-primary mb-2">
             Nenhuma conta conectada
           </h2>
-          <p className="text-sm text-text-secondary max-w-md">
+          <p className="text-sm text-text-tertiary max-w-md">
             Conecte seu Instagram ou TikTok para sincronizar postagens
             automaticamente.
           </p>
@@ -181,8 +181,8 @@ export default function SocialPage() {
           {instagramAccounts.length > 0 && (
             <div>
               <div className="flex items-center gap-2 mb-4">
-                <div className="w-8 h-8 rounded-lg flex items-center justify-center bg-gradient-to-br from-[#833AB4] via-[#E1306C] to-[#F77737]">
-                  <Instagram className="w-4 h-4 text-white" />
+                <div className="w-8 h-8 rounded-lg flex items-center justify-center bg-accent-surface">
+                  <Instagram className="w-4 h-4 text-accent" />
                 </div>
                 <h2 className="text-lg font-semibold text-text-primary">
                   Instagram
@@ -210,8 +210,8 @@ export default function SocialPage() {
           {tiktokAccounts.length > 0 && (
             <div>
               <div className="flex items-center gap-2 mb-4">
-                <div className="w-8 h-8 rounded-lg flex items-center justify-center bg-text-primary">
-                  <Music2 className="w-4 h-4 text-bg-primary" />
+                <div className="w-8 h-8 rounded-lg flex items-center justify-center bg-accent-surface">
+                  <Music2 className="w-4 h-4 text-accent" />
                 </div>
                 <h2 className="text-lg font-semibold text-text-primary">
                   TikTok

@@ -19,7 +19,7 @@ export function EmptyState({ icon: Icon, title, description, action }: EmptyStat
       </div>
       <h2 className="text-heading-2 text-text-primary mb-2">{title}</h2>
       {description && (
-        <p className="text-sm text-text-secondary mb-4">{description}</p>
+        <p className="text-sm text-text-tertiary mb-4">{description}</p>
       )}
       {action && action.href && (
         <a href={action.href} className="btn-accent">

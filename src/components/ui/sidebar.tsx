@@ -12,15 +12,12 @@ import {
   DollarSign,
   Settings,
   LogOut,
-  Search,
   Sparkles,
   Layers,
 } from 'lucide-react';
 import { signOut } from 'next-auth/react';
 import { cn } from '@/lib/utils';
 import ThemeToggle from '@/components/ui/theme-toggle';
-import NotificationBell from '@/components/ui/notification-bell';
-import { useSearchStore } from '@/stores/search-store';
 
 interface NavItem {
   label: string;
@@ -37,33 +34,32 @@ const NAV_SECTIONS: NavSection[] = [
   {
     title: 'Menu',
     items: [
-      { label: 'Dashboard', href: '/', icon: <LayoutDashboard size={20} /> },
-      { label: 'Calendário', href: '/calendar', icon: <Calendar size={20} /> },
-      { label: 'Ideias', href: '/hooks', icon: <Lightbulb size={20} /> },
-      { label: 'Ideação', href: '/ideation', icon: <Sparkles size={20} /> },
-      { label: 'Métricas', href: '/metrics', icon: <BarChart3 size={20} /> },
-      { label: 'Metas', href: '/goals', icon: <Target size={20} /> },
+      { label: 'Dashboard', href: '/', icon: <LayoutDashboard size={22} /> },
+      { label: 'Calendário', href: '/calendar', icon: <Calendar size={22} /> },
+      { label: 'Ideias', href: '/hooks', icon: <Lightbulb size={22} /> },
+      { label: 'Ideação', href: '/ideation', icon: <Sparkles size={22} /> },
+      { label: 'Métricas', href: '/metrics', icon: <BarChart3 size={22} /> },
+      { label: 'Metas', href: '/goals', icon: <Target size={22} /> },
     ],
   },
   {
     title: 'Ferramentas',
     items: [
-      { label: 'Séries', href: '/series', icon: <Layers size={20} /> },
-      { label: 'Comissões', href: '/commissions', icon: <DollarSign size={20} /> },
-      { label: 'Social', href: '/social', icon: <Share2 size={20} /> },
+      { label: 'Séries', href: '/series', icon: <Layers size={22} /> },
+      { label: 'Comissões', href: '/commissions', icon: <DollarSign size={22} /> },
+      { label: 'Social', href: '/social', icon: <Share2 size={22} /> },
     ],
   },
   {
     title: 'Suporte',
     items: [
-      { label: 'Configurações', href: '/settings/pillars', icon: <Settings size={20} /> },
+      { label: 'Configurações', href: '/settings/pillars', icon: <Settings size={22} /> },
     ],
   },
 ];
 
 export default function Sidebar() {
   const pathname = usePathname();
-  const { open: openSearch } = useSearchStore();
 
   const isActive = (href: string): boolean => {
     if (href === '/') return pathname === '/';
@@ -71,49 +67,28 @@ export default function Sidebar() {
   };
 
   return (
-    <aside className="fixed left-0 top-0 z-40 flex h-screen w-[280px] flex-col" style={{ backgroundColor: 'var(--bg-sidebar)', borderRight: '1px solid var(--border)' }}>
-      {/* Logo + Notification */}
-      <div className="flex h-16 items-center justify-between px-5" style={{ borderBottom: '1px solid var(--border)' }}>
+    <aside
+      className="fixed z-40 flex flex-col left-[12px] top-[12px] w-[260px]"
+      style={{
+        height: 'calc(100vh - 24px)',
+        borderRadius: '20px',
+        border: '1px solid var(--border)',
+        backgroundColor: 'var(--bg-card)',
+      }}
+    >
+      {/* Logo — no border-bottom */}
+      <div className="px-6 pt-6 pb-4">
         <div className="flex items-center gap-3">
           <div
-            className="flex h-9 w-9 items-center justify-center rounded-xl text-xs font-bold"
-            style={{ backgroundColor: 'var(--accent)', color: '#fff' }}
+            className="flex h-9 w-9 items-center justify-center text-xs font-bold"
+            style={{ backgroundColor: 'var(--accent)', color: '#fff', borderRadius: '12px' }}
           >
             CH
           </div>
-          <span className="text-[15px] font-semibold" style={{ color: 'var(--text-primary)' }}>
+          <span className="text-[15px] font-bold" style={{ color: 'var(--text-primary)' }}>
             Content Hub
           </span>
         </div>
-        <NotificationBell />
-      </div>
-
-      {/* Search */}
-      <div className="px-4 pt-4 pb-2">
-        <button
-          onClick={openSearch}
-          className="flex w-full items-center gap-2.5 rounded-xl px-3 py-2.5 text-[13px] transition-colors"
-          style={{
-            border: '1px solid var(--border)',
-            color: 'var(--text-tertiary)',
-            backgroundColor: 'transparent',
-          }}
-          onMouseEnter={(e) => { e.currentTarget.style.backgroundColor = 'var(--bg-hover)'; }}
-          onMouseLeave={(e) => { e.currentTarget.style.backgroundColor = 'transparent'; }}
-        >
-          <Search size={16} />
-          <span className="flex-1 text-left">Buscar...</span>
-          <kbd
-            className="text-[10px] font-medium px-1.5 py-0.5 rounded-md"
-            style={{
-              backgroundColor: 'var(--bg-hover)',
-              border: '1px solid var(--border)',
-              color: 'var(--text-tertiary)',
-            }}
-          >
-            Ctrl+K
-          </kbd>
-        </button>
       </div>
 
       {/* Navigation Sections */}
@@ -121,12 +96,12 @@ export default function Sidebar() {
         <div className="flex flex-col gap-6">
           {NAV_SECTIONS.map((section) => (
             <div key={section.title}>
-              {/* Section Label */}
+              {/* Section Label — 13px medium, NOT uppercase, 0.02em */}
               <p
-                className="mb-2 px-3 text-[12px] font-semibold uppercase"
+                className="mb-2 px-4 text-[13px] font-medium"
                 style={{
                   color: 'var(--text-tertiary)',
-                  letterSpacing: '0.05em',
+                  letterSpacing: '0.02em',
                 }}
               >
                 {section.title}
@@ -141,7 +116,8 @@ export default function Sidebar() {
                       key={item.href}
                       href={item.href}
                       className={cn(
-                        'group flex items-center gap-3 rounded-xl px-3 py-2.5 text-[14px] font-medium transition-all duration-150'
+                        'group flex items-center gap-3 rounded-2xl px-4 py-3 text-[16px] transition-all duration-150',
+                        active ? 'font-semibold' : 'font-medium'
                       )}
                       style={{
                         backgroundColor: active ? 'var(--accent-surface)' : 'transparent',
@@ -176,12 +152,12 @@ export default function Sidebar() {
         </div>
       </nav>
 
-      {/* Footer */}
+      {/* Footer — border-top, ThemeToggle + Logout */}
       <div className="px-4 pb-4 pt-2 flex flex-col gap-1" style={{ borderTop: '1px solid var(--border)' }}>
         <ThemeToggle />
         <button
           onClick={() => signOut({ callbackUrl: '/login' })}
-          className="flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-[14px] font-medium transition-colors"
+          className="flex w-full items-center gap-3 rounded-2xl px-4 py-3 text-[16px] font-medium transition-colors"
           style={{
             color: 'var(--error)',
             backgroundColor: 'transparent',
@@ -193,7 +169,7 @@ export default function Sidebar() {
             e.currentTarget.style.backgroundColor = 'transparent';
           }}
         >
-          <LogOut size={20} />
+          <LogOut size={22} />
           Sair
         </button>
       </div>

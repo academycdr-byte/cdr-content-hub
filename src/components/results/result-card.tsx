@@ -110,7 +110,7 @@ const ResultCard = memo(function ResultCard({ result, onEdit, onDelete, onTransf
         {hasImages && (
           <div className="flex items-center gap-1 text-[11px] text-text-tertiary mb-1">
             <ImageIcon size={11} />
-            <span>{result.images!.length} evidencia(s)</span>
+            <span>{result.images!.length} evidência(s)</span>
           </div>
         )}
       </div>

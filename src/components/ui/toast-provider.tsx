@@ -51,7 +51,7 @@ function ToastItem({ id, message, type, onDismiss }: ToastItemProps) {
   return (
     <div
       className={cn(
-        'flex items-center gap-3 rounded-xl bg-bg-card px-4 py-3 animate-slide-up',
+        'flex items-center gap-3 rounded-[20px] bg-bg-card px-4 py-3 animate-slide-up',
         'border border-border-default',
         borders[type]
       )}

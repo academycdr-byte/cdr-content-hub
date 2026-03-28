@@ -25,28 +25,28 @@ function formatNumber(value: number): string {
 const STAT_CARDS = [
   {
     key: 'views' as const,
-    label: 'Total Views',
+    label: 'Total de Views',
     icon: Eye,
     color: 'var(--accent)',
     bgColor: 'var(--accent-surface)',
   },
   {
     key: 'likes' as const,
-    label: 'Total Likes',
+    label: 'Total de Likes',
     icon: Heart,
     color: 'var(--accent)',
     bgColor: 'var(--accent-surface)',
   },
   {
     key: 'comments' as const,
-    label: 'Total Comentários',
+    label: 'Total de Comentários',
     icon: MessageCircle,
     color: 'var(--accent)',
     bgColor: 'var(--accent-surface)',
   },
   {
     key: 'shares' as const,
-    label: 'Total Shares',
+    label: 'Total de Shares',
     icon: Share2,
     color: 'var(--accent)',
     bgColor: 'var(--accent-surface)',
@@ -82,10 +82,10 @@ export default function MetricsOverview({ data, loading }: MetricsOverviewProps)
           const Icon = card.icon;
           const value = totals[card.key];
           return (
-            <div key={card.key} className="card p-5 animate-fade-in">
+            <div key={card.key} className="card p-6 animate-fade-in">
               <div className="flex items-center justify-between mb-3">
                 <div
-                  className="flex h-10 w-10 items-center justify-center rounded-xl"
+                  className="flex h-11 w-11 items-center justify-center rounded-xl"
                   style={{ backgroundColor: card.bgColor }}
                 >
                   <Icon size={20} style={{ color: card.color }} />
@@ -102,7 +102,7 @@ export default function MetricsOverview({ data, loading }: MetricsOverviewProps)
 
       {/* Platform Breakdown */}
       {totals.posts > 0 && (
-        <div className="card p-5">
+        <div className="card p-6">
           <p className="text-xs font-medium text-text-secondary mb-3">
             Distribuição por plataforma ({totals.posts} posts)
           </p>

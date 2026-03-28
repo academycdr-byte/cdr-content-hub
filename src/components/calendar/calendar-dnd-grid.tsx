@@ -21,7 +21,7 @@ interface CalendarDndGridProps {
   onTogglePublished?: (post: Post) => void;
 }
 
-const WEEKDAYS = ['Dom', 'Seg', 'Ter', 'Qua', 'Qui', 'Sex', 'Sab'];
+const WEEKDAYS = ['Dom', 'Seg', 'Ter', 'Qua', 'Qui', 'Sex', 'Sáb'];
 
 export default function CalendarDndGrid({
   year,

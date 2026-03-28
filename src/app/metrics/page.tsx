@@ -258,7 +258,7 @@ export default function MetricsPage() {
         <div>
           <div className="flex items-center gap-2 mb-1">
             <BarChart3 size={24} className="text-accent" />
-            <h1 className="text-2xl font-semibold text-text-primary">Métricas</h1>
+            <h1 className="text-[30px] font-bold leading-tight text-text-primary">Métricas</h1>
             {syncing && (
               <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-accent-surface text-accent text-xs font-medium">
                 <RefreshCw size={12} className="animate-spin" />
@@ -266,7 +266,7 @@ export default function MetricsPage() {
               </span>
             )}
           </div>
-          <p className="text-sm text-text-secondary">
+          <p className="text-sm text-text-tertiary">
             Acompanhe o desempenho dos seus posts no Instagram e TikTok.
           </p>
         </div>

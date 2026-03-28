@@ -25,7 +25,7 @@ export const HookCard = memo(function HookCard({ hook, index, pillarColor, pilla
       {/* Number badge */}
       <div
         className="flex h-8 w-8 items-center justify-center rounded-lg text-xs font-bold shrink-0"
-        style={{ backgroundColor: catColors.bg, color: catColors.text }}
+        style={{ backgroundColor: 'var(--accent-surface)', color: 'var(--accent)' }}
       >
         #{index}
       </div>

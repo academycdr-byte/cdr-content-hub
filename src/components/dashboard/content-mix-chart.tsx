@@ -24,6 +24,22 @@ interface CustomTooltipProps {
   payload?: Array<{ payload: PillarMixItem }>;
 }
 
+// Monochromatic palette: greens + warm accents
+const DONUT_PALETTE = [
+  '#A8D600', // CDR green
+  '#8AB300', // darker green
+  '#6E9000', // deep green
+  '#FFD700', // gold accent
+  '#FF6B4A', // coral accent
+  '#C2F000', // lime green
+  '#4A7A00', // forest green
+  '#FBBF24', // amber accent
+];
+
+function getDonutColor(index: number): string {
+  return DONUT_PALETTE[index % DONUT_PALETTE.length];
+}
+
 function CustomTooltip({ active, payload }: CustomTooltipProps) {
   if (!active || !payload || payload.length === 0) return null;
 
@@ -31,20 +47,20 @@ function CustomTooltip({ active, payload }: CustomTooltipProps) {
 
   return (
     <div
-      className="rounded-lg border border-border-default px-3 py-2 bg-bg-card"
-      style={{ boxShadow: 'var(--shadow-md)' }}
+      className="rounded-lg px-3 py-2"
+      style={{ backgroundColor: '#1F2937', boxShadow: 'var(--shadow-lg)' }}
     >
       <div className="flex items-center gap-2 mb-1">
         <div
           className="h-2.5 w-2.5 rounded-full"
           style={{ backgroundColor: item.color }}
         />
-        <span className="text-xs font-semibold text-text-primary">{item.name}</span>
+        <span className="text-xs font-semibold text-white">{item.name}</span>
       </div>
-      <p className="text-[11px] text-text-secondary">
+      <p className="text-[11px] text-gray-300">
         {item.count} post{item.count !== 1 ? 's' : ''} ({item.percentage}%)
       </p>
-      <p className="text-[11px] text-text-tertiary">
+      <p className="text-[11px] text-gray-400">
         Alvo: {item.targetPercentage}%
       </p>
     </div>
@@ -53,6 +69,7 @@ function CustomTooltip({ active, payload }: CustomTooltipProps) {
 
 export default function ContentMixChart({ data, compact = false }: ContentMixChartProps) {
   const chartData = data.filter((item) => item.count > 0);
+  const totalPosts = data.reduce((sum, d) => sum + d.count, 0);
 
   // Find biggest negative deviation for recommendation
   const deviations = data.map((item) => ({
@@ -68,7 +85,7 @@ export default function ContentMixChart({ data, compact = false }: ContentMixCha
   if (compact) {
     return (
       <div className="flex flex-col items-center">
-        <div className="w-full h-[140px]">
+        <div className="w-full h-[140px] relative">
           <ResponsiveContainer width="100%" height="100%">
             <PieChart>
               <Pie
@@ -81,21 +98,25 @@ export default function ContentMixChart({ data, compact = false }: ContentMixCha
                 nameKey="name"
                 stroke="none"
               >
-                {(chartData.length > 0 ? chartData : [{ color: 'var(--border)' }]).map((entry, index) => (
-                  <Cell key={`cell-${index}`} fill={entry.color} />
+                {(chartData.length > 0 ? chartData : [{ color: 'var(--border)' }]).map((_entry, index) => (
+                  <Cell key={`cell-${index}`} fill={chartData.length > 0 ? getDonutColor(index) : 'var(--border)'} />
                 ))}
               </Pie>
               <Tooltip content={<CustomTooltip />} />
             </PieChart>
           </ResponsiveContainer>
+          {/* Center number */}
+          <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
+            <span className="text-lg font-bold text-text-primary">{totalPosts}</span>
+          </div>
         </div>
         {/* Compact legend */}
         <div className="flex flex-wrap gap-x-3 gap-y-1 justify-center mt-1">
-          {data.map((item) => (
+          {data.map((item, index) => (
             <div key={item.id} className="flex items-center gap-1">
               <div
                 className="h-2 w-2 rounded-full shrink-0"
-                style={{ backgroundColor: item.color }}
+                style={{ backgroundColor: getDonutColor(index) }}
               />
               <span className="text-[10px] text-text-secondary">{item.name}</span>
             </div>
@@ -123,8 +144,8 @@ export default function ContentMixChart({ data, compact = false }: ContentMixCha
                 nameKey="name"
                 stroke="none"
               >
-                {(chartData.length > 0 ? chartData : [{ color: 'var(--border)' }]).map((entry, index) => (
-                  <Cell key={`cell-${index}`} fill={entry.color} />
+                {(chartData.length > 0 ? chartData : [{ color: 'var(--border)' }]).map((_entry, index) => (
+                  <Cell key={`cell-${index}`} fill={chartData.length > 0 ? getDonutColor(index) : 'var(--border)'} />
                 ))}
               </Pie>
               <Tooltip content={<CustomTooltip />} />
@@ -135,7 +156,7 @@ export default function ContentMixChart({ data, compact = false }: ContentMixCha
         {/* Legend */}
         <div className="w-full lg:w-1/2">
           <div className="space-y-2">
-            {deviations.map((item) => {
+            {deviations.map((item, index) => {
               const isOver = item.deviation > 0;
               const isWarning = Math.abs(item.deviation) > 15;
 
@@ -149,7 +170,7 @@ export default function ContentMixChart({ data, compact = false }: ContentMixCha
                 >
                   <div
                     className="h-3 w-3 rounded-full shrink-0"
-                    style={{ backgroundColor: item.color }}
+                    style={{ backgroundColor: getDonutColor(index) }}
                   />
                   <span className="text-xs font-medium text-text-primary flex-1 min-w-0 truncate">
                     {item.name}
@@ -188,7 +209,7 @@ export default function ContentMixChart({ data, compact = false }: ContentMixCha
           <AlertTriangle size={14} className="text-warning shrink-0 mt-0.5" />
           <p className="text-xs text-text-secondary">
             <span className="font-semibold text-text-primary">Recomendação:</span>{' '}
-            Voce precisa de mais <span className="font-semibold" style={{ color: biggestNegative.color }}>{biggestNegative.name}</span> esta semana
+            Voce precisa de mais <span className="font-semibold" style={{ color: getDonutColor(data.indexOf(biggestNegative)) }}>{biggestNegative.name}</span> esta semana
             (desvio de {Math.abs(biggestNegative.deviation)}% abaixo do alvo).
           </p>
         </div>

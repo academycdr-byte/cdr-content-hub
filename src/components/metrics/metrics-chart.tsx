@@ -42,10 +42,10 @@ function CustomTooltip({ active, payload, label }: CustomTooltipProps) {
 
   return (
     <div
-      className="card p-3 min-w-[160px]"
-      style={{ boxShadow: 'var(--shadow-lg)' }}
+      className="rounded-lg p-3 min-w-[160px]"
+      style={{ backgroundColor: '#1F2937', boxShadow: 'var(--shadow-lg)' }}
     >
-      <p className="text-xs font-medium text-text-secondary mb-2">{label}</p>
+      <p className="text-xs font-medium text-gray-300 mb-2">{label}</p>
       {payload.map((entry) => (
         <div key={entry.name} className="flex items-center justify-between gap-4 mb-1">
           <div className="flex items-center gap-2">
@@ -53,9 +53,9 @@ function CustomTooltip({ active, payload, label }: CustomTooltipProps) {
               className="h-2 w-2 rounded-full"
               style={{ backgroundColor: entry.color }}
             />
-            <span className="text-xs text-text-secondary capitalize">{entry.name}</span>
+            <span className="text-xs text-gray-300 capitalize">{entry.name}</span>
           </div>
-          <span className="text-xs font-semibold text-text-primary">
+          <span className="text-xs font-semibold text-white">
             {new Intl.NumberFormat('pt-BR').format(entry.value)}
           </span>
         </div>
@@ -101,7 +101,7 @@ export default function MetricsChart({ metrics, loading }: MetricsChartProps) {
 
   if (loading) {
     return (
-      <div className="card p-5">
+      <div className="card p-6">
         <div className="skeleton h-4 w-32 mb-4" />
         <div className="skeleton h-[280px]" />
       </div>
@@ -119,7 +119,7 @@ export default function MetricsChart({ metrics, loading }: MetricsChartProps) {
   }
 
   return (
-    <div className="card p-5">
+    <div className="card p-6">
       <p className="text-sm font-medium text-text-primary mb-4">
         Views por dia
       </p>

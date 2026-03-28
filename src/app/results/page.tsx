@@ -198,8 +198,8 @@ export default function ResultsPage() {
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-6">
         <div>
-          <h1 className="text-2xl font-semibold text-text-primary">Resultados</h1>
-          <p className="text-sm text-text-secondary mt-1">
+          <h1 className="text-[30px] font-bold leading-tight text-text-primary">Resultados</h1>
+          <p className="text-sm text-text-tertiary mt-1">
             {total} case{total !== 1 ? 's' : ''} de sucesso cadastrado{total !== 1 ? 's' : ''}
           </p>
         </div>
@@ -280,7 +280,7 @@ export default function ResultsPage() {
           <h2 className="text-lg font-semibold text-text-primary mb-2">
             {hasActiveFilters ? 'Nenhum resultado encontrado' : 'Nenhum resultado cadastrado'}
           </h2>
-          <p className="text-sm text-text-secondary max-w-md mb-6">
+          <p className="text-sm text-text-tertiary max-w-md mb-6">
             {hasActiveFilters
               ? 'Tente ajustar os filtros para encontrar o que procura.'
               : 'Cadastre os resultados dos seus clientes para construir um portfolio de cases de sucesso e transformar em conteúdo.'}

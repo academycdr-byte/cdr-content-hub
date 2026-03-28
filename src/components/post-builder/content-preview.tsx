@@ -29,7 +29,7 @@ export default function ContentPreview({
   const hasContent = Object.values(values).some((v) => v.trim());
 
   return (
-    <div className="card p-5">
+    <div className="card p-6">
       <div className="flex items-center gap-2 mb-4">
         <span style={{ color: pillarColor }}>
           {FORMAT_ICONS[framework.format]}

@@ -189,9 +189,9 @@ export default function GoalsPage() {
         <div>
           <div className="flex items-center gap-2 mb-1">
             <Target size={24} className="text-accent" />
-            <h1 className="text-2xl font-semibold text-text-primary">Metas</h1>
+            <h1 className="text-[30px] font-bold leading-tight text-text-primary">Metas</h1>
           </div>
-          <p className="text-sm text-text-secondary">
+          <p className="text-sm text-text-tertiary">
             Defina e acompanhe suas metas por perfil.
           </p>
         </div>
@@ -387,12 +387,15 @@ export default function GoalsPage() {
                 />
                 <Tooltip
                   contentStyle={{
-                    background: 'var(--bg-card)',
-                    border: '1px solid var(--border)',
-                    borderRadius: 'var(--radius-md)',
-                    boxShadow: 'var(--shadow-md)',
+                    background: '#1F2937',
+                    border: 'none',
+                    borderRadius: '8px',
+                    boxShadow: 'var(--shadow-lg)',
                     fontSize: 12,
+                    color: '#fff',
                   }}
+                  labelStyle={{ color: '#D1D5DB' }}
+                  itemStyle={{ color: '#fff' }}
                   labelFormatter={(v) => {
                     const d = new Date(String(v));
                     return d.toLocaleDateString('pt-BR');
@@ -405,9 +408,7 @@ export default function GoalsPage() {
                 <Line
                   type="monotone"
                   dataKey="followers"
-                  stroke={selectedAccountForChart
-                    ? getPlatformColor(selectedAccountForChart.platform)
-                    : 'var(--accent)'}
+                  stroke="var(--accent)"
                   strokeWidth={2}
                   dot={false}
                   activeDot={{ r: 4, strokeWidth: 0 }}

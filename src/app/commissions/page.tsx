@@ -25,7 +25,7 @@ const FORMAT_META: Record<string, { label: string; description: string; icon: Re
     color: 'var(--pillar-education)',
   },
   STATIC: {
-    label: 'Imagem Estatica',
+    label: 'Imagem Estática',
     description: 'Post com imagem única',
     icon: <Image size={20} />,
     color: 'var(--pillar-cases)',
@@ -124,21 +124,21 @@ export default function CommissionsPage() {
     <div className="max-w-4xl mx-auto animate-fade-in">
       {/* Header */}
       <div className="mb-6">
-        <h1 className="text-2xl font-semibold text-text-primary">Comissões</h1>
-        <p className="text-sm text-text-secondary mt-1">
+        <h1 className="text-[30px] font-bold leading-tight text-text-primary">Comissões</h1>
+        <p className="text-sm text-text-tertiary mt-1">
           Configure o valor CPM (custo por mil views) de cada formato de conteúdo.
         </p>
       </div>
 
       {/* How it works */}
-      <div className="card p-5 mb-6 flex items-start gap-3">
+      <div className="card p-6 mb-6 flex items-start gap-3">
         <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-accent-surface">
           <Info size={16} className="text-accent" />
         </div>
         <div>
           <p className="text-sm font-semibold text-text-primary mb-1">Como funciona o cálculo</p>
           <p className="text-sm text-text-secondary">
-            O valor estimado de cada post e calculado como: <span className="font-mono text-text-primary">views / 1.000 x CPM</span>
+            O valor estimado de cada post é calculado como: <span className="font-mono text-text-primary">views / 1.000 x CPM</span>
           </p>
           <p className="text-xs text-text-tertiary mt-1">
             Exemplo: {exampleViews.toLocaleString('pt-BR')} views em um Reel com CPM de R$ {exampleFormat?.cpmValue.toFixed(2).replace('.', ',') || '2,00'} = <span className="font-semibold text-accent">R$ {exampleValue.toFixed(2).replace('.', ',')}</span>
@@ -158,8 +158,7 @@ export default function CommissionsPage() {
             <div key={config.format} className="card p-6">
               <div className="flex items-center gap-3 mb-4">
                 <div
-                  className="flex h-10 w-10 items-center justify-center rounded-xl"
-                  style={{ backgroundColor: `${meta?.color || '#6E6E73'}15`, color: meta?.color || '#6E6E73' }}
+                  className="flex h-10 w-10 items-center justify-center rounded-xl bg-accent-surface text-accent"
                 >
                   {meta?.icon || <DollarSign size={20} />}
                 </div>

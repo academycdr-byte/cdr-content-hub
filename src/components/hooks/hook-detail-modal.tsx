@@ -93,7 +93,7 @@ export function HookDetailModal({ hook, pillars, pillarColor, pillarName, onClos
               <div className="flex items-start gap-3 p-4 sm:p-5">
                 <div
                   className="flex h-10 w-10 items-center justify-center rounded-xl shrink-0 mt-0.5"
-                  style={{ backgroundColor: catColors.bg, color: catColors.text }}
+                  style={{ backgroundColor: 'var(--accent-surface)', color: 'var(--accent)' }}
                 >
                   <Lightbulb size={20} />
                 </div>

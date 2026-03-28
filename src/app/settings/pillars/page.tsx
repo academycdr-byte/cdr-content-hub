@@ -107,8 +107,8 @@ export default function PillarsSettingsPage() {
       {/* Header */}
       <div className="flex items-center justify-between mb-8">
         <div>
-          <h1 className="text-2xl font-semibold text-text-primary">Pilares de Conteúdo</h1>
-          <p className="mt-1 text-sm text-text-secondary">
+          <h1 className="text-[30px] font-bold leading-tight text-text-primary">Pilares de Conteúdo</h1>
+          <p className="mt-1 text-sm text-text-tertiary">
             Configure os pilares e a distribuição percentual do seu mix de conteúdo.
           </p>
         </div>
@@ -141,7 +141,7 @@ export default function PillarsSettingsPage() {
                 key={acc.id}
                 onClick={() => setSelectedAccountId(acc.id)}
                 className={cn(
-                  'rounded-lg border px-4 py-2 text-sm font-medium transition-all',
+                  'rounded-[10px] border px-4 py-2 text-sm font-medium transition-all',
                   selectedAccountId === acc.id
                     ? 'border-accent bg-accent-surface text-accent'
                     : 'border-border-default bg-bg-primary text-text-secondary hover:border-border-strong'
@@ -179,7 +179,7 @@ export default function PillarsSettingsPage() {
                   type="color"
                   value={pillar.color}
                   onChange={(e) => updatePillar(index, 'color', e.target.value)}
-                  className="h-10 w-10 cursor-pointer rounded-lg border border-border-default"
+                  className="h-10 w-10 cursor-pointer rounded-[10px] border border-border-default"
                   style={{ padding: 2 }}
                 />
               </div>

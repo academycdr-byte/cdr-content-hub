@@ -41,9 +41,9 @@ export default function AppearanceSettingsPage() {
     <div className="max-w-3xl mx-auto animate-fade-in">
       {/* Header */}
       <div className="mb-8">
-        <h1 className="text-2xl font-semibold text-text-primary">Aparencia</h1>
-        <p className="mt-1 text-sm text-text-secondary">
-          Personalize a aparencia do Content Hub.
+        <h1 className="text-[30px] font-bold leading-tight text-text-primary">Aparência</h1>
+        <p className="mt-1 text-sm text-text-tertiary">
+          Personalize a aparência do Content Hub.
         </p>
       </div>
 
@@ -66,8 +66,10 @@ export default function AppearanceSettingsPage() {
               >
                 <div
                   className={cn(
-                    'mb-3 transition-colors',
-                    isSelected ? 'text-accent' : 'text-text-secondary'
+                    'flex h-10 w-10 items-center justify-center rounded-xl mb-3 transition-colors',
+                    isSelected
+                      ? 'bg-accent-surface text-accent'
+                      : 'bg-bg-hover text-text-secondary'
                   )}
                 >
                   {option.icon}
@@ -118,7 +120,7 @@ export default function AppearanceSettingsPage() {
             DM Keywords
           </a>
           <span className="badge bg-accent-surface text-accent">
-            Aparencia
+            Aparência
           </span>
         </div>
       </div>

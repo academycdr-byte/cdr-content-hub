@@ -36,12 +36,12 @@ const METRIC_OPTIONS = [
 const NICHE_SUGGESTIONS = [
   'E-commerce Moda',
   'E-commerce Suplementos',
-  'E-commerce Cosmeticos',
-  'E-commerce Eletronicos',
+  'E-commerce Cosméticos',
+  'E-commerce Eletrônicos',
   'SaaS',
   'Infoprodutos',
   'Varejo',
-  'Servicos',
+  'Serviços',
 ] as const;
 
 const INITIAL_FORM: ResultFormData = {
@@ -146,10 +146,10 @@ export default function ResultFormModal({ isOpen, onClose, onSubmit, editingResu
       {/* Centering wrapper */}
       <div className="flex min-h-full items-center justify-center p-3 sm:p-4">
         {/* Modal */}
-        <div className="relative bg-bg-modal border border-border-default rounded-2xl w-full max-w-lg animate-scale-in"
+        <div className="relative bg-bg-modal border border-border-default rounded-[20px] w-full max-w-lg animate-scale-in"
           style={{ boxShadow: 'var(--shadow-xl)' }}
         >
-          <div className="max-h-[85vh] overflow-y-auto rounded-2xl">
+          <div className="max-h-[85vh] overflow-y-auto rounded-[20px]">
         {/* Header */}
         <div className="sticky top-0 z-10 flex items-center gap-3 p-4 sm:p-5 border-b border-border-default bg-bg-modal rounded-t-2xl">
           <div
@@ -178,7 +178,7 @@ export default function ResultFormModal({ isOpen, onClose, onSubmit, editingResu
         <form onSubmit={handleSubmit} className="p-4 sm:p-5 space-y-5">
           {/* Section: Cliente */}
           <div className="space-y-3">
-            <p className="text-xs font-semibold text-text-secondary tracking-wide">Cliente</p>
+            <p className="text-xs font-semibold text-text-tertiary tracking-wide">Cliente</p>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
               <div>
                 <label className="text-xs text-text-tertiary mb-1 block">Nome *</label>
@@ -213,7 +213,7 @@ export default function ResultFormModal({ isOpen, onClose, onSubmit, editingResu
 
           {/* Section: Métrica */}
           <div className="space-y-3">
-            <p className="text-xs font-semibold text-text-secondary tracking-wide">Métrica Principal</p>
+            <p className="text-xs font-semibold text-text-tertiary tracking-wide">Métrica Principal</p>
             <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
               <div className="col-span-2 sm:col-span-1">
                 <label className="text-xs text-text-tertiary mb-1 block">Tipo *</label>
@@ -270,7 +270,7 @@ export default function ResultFormModal({ isOpen, onClose, onSubmit, editingResu
 
           {/* Section: Detalhes */}
           <div className="space-y-3">
-            <p className="text-xs font-semibold text-text-secondary tracking-wide">Detalhes (opcional)</p>
+            <p className="text-xs font-semibold text-text-tertiary tracking-wide">Detalhes (opcional)</p>
             <div>
               <label className="text-xs text-text-tertiary mb-1 block">Descrição</label>
               <textarea
@@ -296,7 +296,7 @@ export default function ResultFormModal({ isOpen, onClose, onSubmit, editingResu
           {/* Section: Imagens */}
           <div className="space-y-3">
             <div className="flex items-center justify-between">
-              <p className="text-xs font-semibold text-text-secondary tracking-wide">Evidencias (opcional)</p>
+              <p className="text-xs font-semibold text-text-tertiary tracking-wide">Evidências (opcional)</p>
               <button
                 type="button"
                 onClick={handleAddImage}
@@ -310,7 +310,7 @@ export default function ResultFormModal({ isOpen, onClose, onSubmit, editingResu
             {form.imageUrls.length === 0 ? (
               <div className="rounded-xl border border-dashed border-border-default p-4 text-center">
                 <p className="text-xs text-text-tertiary">
-                  Adicione screenshots ou evidencias dos resultados
+                  Adicione screenshots ou evidências dos resultados
                 </p>
               </div>
             ) : (

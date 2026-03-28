@@ -86,23 +86,16 @@ export default function AccountCard({
   const healthStyle = HEALTH_STYLES[health];
 
   return (
-    <div className="card card-hover p-5 animate-fade-in">
+    <div className="card card-hover p-6 animate-fade-in">
       {/* Header */}
       <div className="flex items-start justify-between">
         <div className="flex items-center gap-3">
           {/* Platform icon */}
-          <div
-            className={cn(
-              'w-11 h-11 rounded-xl flex items-center justify-center shrink-0',
-              isInstagram
-                ? 'bg-gradient-to-br from-[#833AB4] via-[#E1306C] to-[#F77737]'
-                : 'bg-text-primary'
-            )}
-          >
+          <div className="w-11 h-11 rounded-xl flex items-center justify-center shrink-0 bg-accent-surface">
             {isInstagram ? (
-              <Instagram className="w-5 h-5 text-white" />
+              <Instagram className="w-5 h-5 text-accent" />
             ) : (
-              <Music2 className="w-5 h-5 text-bg-primary" />
+              <Music2 className="w-5 h-5 text-accent" />
             )}
           </div>
           <div className="min-w-0">
@@ -146,14 +139,14 @@ export default function AccountCard({
       {/* Last sync */}
       {account.lastSyncAt && (
         <p className="text-xs mt-2 text-text-tertiary">
-          Ultimo sync: {formatRelativeTime(account.lastSyncAt)}
+          Último sync: {formatRelativeTime(account.lastSyncAt)}
         </p>
       )}
 
       {/* Token expiry warning */}
       {health === 'expiring' && (
         <div className="mt-3 px-3 py-2 rounded-lg bg-warning-surface text-warning text-xs font-medium">
-          Token expira em breve. Sera renovado automaticamente.
+          Token expira em breve. Será renovado automaticamente.
         </div>
       )}
       {health === 'expired' && (
@@ -197,7 +190,7 @@ export default function AccountCard({
                 ? '/api/social/instagram/auth'
                 : '/api/social/tiktok/auth'
             }
-            className="flex-1 flex items-center justify-center gap-1.5 px-3 py-2 text-sm font-medium rounded-xl transition-all bg-accent text-text-inverted hover:opacity-90"
+            className="flex-1 flex items-center justify-center gap-1.5 btn-accent"
           >
             <LinkIcon className="w-3.5 h-3.5" />
             Reconectar
@@ -206,7 +199,7 @@ export default function AccountCard({
           <button
             onClick={() => onSync(account.id)}
             disabled={syncing}
-            className="flex-1 flex items-center justify-center gap-1.5 px-3 py-2 text-sm font-medium rounded-xl transition-all bg-accent-surface text-accent hover:bg-accent-surface-hover disabled:opacity-50 disabled:cursor-not-allowed"
+            className="flex-1 flex items-center justify-center gap-1.5 px-3 py-2 text-sm font-medium rounded-[10px] transition-all bg-accent-surface text-accent hover:bg-accent-surface-hover disabled:opacity-50 disabled:cursor-not-allowed"
           >
             <RefreshCw
               className={cn('w-3.5 h-3.5', syncing && 'animate-spin')}
@@ -216,7 +209,7 @@ export default function AccountCard({
         )}
         <button
           onClick={() => onDisconnect(account.id)}
-          className="flex items-center justify-center gap-1.5 px-3 py-2 text-sm font-medium rounded-xl transition-colors text-error hover:bg-error-surface"
+          className="flex items-center justify-center gap-1.5 px-3 py-2 text-sm font-medium rounded-[10px] transition-colors text-error hover:bg-error-surface"
           title="Desconectar"
         >
           <Unlink className="w-3.5 h-3.5" />

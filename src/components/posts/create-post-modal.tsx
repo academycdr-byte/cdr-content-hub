@@ -143,7 +143,7 @@ export default function CreatePostModal({
       {/* Modal */}
       <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
         <div
-          className="w-full max-w-[480px] rounded-2xl bg-bg-modal border border-border-default animate-scale-in"
+          className="w-full max-w-[480px] rounded-[20px] bg-bg-modal border border-border-default animate-scale-in"
           style={{ boxShadow: 'var(--shadow-xl)' }}
           onClick={(e) => e.stopPropagation()}
         >
@@ -310,7 +310,7 @@ export default function CreatePostModal({
             {filteredSeries.length > 0 && (
               <div>
                 <label htmlFor="post-series" className="text-label text-text-secondary mb-2 block">
-                  Serie
+                  Série
                 </label>
                 <div className="flex gap-2">
                   <select
@@ -319,7 +319,7 @@ export default function CreatePostModal({
                     onChange={(e) => setSeriesId(e.target.value || null)}
                     className="input flex-1"
                   >
-                    <option value="">Nenhuma serie</option>
+                    <option value="">Nenhuma série</option>
                     {filteredSeries.map((s) => (
                       <option key={s.id} value={s.id}>
                         {s.name}
@@ -350,7 +350,7 @@ export default function CreatePostModal({
                 type="text"
                 value={ctaKeyword}
                 onChange={(e) => setCtaKeyword(e.target.value.toUpperCase())}
-                placeholder="Ex: DIAGNOSTICO, CHECKLIST"
+                placeholder="Ex: DIAGNÓSTICO, CHECKLIST"
                 className="input"
               />
             </div>

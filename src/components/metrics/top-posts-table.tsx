@@ -74,7 +74,7 @@ export default function TopPostsTable({ posts, loading }: TopPostsTableProps) {
 
   if (loading) {
     return (
-      <div className="card p-5">
+      <div className="card p-6">
         <div className="skeleton h-4 w-40 mb-4" />
         <div className="space-y-3">
           {Array.from({ length: 5 }).map((_, i) => (

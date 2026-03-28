@@ -168,7 +168,7 @@ export default function SearchCommand() {
                   setResults([]);
                   inputRef.current?.focus();
                 }}
-                className="p-1 rounded-md hover:bg-bg-hover transition-colors"
+                className="p-1 rounded-[10px] hover:bg-bg-hover transition-colors"
               >
                 <X size={14} className="text-text-tertiary" />
               </button>
@@ -213,7 +213,7 @@ export default function SearchCommand() {
                   onClick={() => navigateToPost(post.id)}
                   onMouseEnter={() => setSelectedIndex(index)}
                   className={cn(
-                    'flex items-center gap-3 w-full px-3 py-2.5 rounded-lg text-left transition-colors',
+                    'flex items-center gap-3 w-full px-3 py-2.5 rounded-[10px] text-left transition-colors',
                     index === selectedIndex
                       ? 'bg-accent-surface'
                       : 'hover:bg-bg-hover'

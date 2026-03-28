@@ -4,9 +4,11 @@ import { useEffect, useState, useCallback } from 'react';
 import { useSession } from 'next-auth/react';
 import { usePathname, useRouter } from 'next/navigation';
 import { redirect } from 'next/navigation';
+import { Search } from 'lucide-react';
 import Sidebar from '@/components/ui/sidebar';
 import MobileBottomNav from '@/components/ui/mobile-bottom-nav';
 import SearchCommand from '@/components/ui/search-command';
+import NotificationBell from '@/components/ui/notification-bell';
 import CreatePostModal, { type CreatePostData } from '@/components/posts/create-post-modal';
 import { useToastStore } from '@/stores/toast-store';
 import { useSearchStore } from '@/stores/search-store';
@@ -131,16 +133,66 @@ export default function AppShell({ children }: AppShellProps) {
   }
 
   return (
-    <div className="flex min-h-screen bg-bg-primary">
+    <div className="flex min-h-screen">
       {/* Desktop Sidebar - hidden on mobile */}
       <div className="hidden md:block">
         <Sidebar />
       </div>
 
-      {/* Main content */}
-      <main className="flex-1 md:ml-[280px] p-4 md:p-8 pb-20 md:pb-8">
-        {children}
-      </main>
+      {/* Content wrapper — floating layout */}
+      <div className="flex-1 md:ml-[284px] flex flex-col md:pr-[12px] md:py-[12px]">
+        {/* Top Header — desktop only */}
+        <header className="top-header hidden md:flex" style={{ borderRadius: '20px 20px 0 0', background: 'var(--bg-primary)' }}>
+          {/* Left spacer */}
+          <div className="flex-1" />
+
+          {/* Center: Search button */}
+          <button
+            onClick={openSearch}
+            className="flex items-center gap-2.5 rounded-xl px-4 py-2.5 text-sm transition-colors w-full"
+            style={{
+              maxWidth: '480px',
+              border: '1px solid var(--border)',
+              color: 'var(--text-tertiary)',
+              backgroundColor: 'transparent',
+            }}
+            onMouseEnter={(e) => { e.currentTarget.style.backgroundColor = 'var(--bg-hover)'; }}
+            onMouseLeave={(e) => { e.currentTarget.style.backgroundColor = 'transparent'; }}
+          >
+            <Search size={16} />
+            <span className="flex-1 text-left">Buscar...</span>
+            <kbd
+              className="text-[11px] font-medium px-1.5 py-0.5 rounded-md"
+              style={{
+                backgroundColor: 'var(--bg-hover)',
+                border: '1px solid var(--border)',
+                color: 'var(--text-tertiary)',
+              }}
+            >
+              Ctrl+K
+            </kbd>
+          </button>
+
+          {/* Right: Notification + Avatar */}
+          <div className="flex-1 flex items-center justify-end gap-3">
+            <NotificationBell />
+            <div
+              className="flex h-9 w-9 items-center justify-center rounded-full text-xs font-bold"
+              style={{ backgroundColor: 'var(--accent)', color: '#fff' }}
+            >
+              IF
+            </div>
+          </div>
+        </header>
+
+        {/* Main content */}
+        <main
+          className="flex-1 p-4 md:p-8 pb-20 md:pb-8"
+          style={{ background: 'var(--bg-primary)', borderRadius: '0 0 20px 20px' }}
+        >
+          {children}
+        </main>
+      </div>
 
       {/* Mobile Bottom Nav - visible only on mobile */}
       <div className="block md:hidden">

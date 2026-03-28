@@ -82,12 +82,13 @@
    ======================================== */
 :root {
   /* Backgrounds — clean solid surfaces */
+  --bg-outer: #ECEEF2;
   --bg-primary: #F5F7FA;
   --bg-secondary: #EEF0F4;
   --bg-card: #FFFFFF;
   --bg-elevated: #FFFFFF;
-  --bg-hover: #F9FBF0;
-  --bg-active: #F2F9D6;
+  --bg-hover: #F9FAFB;
+  --bg-active: rgba(168, 214, 0, 0.06);
   --bg-input: #FFFFFF;
   --bg-modal: #FFFFFF;
 
@@ -107,8 +108,8 @@
   --accent: #A8D600;
   --accent-hover: #C2F000;
   --accent-muted: rgba(168, 214, 0, 0.3);
-  --accent-surface: #F2F9D6;
-  --accent-surface-hover: rgba(168, 214, 0, 0.18);
+  --accent-surface: rgba(168, 214, 0, 0.06);
+  --accent-surface-hover: rgba(168, 214, 0, 0.10);
 
   /* Semantic */
   --success: #10B981;
@@ -137,18 +138,18 @@
   --sidebar-border: #E5E7EB;
   --sidebar-text: #6B7280;
   --sidebar-text-active: #A8D600;
-  --sidebar-hover: #F9FBF0;
+  --sidebar-hover: #F9FAFB;
 
   /* Shadows — ultra-subtle for light mode */
-  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.05);
-  --shadow-md: 0 4px 6px rgba(0, 0, 0, 0.05), 0 1px 3px rgba(0, 0, 0, 0.04);
+  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.03);
+  --shadow-md: 0 2px 4px rgba(0, 0, 0, 0.04);
   --shadow-lg: 0 10px 15px rgba(0, 0, 0, 0.06), 0 4px 6px rgba(0, 0, 0, 0.04);
   --shadow-xl: 0 20px 25px rgba(0, 0, 0, 0.08), 0 8px 10px rgba(0, 0, 0, 0.04);
 
   /* Border Radius */
   --radius-sm: 8px;
   --radius-md: 10px;
-  --radius-lg: 16px;
+  --radius-lg: 20px;
   --radius-xl: 24px;
   --radius-pill: 200px;
   --radius-full: 9999px;
@@ -184,12 +185,13 @@
    Same as :root
    ======================================== */
 [data-theme="light"] {
+  --bg-outer: #ECEEF2;
   --bg-primary: #F5F7FA;
   --bg-secondary: #EEF0F4;
   --bg-card: #FFFFFF;
   --bg-elevated: #FFFFFF;
-  --bg-hover: #F9FBF0;
-  --bg-active: #F2F9D6;
+  --bg-hover: #F9FAFB;
+  --bg-active: rgba(168, 214, 0, 0.06);
   --bg-input: #FFFFFF;
   --bg-modal: #FFFFFF;
 
@@ -206,8 +208,8 @@
   --accent: #A8D600;
   --accent-hover: #C2F000;
   --accent-muted: rgba(168, 214, 0, 0.3);
-  --accent-surface: #F2F9D6;
-  --accent-surface-hover: rgba(168, 214, 0, 0.18);
+  --accent-surface: rgba(168, 214, 0, 0.06);
+  --accent-surface-hover: rgba(168, 214, 0, 0.10);
 
   --success: #10B981;
   --success-surface: #ECFDF5;
@@ -233,10 +235,10 @@
   --sidebar-border: #E5E7EB;
   --sidebar-text: #6B7280;
   --sidebar-text-active: #A8D600;
-  --sidebar-hover: #F9FBF0;
+  --sidebar-hover: #F9FAFB;
 
-  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.05);
-  --shadow-md: 0 4px 6px rgba(0, 0, 0, 0.05), 0 1px 3px rgba(0, 0, 0, 0.04);
+  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.03);
+  --shadow-md: 0 2px 4px rgba(0, 0, 0, 0.04);
   --shadow-lg: 0 10px 15px rgba(0, 0, 0, 0.06), 0 4px 6px rgba(0, 0, 0, 0.04);
   --shadow-xl: 0 20px 25px rgba(0, 0, 0, 0.08), 0 8px 10px rgba(0, 0, 0, 0.04);
 
@@ -254,25 +256,26 @@
    ======================================== */
 [data-theme="dark"] {
   /* Backgrounds — solid dark surfaces */
+  --bg-outer: #020204;
   --bg-primary: #06060A;
   --bg-secondary: #0A0A0E;
-  --bg-card: #111114;
-  --bg-elevated: #111114;
-  --bg-hover: #1A1A1E;
+  --bg-card: #0F0F12;
+  --bg-elevated: #0F0F12;
+  --bg-hover: #18181C;
   --bg-active: rgba(168, 214, 0, 0.08);
-  --bg-input: #111114;
+  --bg-input: #0F0F12;
   --bg-modal: #151518;
 
   /* Borders */
-  --border: #1C1C20;
-  --border-strong: #2A2A2E;
+  --border: #222228;
+  --border-strong: #2E2E34;
   --border-subtle: #151518;
   --border-focus: rgba(168, 214, 0, 0.5);
 
   /* Text */
   --text-primary: #FFFFFF;
-  --text-secondary: #9CA3AF;
-  --text-tertiary: #6B7280;
+  --text-secondary: #A1A1AA;
+  --text-tertiary: #71717A;
   --text-inverted: #06060A;
 
   /* Accent — same CDR green, bright on dark */
@@ -328,7 +331,7 @@
 /* ===== BASE ===== */
 body {
   font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-  background-color: var(--bg-primary);
+  background-color: var(--bg-outer);
   color: var(--text-primary);
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
@@ -568,8 +571,6 @@ a:focus-visible {
   }
   .card-hover:hover {
     border-color: var(--border-strong);
-    box-shadow: var(--shadow-md);
-    transform: translateY(-2px);
   }
 
   /* Solid card variant — same as card in new system */
@@ -602,11 +603,9 @@ a:focus-visible {
   }
   .btn-accent:hover {
     background-color: var(--accent-hover);
-    box-shadow: var(--shadow-md);
-    transform: translateY(-1px);
   }
   .btn-accent:active {
-    transform: scale(0.98) translateY(0);
+    transform: scale(0.98);
   }
   .btn-accent:disabled {
     opacity: 0.5;
@@ -798,6 +797,25 @@ select.input option {
 .drop-target {
   border-color: var(--accent) !important;
   background: var(--accent-surface) !important;
+}
+
+/* ===== Top Header Bar (DS v2.0) ===== */
+.top-header {
+  height: 72px;
+  display: flex;
+  align-items: center;
+  border-bottom: 1px solid var(--border);
+  padding: 0 32px;
+}
+
+/* ===== KPI Value (DS v2.0) ===== */
+.text-kpi-value {
+  font-size: 48px;
+  font-weight: 700;
+  line-height: 1.1;
+  letter-spacing: -0.02em;
+  font-variant-numeric: tabular-nums;
+  font-feature-settings: "tnum", "ss01";
 }
 
 /* ===== Dark mode subtle glow on active elements ===== */

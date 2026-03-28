@@ -39,25 +39,25 @@ export default function LoginPage() {
   }
 
   return (
-    <div className="flex min-h-screen items-center justify-center bg-bg-primary p-4">
-      <div className="w-full max-w-[400px] animate-fade-in">
-        {/* Logo */}
-        <div className="mb-10 text-center">
-          <div
-            className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-2xl text-xl font-bold"
-            style={{ backgroundColor: 'var(--accent)', color: 'var(--text-inverted)' }}
-          >
-            CH
+    <div className="flex min-h-screen items-center justify-center p-4" style={{ background: 'var(--bg-outer)' }}>
+      <div className="w-full max-w-[420px] animate-fade-in">
+        {/* Card with premium floating design */}
+        <div className="p-8 md:p-10" style={{ background: 'var(--bg-card)', borderRadius: 'var(--radius-lg)', border: '1px solid var(--border)' }}>
+          {/* Logo badge */}
+          <div className="mb-8 text-center">
+            <div
+              className="mx-auto mb-4 flex h-12 w-12 items-center justify-center text-lg font-bold"
+              style={{ backgroundColor: 'var(--accent)', color: 'var(--text-inverted)', borderRadius: '12px' }}
+            >
+              CH
+            </div>
+            <h1 className="text-heading-2 text-text-primary">Bem-vindo de volta</h1>
+            <p className="mt-1 text-sm text-text-secondary">CDR Group - Produção de Conteúdo</p>
           </div>
-          <h1 className="text-heading-1 text-text-primary">Content Hub</h1>
-          <p className="mt-1 text-sm text-text-secondary">CDR Group - Produção de Conteúdo</p>
-        </div>
 
-        {/* Login Form */}
-        <div className="card p-8">
           <form onSubmit={handleSubmit} className="space-y-5">
             <div>
-              <label htmlFor="email" className="text-label text-text-secondary mb-2 block">
+              <label htmlFor="email" className="text-[14px] font-medium text-text-secondary mb-2 block">
                 Email
               </label>
               <input
@@ -73,7 +73,7 @@ export default function LoginPage() {
             </div>
 
             <div>
-              <label htmlFor="password" className="text-label text-text-secondary mb-2 block">
+              <label htmlFor="password" className="text-[14px] font-medium text-text-secondary mb-2 block">
                 Senha
               </label>
               <div className="relative">
@@ -108,6 +108,7 @@ export default function LoginPage() {
               type="submit"
               disabled={loading}
               className="btn-accent w-full flex items-center justify-center gap-2"
+              style={{ padding: '12px 20px' }}
             >
               {loading ? (
                 <>

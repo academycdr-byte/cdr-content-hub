@@ -50,7 +50,7 @@ export default function PipelineColumn({ status, posts, onPostClick }: PipelineC
     <div
       ref={setNodeRef}
       className={cn(
-        'flex flex-col min-w-[200px] flex-1 rounded-xl bg-bg-secondary transition-colors',
+        'flex flex-col min-w-[200px] flex-1 rounded-2xl bg-bg-secondary transition-colors',
         isOver && 'bg-accent-surface ring-2 ring-accent'
       )}
     >
@@ -60,7 +60,7 @@ export default function PipelineColumn({ status, posts, onPostClick }: PipelineC
           className="h-2.5 w-2.5 rounded-full shrink-0"
           style={{ backgroundColor: statusColor }}
         />
-        <h3 className="text-xs font-semibold text-text-primary flex-1">
+        <h3 className="text-[14px] font-semibold text-text-primary flex-1">
           {STATUS_LABELS[status]}
         </h3>
         <span

@@ -32,13 +32,13 @@ export default function PostSidebar({ post, pillar }: PostSidebarProps) {
     : 'Não agendado';
 
   return (
-    <div className="card p-5 space-y-4">
+    <div className="card p-6 space-y-4">
       <h3 className="text-heading-3 text-text-primary">Informações</h3>
 
       {/* Status */}
       <div className="flex items-center gap-3">
-        <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-bg-secondary">
-          <Layers size={14} className="text-text-tertiary" />
+        <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-accent-surface">
+          <Layers size={14} className="text-accent" />
         </div>
         <div>
           <p className="text-[10px] font-semibold text-text-tertiary uppercase tracking-wider">Status</p>
@@ -56,8 +56,8 @@ export default function PostSidebar({ post, pillar }: PostSidebarProps) {
 
       {/* Pillar */}
       <div className="flex items-center gap-3">
-        <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-bg-secondary">
-          <Tag size={14} className="text-text-tertiary" />
+        <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-accent-surface">
+          <Tag size={14} className="text-accent" />
         </div>
         <div>
           <p className="text-[10px] font-semibold text-text-tertiary uppercase tracking-wider">Pilar</p>
@@ -75,8 +75,8 @@ export default function PostSidebar({ post, pillar }: PostSidebarProps) {
 
       {/* Format */}
       <div className="flex items-center gap-3">
-        <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-bg-secondary">
-          <Clock size={14} className="text-text-tertiary" />
+        <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-accent-surface">
+          <Clock size={14} className="text-accent" />
         </div>
         <div>
           <p className="text-[10px] font-semibold text-text-tertiary uppercase tracking-wider">Formato</p>
@@ -88,11 +88,11 @@ export default function PostSidebar({ post, pillar }: PostSidebarProps) {
 
       {/* Social Account */}
       <div className="flex items-center gap-3">
-        <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-bg-secondary">
+        <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-accent-surface">
           {post.socialAccount?.platform === 'instagram' ? (
-            <Instagram size={14} className="text-text-tertiary" />
+            <Instagram size={14} className="text-accent" />
           ) : (
-            <User size={14} className="text-text-tertiary" />
+            <User size={14} className="text-accent" />
           )}
         </div>
         <div>
@@ -107,8 +107,8 @@ export default function PostSidebar({ post, pillar }: PostSidebarProps) {
 
       {/* Scheduled Date */}
       <div className="flex items-center gap-3">
-        <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-bg-secondary">
-          <Calendar size={14} className="text-text-tertiary" />
+        <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-accent-surface">
+          <Calendar size={14} className="text-accent" />
         </div>
         <div>
           <p className="text-[10px] font-semibold text-text-tertiary uppercase tracking-wider">Data Agendada</p>

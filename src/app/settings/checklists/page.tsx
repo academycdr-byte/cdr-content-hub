@@ -79,7 +79,7 @@ export default function ChecklistsSettingsPage() {
     // Validate: no empty items
     const hasEmpty = templates.some((t) => (t.items || []).some((item) => !item.trim()));
     if (hasEmpty) {
-      addToast('Remova items vazios antes de salvar', 'error');
+      addToast('Remova itens vazios antes de salvar', 'error');
       return;
     }
 
@@ -122,9 +122,9 @@ export default function ChecklistsSettingsPage() {
       {/* Header */}
       <div className="flex items-center justify-between mb-8">
         <div>
-          <h1 className="text-heading-1 text-text-primary">Checklists por Etapa</h1>
-          <p className="mt-1 text-sm text-text-secondary">
-            Configure os items de checklist para cada etapa do pipeline de produção.
+          <h1 className="text-[30px] font-bold leading-tight text-text-primary">Checklists por Etapa</h1>
+          <p className="mt-1 text-sm text-text-tertiary">
+            Configure os itens de checklist para cada etapa do pipeline de produção.
           </p>
         </div>
         <button
@@ -187,7 +187,7 @@ export default function ChecklistsSettingsPage() {
                     />
                     <button
                       onClick={() => removeItem(templateIndex, itemIndex)}
-                      className="flex h-7 w-7 items-center justify-center rounded-md text-text-tertiary hover:bg-error-surface hover:text-error transition-colors shrink-0"
+                      className="flex h-7 w-7 items-center justify-center rounded-[10px] text-text-tertiary hover:bg-error-surface hover:text-error transition-colors shrink-0"
                       title="Remover item"
                     >
                       <X size={14} />
@@ -200,7 +200,7 @@ export default function ChecklistsSettingsPage() {
               <button
                 onClick={() => addItem(templateIndex)}
                 className={cn(
-                  'mt-3 flex items-center gap-2 rounded-lg px-3 py-2 text-xs font-medium transition-colors',
+                  'mt-3 flex items-center gap-2 rounded-[10px] px-3 py-2 text-xs font-medium transition-colors',
                   'text-text-tertiary hover:text-accent hover:bg-accent-surface'
                 )}
               >
@@ -235,7 +235,7 @@ export default function ChecklistsSettingsPage() {
             href="/settings/appearance"
             className="badge bg-bg-secondary text-text-secondary hover:bg-bg-hover transition-colors cursor-pointer"
           >
-            Aparencia
+            Aparência
           </a>
         </div>
       </div>

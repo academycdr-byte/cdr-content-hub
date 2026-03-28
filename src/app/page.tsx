@@ -151,8 +151,8 @@ export default function DashboardPage() {
       {/* Header */}
       <div className="flex items-center justify-between mb-8">
         <div>
-          <h1 className="text-2xl font-semibold text-text-primary">Dashboard</h1>
-          <p className="mt-1 text-sm text-text-secondary">
+          <h1 className="text-[30px] font-bold leading-tight text-text-primary">Dashboard</h1>
+          <p className="mt-1 text-sm text-text-tertiary">
             Visão geral da sua produção de conteúdo
           </p>
         </div>
@@ -164,20 +164,20 @@ export default function DashboardPage() {
         {stats && (
           <>
             {/* ===== HERO KPIs ===== */}
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-8">
               {/* Posts Publicados */}
-              <div className="card p-6">
+              <div className="card p-7">
                 <div className="flex items-center justify-between mb-4">
-                  <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-accent-surface">
-                    <CalendarDays size={18} className="text-accent" />
+                  <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-accent-surface">
+                    <CalendarDays size={20} className="text-accent" />
                   </div>
-                  <button className="flex h-7 w-7 items-center justify-center rounded-lg hover:bg-bg-hover transition-colors">
+                  <button className="flex h-9 w-9 items-center justify-center rounded-lg hover:bg-bg-hover transition-colors">
                     <MoreHorizontal size={16} className="text-text-tertiary" />
                   </button>
                 </div>
                 <p className="text-sm font-medium text-text-secondary mb-2">Posts Publicados</p>
                 <div className="flex items-baseline gap-2 mb-3">
-                  <p className="text-4xl font-bold text-text-primary tracking-tight">{syncedPostsCount}</p>
+                  <p className="text-kpi-value text-text-primary">{syncedPostsCount}</p>
                   <p className="text-sm text-text-tertiary">/ {stats.monthlyGoal}</p>
                 </div>
                 <div className="h-1.5 w-full rounded-full bg-bg-hover overflow-hidden mb-1.5">
@@ -190,34 +190,34 @@ export default function DashboardPage() {
               </div>
 
               {/* Total Views */}
-              <div className="card p-6">
+              <div className="card p-7">
                 <div className="flex items-center justify-between mb-4">
-                  <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-accent-surface">
-                    <Eye size={18} className="text-accent" />
+                  <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-accent-surface">
+                    <Eye size={20} className="text-accent" />
                   </div>
-                  <button className="flex h-7 w-7 items-center justify-center rounded-lg hover:bg-bg-hover transition-colors">
+                  <button className="flex h-9 w-9 items-center justify-center rounded-lg hover:bg-bg-hover transition-colors">
                     <MoreHorizontal size={16} className="text-text-tertiary" />
                   </button>
                 </div>
                 <p className="text-sm font-medium text-text-secondary mb-2">Views</p>
-                <p className="text-4xl font-bold text-text-primary tracking-tight">
+                <p className="text-kpi-value text-text-primary">
                   {stats.metricsSummary ? formatMetricNumber(stats.metricsSummary.views) : '--'}
                 </p>
                 <p className="text-[13px] text-text-tertiary mt-1">{periodLabel}</p>
               </div>
 
               {/* Engajamento Total */}
-              <div className="card p-6">
+              <div className="card p-7">
                 <div className="flex items-center justify-between mb-4">
-                  <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-accent-surface">
-                    <Heart size={18} className="text-accent" />
+                  <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-accent-surface">
+                    <Heart size={20} className="text-accent" />
                   </div>
-                  <button className="flex h-7 w-7 items-center justify-center rounded-lg hover:bg-bg-hover transition-colors">
+                  <button className="flex h-9 w-9 items-center justify-center rounded-lg hover:bg-bg-hover transition-colors">
                     <MoreHorizontal size={16} className="text-text-tertiary" />
                   </button>
                 </div>
                 <p className="text-sm font-medium text-text-secondary mb-2">Engajamento</p>
-                <p className="text-4xl font-bold text-text-primary tracking-tight">
+                <p className="text-kpi-value text-text-primary">
                   {totalEngagement > 0 ? formatMetricNumber(totalEngagement) : '--'}
                 </p>
                 {stats.metricsSummary && stats.metricsSummary.posts > 0 ? (
@@ -230,17 +230,17 @@ export default function DashboardPage() {
               </div>
 
               {/* Valor Estimado (CPM) */}
-              <div className="card p-6">
+              <div className="card p-7">
                 <div className="flex items-center justify-between mb-4">
-                  <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-accent-surface">
-                    <DollarSign size={18} className="text-accent" />
+                  <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-accent-surface">
+                    <DollarSign size={20} className="text-accent" />
                   </div>
-                  <button className="flex h-7 w-7 items-center justify-center rounded-lg hover:bg-bg-hover transition-colors">
+                  <button className="flex h-9 w-9 items-center justify-center rounded-lg hover:bg-bg-hover transition-colors">
                     <MoreHorizontal size={16} className="text-text-tertiary" />
                   </button>
                 </div>
                 <p className="text-sm font-medium text-text-secondary mb-2">Valor Estimado</p>
-                <p className="text-4xl font-bold text-text-primary tracking-tight">
+                <p className="text-kpi-value text-text-primary">
                   {stats.totalCpmValue > 0 ? formatCurrency(stats.totalCpmValue) : '--'}
                 </p>
                 <p className="text-[13px] text-text-tertiary mt-1">baseado em CPM</p>
@@ -389,7 +389,7 @@ export default function DashboardPage() {
                                 className="h-full rounded flex items-center justify-end pr-2 transition-all duration-300"
                                 style={{
                                   width: `${barWidth}%`,
-                                  backgroundColor: PLATFORM_COLORS[p.platform] || '#6E6E73',
+                                  backgroundColor: 'var(--accent)',
                                 }}
                               >
                                 <span className="text-[10px] font-bold text-white">
@@ -440,7 +440,7 @@ export default function DashboardPage() {
                                 className="h-full rounded flex items-center justify-end pr-2 transition-all duration-300"
                                 style={{
                                   width: `${barWidth}%`,
-                                  backgroundColor: PLATFORM_COLORS[p.platform] || '#6E6E73',
+                                  backgroundColor: 'var(--accent)',
                                 }}
                               >
                                 <span className="text-[10px] font-bold text-white">
@@ -556,7 +556,7 @@ export default function DashboardPage() {
                           <div className="flex-1 h-4 bg-bg-hover rounded overflow-hidden">
                             <div
                               className="h-full rounded flex items-center justify-end pr-1.5 transition-all duration-300"
-                              style={{ width: `${barWidth}%`, backgroundColor: s.color }}
+                              style={{ width: `${barWidth}%`, backgroundColor: 'var(--accent)' }}
                             >
                               <span className="text-[10px] font-bold text-white">{s.count}</span>
                             </div>

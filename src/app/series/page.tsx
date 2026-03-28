@@ -134,9 +134,9 @@ export default function SeriesPage() {
         <div>
           <div className="flex items-center gap-2 mb-1">
             <Layers size={24} className="text-accent" />
-            <h1 className="text-2xl font-semibold text-text-primary">Séries de Conteúdo</h1>
+            <h1 className="text-[30px] font-bold leading-tight text-text-primary">Séries de Conteúdo</h1>
           </div>
-          <p className="text-sm text-text-secondary">
+          <p className="text-sm text-text-tertiary">
             Organize seu conteúdo em séries recorrentes.
           </p>
         </div>
@@ -172,20 +172,21 @@ export default function SeriesPage() {
       {/* Series List */}
       {seriesList.length === 0 ? (
         <div className="card p-16 flex flex-col items-center justify-center text-center">
-          <Layers size={32} className="text-text-tertiary mb-3 opacity-40" />
+          <div className="flex h-16 w-16 items-center justify-center rounded-2xl bg-accent-surface mb-4">
+            <Layers size={28} className="text-accent" />
+          </div>
           <h2 className="text-heading-2 text-text-primary mb-2">Nenhuma série criada</h2>
-          <p className="text-sm text-text-secondary mb-4">
+          <p className="text-sm text-text-tertiary mb-4">
             Crie séries para organizar seu conteúdo recorrente.
           </p>
         </div>
       ) : (
         <div className="space-y-3">
           {seriesList.map((series) => (
-            <div key={series.id} className="card p-5">
+            <div key={series.id} className="card p-6">
               <div className="flex items-start gap-4">
                 <div
-                  className="h-10 w-10 rounded-xl flex items-center justify-center shrink-0 text-lg"
-                  style={{ backgroundColor: `${series.color}20`, color: series.color }}
+                  className="h-10 w-10 rounded-xl flex items-center justify-center shrink-0 text-lg bg-accent-surface text-accent"
                 >
                   {series.icon || '#'}
                 </div>
@@ -285,7 +286,7 @@ function SeriesModal({
       <div className="fixed inset-0 z-50 bg-black/30 animate-backdrop" onClick={onClose} />
       <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
         <div
-          className="w-full max-w-md rounded-2xl bg-bg-modal border border-border-default animate-scale-in"
+          className="w-full max-w-md rounded-[20px] bg-bg-modal border border-border-default animate-scale-in"
           style={{ boxShadow: 'var(--shadow-xl)' }}
           onClick={(e) => e.stopPropagation()}
         >

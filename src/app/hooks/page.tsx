@@ -194,8 +194,8 @@ export default function HooksPage() {
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-6">
         <div>
-          <h1 className="text-2xl font-semibold text-text-primary">Banco de Ideias</h1>
-          <p className="text-sm text-text-secondary mt-1">
+          <h1 className="text-[30px] font-bold leading-tight text-text-primary">Banco de Ideias</h1>
+          <p className="text-sm text-text-tertiary mt-1">
             {filteredHooks.length} ideia{filteredHooks.length !== 1 ? 's' : ''} encontrada{filteredHooks.length !== 1 ? 's' : ''}
           </p>
         </div>

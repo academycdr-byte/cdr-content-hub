@@ -15,8 +15,7 @@ export default function ConnectButton({ platform }: ConnectButtonProps) {
     return (
       <button
         onClick={handleConnect}
-        className="flex items-center gap-2.5 px-5 py-3 text-white text-sm font-semibold rounded-xl transition-all hover:opacity-90 active:scale-[0.98] bg-gradient-to-br from-[#833AB4] via-[#E1306C] to-[#F77737]"
-        style={{ boxShadow: '0 4px 14px rgba(225, 48, 108, 0.25)' }}
+        className="btn-accent flex items-center gap-2.5 px-5 py-3"
       >
         <Instagram className="w-5 h-5" />
         Conectar Instagram
@@ -27,8 +26,7 @@ export default function ConnectButton({ platform }: ConnectButtonProps) {
   return (
     <button
       onClick={handleConnect}
-      className="flex items-center gap-2.5 px-5 py-3 text-sm font-semibold rounded-xl transition-all hover:opacity-90 active:scale-[0.98] bg-text-primary text-bg-primary"
-      style={{ boxShadow: '0 4px 14px rgba(0, 0, 0, 0.15)' }}
+      className="btn-ghost flex items-center gap-2.5 px-5 py-3 font-semibold"
     >
       <Music2 className="w-5 h-5" />
       Conectar TikTok

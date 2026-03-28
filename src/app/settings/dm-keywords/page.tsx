@@ -103,9 +103,9 @@ export default function DmKeywordsPage() {
         <div>
           <div className="flex items-center gap-2 mb-1">
             <MessageSquare size={24} className="text-accent" />
-            <h1 className="text-heading-1 text-text-primary">DM Keywords</h1>
+            <h1 className="text-[30px] font-bold leading-tight text-text-primary">DM Keywords</h1>
           </div>
-          <p className="text-sm text-text-secondary">
+          <p className="text-sm text-text-tertiary">
             Gerencie as palavras-chave de CTA para rastrear DMs.
           </p>
         </div>
@@ -126,7 +126,7 @@ export default function DmKeywordsPage() {
               key={acc.id}
               onClick={() => setSelectedAccountId(acc.id)}
               className={cn(
-                'rounded-lg border px-4 py-2 text-sm font-medium transition-all',
+                'rounded-[10px] border px-4 py-2 text-sm font-medium transition-all',
                 selectedAccountId === acc.id
                   ? 'border-accent bg-accent-surface text-accent'
                   : 'border-border-default bg-bg-primary text-text-secondary hover:border-border-strong'
@@ -141,9 +141,11 @@ export default function DmKeywordsPage() {
       {/* Keywords List */}
       {keywords.length === 0 ? (
         <div className="card p-12 flex flex-col items-center justify-center text-center">
-          <MessageSquare size={32} className="text-text-tertiary mb-3 opacity-40" />
+          <div className="flex h-16 w-16 items-center justify-center rounded-2xl bg-accent-surface mb-4">
+            <MessageSquare size={28} className="text-accent" />
+          </div>
           <h2 className="text-heading-2 text-text-primary mb-2">Nenhuma keyword</h2>
-          <p className="text-sm text-text-secondary">
+          <p className="text-sm text-text-tertiary">
             Crie keywords para rastrear CTAs de DM nos seus posts.
           </p>
         </div>
@@ -164,7 +166,7 @@ export default function DmKeywordsPage() {
               </div>
               <button
                 onClick={() => handleDelete(kw.id)}
-                className="p-1.5 rounded-lg hover:bg-error-surface transition-colors shrink-0"
+                className="p-1.5 rounded-[10px] hover:bg-error-surface transition-colors shrink-0"
               >
                 <Trash2 size={14} className="text-error" />
               </button>
@@ -242,31 +244,31 @@ function CreateKeywordModal({
       <div className="fixed inset-0 z-50 bg-black/30 animate-backdrop" onClick={onClose} />
       <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
         <div
-          className="w-full max-w-sm rounded-2xl bg-bg-modal border border-border-default animate-scale-in"
+          className="w-full max-w-sm rounded-[20px] bg-bg-modal border border-border-default animate-scale-in"
           style={{ boxShadow: 'var(--shadow-xl)' }}
           onClick={(e) => e.stopPropagation()}
         >
           <div className="flex items-center justify-between border-b border-border-default px-6 py-4">
             <h2 className="text-heading-2 text-text-primary">Nova Keyword</h2>
-            <button onClick={onClose} className="p-1.5 rounded-lg hover:bg-bg-hover transition-colors">
+            <button onClick={onClose} className="p-1.5 rounded-[10px] hover:bg-bg-hover transition-colors">
               <X size={16} className="text-text-secondary" />
             </button>
           </div>
           <form onSubmit={handleSubmit} className="p-6 space-y-4">
             <div>
-              <label className="text-label text-text-secondary mb-1.5 block">Keyword</label>
+              <label className="text-label text-text-tertiary mb-1.5 block">Keyword</label>
               <input
                 type="text"
                 value={keyword}
                 onChange={(e) => setKeyword(e.target.value.toUpperCase())}
-                placeholder="Ex: DIAGNOSTICO"
+                placeholder="Ex: DIAGNÓSTICO"
                 className="input"
                 autoFocus
                 required
               />
             </div>
             <div>
-              <label className="text-label text-text-secondary mb-1.5 block">Descrição</label>
+              <label className="text-label text-text-tertiary mb-1.5 block">Descrição</label>
               <input
                 type="text"
                 value={description}
