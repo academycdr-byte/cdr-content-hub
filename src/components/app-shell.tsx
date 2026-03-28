@@ -31,7 +31,6 @@ export default function AppShell({ children }: AppShellProps) {
   const isLoginPage = pathname === '/login';
   const isAuthenticated = status === 'authenticated';
 
-  // Fetch pillars for the create post modal
   const fetchPillars = useCallback(async () => {
     try {
       const res = await fetch('/api/pillars');
@@ -39,7 +38,7 @@ export default function AppShell({ children }: AppShellProps) {
       const data = await res.json() as ContentPillar[];
       setPillars(data);
     } catch {
-      // Silently fail - pillars will be fetched when modal opens
+      // Silently fail
     }
   }, []);
 
@@ -49,19 +48,16 @@ export default function AppShell({ children }: AppShellProps) {
     }
   }, [isAuthenticated, fetchPillars]);
 
-  // Keyboard shortcuts
   useEffect(() => {
     if (!isAuthenticated || isLoginPage) return;
 
     function handleKeyDown(e: KeyboardEvent) {
-      // Ctrl+K / Cmd+K: Search command palette (works even in inputs)
       if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'k') {
         e.preventDefault();
         openSearch();
         return;
       }
 
-      // Don't trigger other shortcuts when typing in inputs
       const target = e.target as HTMLElement;
       if (
         target.tagName === 'INPUT' ||
@@ -75,9 +71,7 @@ export default function AppShell({ children }: AppShellProps) {
       switch (e.key.toLowerCase()) {
         case 'n':
           e.preventDefault();
-          if (pillars.length === 0) {
-            fetchPillars();
-          }
+          if (pillars.length === 0) fetchPillars();
           setShowCreatePost(true);
           break;
         case 'c':
@@ -108,7 +102,7 @@ export default function AppShell({ children }: AppShellProps) {
 
   if (status === 'loading') {
     return (
-      <div className="flex h-screen items-center justify-center bg-bg-primary">
+      <div className="flex h-screen items-center justify-center" style={{ backgroundColor: 'var(--bg-outer)' }}>
         <div className="flex flex-col items-center gap-4">
           <div
             className="h-10 w-10 rounded-xl flex items-center justify-center font-bold"
@@ -133,25 +127,44 @@ export default function AppShell({ children }: AppShellProps) {
   }
 
   return (
-    <div className="flex min-h-screen">
-      {/* Desktop Sidebar - hidden on mobile */}
-      <div className="hidden md:block">
-        <Sidebar />
-      </div>
+    <div className="min-h-screen md:p-3" style={{ backgroundColor: 'var(--bg-outer)' }}>
+      {/* Single container — like the Dribbble reference: ONE white card with rounded corners */}
+      <div
+        className="hidden md:flex md:flex-col md:min-h-[calc(100vh-24px)]"
+        style={{
+          backgroundColor: 'var(--bg-card)',
+          borderRadius: '20px',
+          overflow: 'hidden',
+        }}
+      >
+        {/* Top Header — spans full width (sidebar + content) */}
+        <header
+          className="flex items-center justify-between shrink-0"
+          style={{
+            height: '72px',
+            padding: '0 32px',
+            borderBottom: '1px solid var(--border)',
+          }}
+        >
+          {/* Left: Logo */}
+          <div className="flex items-center gap-3">
+            <div
+              className="flex h-9 w-9 items-center justify-center text-xs font-bold"
+              style={{ backgroundColor: 'var(--accent)', color: '#fff', borderRadius: '12px' }}
+            >
+              CH
+            </div>
+            <span className="text-[15px] font-bold" style={{ color: 'var(--text-primary)' }}>
+              Content Hub
+            </span>
+          </div>
 
-      {/* Content wrapper — floating layout */}
-      <div className="flex-1 md:ml-[284px] flex flex-col md:pr-[12px] md:py-[12px]">
-        {/* Top Header — desktop only */}
-        <header className="top-header hidden md:flex" style={{ borderRadius: '20px 20px 0 0', background: 'var(--bg-primary)' }}>
-          {/* Left spacer */}
-          <div className="flex-1" />
-
-          {/* Center: Search button */}
+          {/* Center: Search */}
           <button
             onClick={openSearch}
-            className="flex items-center gap-2.5 rounded-xl px-4 py-2.5 text-sm transition-colors w-full"
+            className="flex items-center gap-2.5 rounded-xl px-4 py-2.5 text-sm transition-colors"
             style={{
-              maxWidth: '480px',
+              width: '400px',
               border: '1px solid var(--border)',
               color: 'var(--text-tertiary)',
               backgroundColor: 'transparent',
@@ -160,7 +173,7 @@ export default function AppShell({ children }: AppShellProps) {
             onMouseLeave={(e) => { e.currentTarget.style.backgroundColor = 'transparent'; }}
           >
             <Search size={16} />
-            <span className="flex-1 text-left">Buscar...</span>
+            <span className="flex-1 text-left">Search</span>
             <kbd
               className="text-[11px] font-medium px-1.5 py-0.5 rounded-md"
               style={{
@@ -173,36 +186,52 @@ export default function AppShell({ children }: AppShellProps) {
             </kbd>
           </button>
 
-          {/* Right: Notification + Avatar */}
-          <div className="flex-1 flex items-center justify-end gap-3">
+          {/* Right: Icons + Avatar */}
+          <div className="flex items-center gap-4">
             <NotificationBell />
             <div
-              className="flex h-9 w-9 items-center justify-center rounded-full text-xs font-bold"
-              style={{ backgroundColor: 'var(--accent)', color: '#fff' }}
+              className="flex items-center gap-3 pl-4"
+              style={{ borderLeft: '1px solid var(--border)' }}
             >
-              IF
+              <div
+                className="flex h-10 w-10 items-center justify-center rounded-full text-xs font-bold"
+                style={{ backgroundColor: 'var(--accent)', color: '#fff' }}
+              >
+                IF
+              </div>
+              <div className="hidden lg:block">
+                <p className="text-sm font-semibold" style={{ color: 'var(--text-primary)' }}>Ivan</p>
+                <p className="text-xs" style={{ color: 'var(--text-tertiary)' }}>Admin</p>
+              </div>
             </div>
           </div>
         </header>
 
-        {/* Main content */}
-        <main
-          className="flex-1 p-4 md:p-8 pb-20 md:pb-8"
-          style={{ background: 'var(--bg-primary)', borderRadius: '0 0 20px 20px' }}
-        >
-          {children}
-        </main>
+        {/* Body: Sidebar + Content side by side */}
+        <div className="flex flex-1 min-h-0">
+          {/* Sidebar — no border, no bg, just part of the same container */}
+          <Sidebar />
+
+          {/* Content area — slightly different bg for contrast */}
+          <main
+            className="flex-1 p-8 overflow-y-auto"
+            style={{ backgroundColor: 'var(--bg-primary)' }}
+          >
+            {children}
+          </main>
+        </div>
       </div>
 
-      {/* Mobile Bottom Nav - visible only on mobile */}
-      <div className="block md:hidden">
+      {/* Mobile layout — simple, no floating container */}
+      <div className="md:hidden min-h-screen" style={{ backgroundColor: 'var(--bg-primary)' }}>
+        <main className="p-4 pb-20">
+          {children}
+        </main>
         <MobileBottomNav />
       </div>
 
-      {/* Global Search Command Palette (Ctrl+K) */}
       <SearchCommand />
 
-      {/* Global Create Post Modal (triggered by keyboard shortcut) */}
       <CreatePostModal
         isOpen={showCreatePost}
         onClose={() => setShowCreatePost(false)}

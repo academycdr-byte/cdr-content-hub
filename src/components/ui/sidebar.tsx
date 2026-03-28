@@ -67,47 +67,17 @@ export default function Sidebar() {
   };
 
   return (
-    <aside
-      className="fixed z-40 flex flex-col left-[12px] top-[12px] w-[260px]"
-      style={{
-        height: 'calc(100vh - 24px)',
-        borderRadius: '20px',
-        border: '1px solid var(--border)',
-        backgroundColor: 'var(--bg-card)',
-      }}
-    >
-      {/* Logo — no border-bottom */}
-      <div className="px-6 pt-6 pb-4">
-        <div className="flex items-center gap-3">
-          <div
-            className="flex h-9 w-9 items-center justify-center text-xs font-bold"
-            style={{ backgroundColor: 'var(--accent)', color: '#fff', borderRadius: '12px' }}
-          >
-            CH
-          </div>
-          <span className="text-[15px] font-bold" style={{ color: 'var(--text-primary)' }}>
-            Content Hub
-          </span>
-        </div>
-      </div>
-
-      {/* Navigation Sections */}
+    <aside className="w-[240px] shrink-0 flex flex-col h-full">
       <nav className="flex-1 overflow-y-auto px-4 py-2">
         <div className="flex flex-col gap-6">
           {NAV_SECTIONS.map((section) => (
             <div key={section.title}>
-              {/* Section Label — 13px medium, NOT uppercase, 0.02em */}
               <p
                 className="mb-2 px-4 text-[13px] font-medium"
-                style={{
-                  color: 'var(--text-tertiary)',
-                  letterSpacing: '0.02em',
-                }}
+                style={{ color: 'var(--text-tertiary)', letterSpacing: '0.02em' }}
               >
                 {section.title}
               </p>
-
-              {/* Section Items */}
               <div className="flex flex-col gap-0.5">
                 {section.items.map((item) => {
                   const active = isActive(item.href);
@@ -152,22 +122,14 @@ export default function Sidebar() {
         </div>
       </nav>
 
-      {/* Footer — border-top, ThemeToggle + Logout */}
-      <div className="px-4 pb-4 pt-2 flex flex-col gap-1" style={{ borderTop: '1px solid var(--border)' }}>
+      <div className="px-4 pb-4 pt-2 flex flex-col gap-1">
         <ThemeToggle />
         <button
           onClick={() => signOut({ callbackUrl: '/login' })}
           className="flex w-full items-center gap-3 rounded-2xl px-4 py-3 text-[16px] font-medium transition-colors"
-          style={{
-            color: 'var(--error)',
-            backgroundColor: 'transparent',
-          }}
-          onMouseEnter={(e) => {
-            e.currentTarget.style.backgroundColor = 'var(--error-surface)';
-          }}
-          onMouseLeave={(e) => {
-            e.currentTarget.style.backgroundColor = 'transparent';
-          }}
+          style={{ color: 'var(--error)', backgroundColor: 'transparent' }}
+          onMouseEnter={(e) => { e.currentTarget.style.backgroundColor = 'var(--error-surface)'; }}
+          onMouseLeave={(e) => { e.currentTarget.style.backgroundColor = 'transparent'; }}
         >
           <LogOut size={22} />
           Sair
