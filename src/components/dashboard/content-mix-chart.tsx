@@ -47,20 +47,27 @@ function CustomTooltip({ active, payload }: CustomTooltipProps) {
 
   return (
     <div
-      className="rounded-lg px-3 py-2"
-      style={{ backgroundColor: '#1F2937', boxShadow: 'var(--shadow-lg)' }}
+      style={{
+        backgroundColor: '#1F2937',
+        color: '#FFFFFF',
+        borderRadius: '8px',
+        padding: '8px 12px',
+        boxShadow: '0 4px 12px rgba(0,0,0,0.15)',
+        fontSize: '12px',
+        lineHeight: '1.4',
+      }}
     >
       <div className="flex items-center gap-2 mb-1">
         <div
-          className="h-2.5 w-2.5 rounded-full"
+          className="h-2.5 w-2.5 rounded-full shrink-0"
           style={{ backgroundColor: item.color }}
         />
-        <span className="text-xs font-semibold text-white">{item.name}</span>
+        <span style={{ fontWeight: 600 }}>{item.name}</span>
       </div>
-      <p className="text-[11px] text-gray-300">
+      <p style={{ color: 'rgba(255,255,255,0.7)' }}>
         {item.count} post{item.count !== 1 ? 's' : ''} ({item.percentage}%)
       </p>
-      <p className="text-[11px] text-gray-400">
+      <p style={{ color: 'rgba(255,255,255,0.5)' }}>
         Alvo: {item.targetPercentage}%
       </p>
     </div>
@@ -92,11 +99,14 @@ export default function ContentMixChart({ data, compact = false }: ContentMixCha
                 data={chartData.length > 0 ? chartData : [{ name: 'Vazio', count: 1, color: 'var(--border)' }]}
                 cx="50%"
                 cy="50%"
-                innerRadius={35}
-                outerRadius={55}
+                innerRadius="55%"
+                outerRadius="85%"
                 dataKey="count"
                 nameKey="name"
-                stroke="none"
+                stroke="var(--bg-card)"
+                strokeWidth={3}
+                paddingAngle={2}
+                cornerRadius={4}
               >
                 {(chartData.length > 0 ? chartData : [{ color: 'var(--border)' }]).map((_entry, index) => (
                   <Cell key={`cell-${index}`} fill={chartData.length > 0 ? getDonutColor(index) : 'var(--border)'} />
@@ -107,7 +117,7 @@ export default function ContentMixChart({ data, compact = false }: ContentMixCha
           </ResponsiveContainer>
           {/* Center number */}
           <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
-            <span className="text-lg font-bold text-text-primary">{totalPosts}</span>
+            <span className="text-2xl font-bold text-text-primary">{totalPosts}</span>
           </div>
         </div>
         {/* Compact legend */}
@@ -138,11 +148,14 @@ export default function ContentMixChart({ data, compact = false }: ContentMixCha
                 data={chartData.length > 0 ? chartData : [{ name: 'Vazio', count: 1, color: 'var(--border)' }]}
                 cx="50%"
                 cy="50%"
-                innerRadius={50}
-                outerRadius={80}
+                innerRadius="55%"
+                outerRadius="85%"
                 dataKey="count"
                 nameKey="name"
-                stroke="none"
+                stroke="var(--bg-card)"
+                strokeWidth={3}
+                paddingAngle={2}
+                cornerRadius={4}
               >
                 {(chartData.length > 0 ? chartData : [{ color: 'var(--border)' }]).map((_entry, index) => (
                   <Cell key={`cell-${index}`} fill={chartData.length > 0 ? getDonutColor(index) : 'var(--border)'} />

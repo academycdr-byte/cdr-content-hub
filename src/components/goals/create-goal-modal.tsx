@@ -94,7 +94,7 @@ export function CreateGoalModal({ accounts, onClose, onCreate }: CreateGoalModal
             onClick={onClose}
             className="p-1.5 rounded-lg hover:bg-bg-hover transition-colors"
           >
-            <X size={16} className="text-text-secondary" />
+            <X size={16} className="text-text-tertiary" />
           </button>
         </div>
 

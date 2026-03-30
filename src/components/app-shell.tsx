@@ -194,7 +194,7 @@ export default function AppShell({ children }: AppShellProps) {
               style={{ borderLeft: '1px solid var(--border)' }}
             >
               <div
-                className="flex h-10 w-10 items-center justify-center rounded-full text-xs font-bold"
+                className="flex h-9 w-9 items-center justify-center rounded-full text-xs font-bold"
                 style={{ backgroundColor: 'var(--accent)', color: '#fff' }}
               >
                 IF

@@ -101,7 +101,7 @@ export default function NotificationBell() {
         className="relative flex items-center justify-center w-8 h-8 rounded-lg transition-colors hover:bg-sidebar-hover"
         title="Notificações"
       >
-        <Bell size={18} className="text-sidebar-text" />
+        <Bell size={20} className="text-sidebar-text" />
         {count > 0 && (
           <span
             className="absolute -top-0.5 -right-0.5 flex items-center justify-center min-w-[16px] h-4 px-1 rounded-full text-[10px] font-bold"
@@ -124,7 +124,7 @@ export default function NotificationBell() {
             background: 'var(--sidebar-bg, #0a0a0a)',
             border: '1px solid var(--sidebar-border)',
             borderRadius: 'var(--radius-xl)',
-            boxShadow: '0 8px 32px rgba(0,0,0,0.6)',
+            boxShadow: 'var(--shadow-xl)',
           }}
         >
           {/* Header */}

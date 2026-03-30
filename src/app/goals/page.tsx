@@ -372,7 +372,7 @@ export default function GoalsPage() {
                   dataKey="date"
                   tick={{ fontSize: 11, fill: 'var(--text-tertiary)' }}
                   tickLine={false}
-                  axisLine={{ stroke: 'var(--border)' }}
+                  axisLine={false}
                   tickFormatter={(v: string) => {
                     const parts = v.split('-');
                     return `${parts[2]}/${parts[1]}`;
@@ -390,12 +390,13 @@ export default function GoalsPage() {
                     background: '#1F2937',
                     border: 'none',
                     borderRadius: '8px',
-                    boxShadow: 'var(--shadow-lg)',
+                    boxShadow: '0 4px 12px rgba(0,0,0,0.15)',
                     fontSize: 12,
-                    color: '#fff',
+                    color: '#FFFFFF',
+                    padding: '8px 12px',
                   }}
-                  labelStyle={{ color: '#D1D5DB' }}
-                  itemStyle={{ color: '#fff' }}
+                  labelStyle={{ color: 'rgba(255,255,255,0.7)', fontWeight: 400 }}
+                  itemStyle={{ color: '#FFFFFF', fontWeight: 700, fontSize: 14 }}
                   labelFormatter={(v) => {
                     const d = new Date(String(v));
                     return d.toLocaleDateString('pt-BR');

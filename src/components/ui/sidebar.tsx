@@ -122,7 +122,7 @@ export default function Sidebar() {
         </div>
       </nav>
 
-      <div className="px-4 pb-4 pt-2 flex flex-col gap-1">
+      <div className="px-4 pb-4 pt-3 flex flex-col gap-1" style={{ borderTop: '1px solid var(--border)' }}>
         <ThemeToggle />
         <button
           onClick={() => signOut({ callbackUrl: '/login' })}

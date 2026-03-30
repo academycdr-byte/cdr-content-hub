@@ -42,20 +42,28 @@ function CustomTooltip({ active, payload, label }: CustomTooltipProps) {
 
   return (
     <div
-      className="rounded-lg p-3 min-w-[160px]"
-      style={{ backgroundColor: '#1F2937', boxShadow: 'var(--shadow-lg)' }}
+      style={{
+        backgroundColor: '#1F2937',
+        color: '#FFFFFF',
+        borderRadius: '8px',
+        padding: '8px 12px',
+        boxShadow: '0 4px 12px rgba(0,0,0,0.15)',
+        minWidth: '160px',
+        fontSize: '12px',
+        lineHeight: '1.4',
+      }}
     >
-      <p className="text-xs font-medium text-gray-300 mb-2">{label}</p>
+      <p style={{ fontWeight: 500, color: 'rgba(255,255,255,0.7)', marginBottom: '6px' }}>{label}</p>
       {payload.map((entry) => (
         <div key={entry.name} className="flex items-center justify-between gap-4 mb-1">
           <div className="flex items-center gap-2">
             <span
-              className="h-2 w-2 rounded-full"
+              className="h-2 w-2 rounded-full shrink-0"
               style={{ backgroundColor: entry.color }}
             />
-            <span className="text-xs text-gray-300 capitalize">{entry.name}</span>
+            <span style={{ color: 'rgba(255,255,255,0.7)' }} className="capitalize">{entry.name}</span>
           </div>
-          <span className="text-xs font-semibold text-white">
+          <span style={{ fontWeight: 700, fontSize: '14px' }}>
             {new Intl.NumberFormat('pt-BR').format(entry.value)}
           </span>
         </div>

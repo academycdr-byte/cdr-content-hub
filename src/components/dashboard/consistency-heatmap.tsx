@@ -35,11 +35,12 @@ interface ConsistencyData {
   badges: Badge[];
 }
 
-const LEVEL_COLORS = [
-  'bg-bg-hover',           // 0 - no posts
-  'bg-accent-surface',     // 1 - 1 post (light)
-  'bg-accent-muted',       // 2 - 2 posts (medium)
-  'bg-accent',             // 3 - 3+ posts (dark)
+// Chart token-based colors (DS v2.1 section 10.1)
+const LEVEL_STYLES = [
+  { backgroundColor: 'var(--bg-hover)' },       // 0 - no posts
+  { backgroundColor: 'var(--chart-100)' },       // 1 - 1 post
+  { backgroundColor: 'var(--chart-200)' },       // 2 - 2 posts
+  { backgroundColor: 'var(--chart-400)' },       // 3 - 3+ posts
 ] as const;
 
 
@@ -117,17 +118,15 @@ export default function ConsistencyHeatmap() {
     <div className="card p-6 animate-fade-in">
       {/* Header */}
       <div className="flex items-center justify-between mb-6">
-        <h2 className="text-heading-2 text-text-primary">Consistencia</h2>
+        <h2 className="text-heading-2 text-text-primary">Consistência</h2>
         <div className="flex items-center gap-4">
           <div className="flex items-center gap-1">
             <span className="text-[10px] text-text-tertiary">Menos</span>
             {[0, 1, 2, 3].map((level) => (
               <div
                 key={level}
-                className={cn(
-                  'h-3 w-3 rounded-sm',
-                  LEVEL_COLORS[level]
-                )}
+                className="h-3 w-3"
+                style={{ ...LEVEL_STYLES[level], borderRadius: '3px' }}
               />
             ))}
             <span className="text-[10px] text-text-tertiary">Mais</span>
@@ -169,11 +168,11 @@ export default function ConsistencyHeatmap() {
 
       {/* Heatmap Grid */}
       <div className="overflow-x-auto">
-        <div className="flex gap-0.5">
+        <div className="flex gap-1">
           {/* Weekday labels */}
-          <div className="flex flex-col gap-0.5 pr-1 shrink-0">
+          <div className="flex flex-col gap-1 pr-1 shrink-0">
             {WEEKDAY_LABELS.map((label, i) => (
-              <div key={i} className="h-3 flex items-center">
+              <div key={i} className="h-3.5 flex items-center">
                 <span className="text-[9px] text-text-tertiary w-4">{label}</span>
               </div>
             ))}
@@ -181,15 +180,19 @@ export default function ConsistencyHeatmap() {
 
           {/* Week columns */}
           {weeks.map((week, weekIdx) => (
-            <div key={weekIdx} className="flex flex-col gap-0.5">
+            <div key={weekIdx} className="flex flex-col gap-1">
               {week.map((day, dayIdx) => (
                 <div
                   key={`${weekIdx}-${dayIdx}`}
                   className={cn(
-                    'h-3 w-3 rounded-sm transition-all cursor-default',
-                    day.level === -1 ? 'opacity-0' : LEVEL_COLORS[day.level] || LEVEL_COLORS[0],
+                    'h-3.5 w-3.5 transition-all cursor-default',
+                    day.level === -1 && 'opacity-0',
                     day.level > 0 && 'hover:ring-1 hover:ring-accent hover:ring-offset-1'
                   )}
+                  style={{
+                    borderRadius: '3px',
+                    ...(day.level >= 0 ? (LEVEL_STYLES[day.level] || LEVEL_STYLES[0]) : {}),
+                  }}
                   onMouseEnter={() => day.level >= 0 ? setHoveredDay(day) : undefined}
                   onMouseLeave={() => setHoveredDay(null)}
                   title={day.date && day.level >= 0 ? `${day.date}: ${day.count} post${day.count !== 1 ? 's' : ''}` : undefined}
