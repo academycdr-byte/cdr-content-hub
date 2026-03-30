@@ -4,7 +4,6 @@ import { useEffect, useState, useCallback } from 'react';
 import { useSession } from 'next-auth/react';
 import { usePathname, useRouter } from 'next/navigation';
 import { redirect } from 'next/navigation';
-import { Search } from 'lucide-react';
 import Sidebar from '@/components/ui/sidebar';
 import MobileBottomNav from '@/components/ui/mobile-bottom-nav';
 import SearchCommand from '@/components/ui/search-command';
@@ -158,33 +157,6 @@ export default function AppShell({ children }: AppShellProps) {
               Content Hub
             </span>
           </div>
-
-          {/* Center: Search */}
-          <button
-            onClick={openSearch}
-            className="flex items-center gap-2.5 rounded-xl px-4 py-2.5 text-sm transition-colors"
-            style={{
-              width: '400px',
-              border: '1px solid var(--border)',
-              color: 'var(--text-tertiary)',
-              backgroundColor: 'transparent',
-            }}
-            onMouseEnter={(e) => { e.currentTarget.style.backgroundColor = 'var(--bg-hover)'; }}
-            onMouseLeave={(e) => { e.currentTarget.style.backgroundColor = 'transparent'; }}
-          >
-            <Search size={16} />
-            <span className="flex-1 text-left">Search</span>
-            <kbd
-              className="text-[11px] font-medium px-1.5 py-0.5 rounded-md"
-              style={{
-                backgroundColor: 'var(--bg-hover)',
-                border: '1px solid var(--border)',
-                color: 'var(--text-tertiary)',
-              }}
-            >
-              Ctrl+K
-            </kbd>
-          </button>
 
           {/* Right: Icons + Avatar */}
           <div className="flex items-center gap-4">
