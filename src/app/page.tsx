@@ -16,7 +16,6 @@ import {
   Award,
   ExternalLink,
   ChevronDown,
-  MoreHorizontal,
 } from 'lucide-react';
 import { formatDate, cn } from '@/lib/utils';
 import { PLATFORM_COLORS } from '@/lib/constants';
@@ -171,9 +170,6 @@ export default function DashboardPage() {
                   <div className="flex h-9 w-9 sm:h-11 sm:w-11 items-center justify-center rounded-xl bg-accent-surface">
                     <CalendarDays size={20} className="text-accent" />
                   </div>
-                  <button className="flex h-9 w-9 items-center justify-center rounded-lg hover:bg-bg-hover transition-colors">
-                    <MoreHorizontal size={16} className="text-text-tertiary" />
-                  </button>
                 </div>
                 <p className="text-sm font-medium text-text-secondary mb-2">Posts Publicados</p>
                 <div className="flex items-baseline gap-2 mb-3">
@@ -195,9 +191,6 @@ export default function DashboardPage() {
                   <div className="flex h-9 w-9 sm:h-11 sm:w-11 items-center justify-center rounded-xl bg-accent-surface">
                     <Eye size={20} className="text-accent" />
                   </div>
-                  <button className="flex h-9 w-9 items-center justify-center rounded-lg hover:bg-bg-hover transition-colors">
-                    <MoreHorizontal size={16} className="text-text-tertiary" />
-                  </button>
                 </div>
                 <p className="text-sm font-medium text-text-secondary mb-2">Views</p>
                 <p className="text-[28px] sm:text-kpi-value font-bold text-text-primary" style={{ letterSpacing: '-0.02em', fontVariantNumeric: 'tabular-nums' }}>
@@ -212,9 +205,6 @@ export default function DashboardPage() {
                   <div className="flex h-9 w-9 sm:h-11 sm:w-11 items-center justify-center rounded-xl bg-accent-surface">
                     <Heart size={20} className="text-accent" />
                   </div>
-                  <button className="flex h-9 w-9 items-center justify-center rounded-lg hover:bg-bg-hover transition-colors">
-                    <MoreHorizontal size={16} className="text-text-tertiary" />
-                  </button>
                 </div>
                 <p className="text-sm font-medium text-text-secondary mb-2">Engajamento</p>
                 <p className="text-[28px] sm:text-kpi-value font-bold text-text-primary" style={{ letterSpacing: '-0.02em', fontVariantNumeric: 'tabular-nums' }}>
@@ -235,9 +225,6 @@ export default function DashboardPage() {
                   <div className="flex h-9 w-9 sm:h-11 sm:w-11 items-center justify-center rounded-xl bg-accent-surface">
                     <DollarSign size={20} className="text-accent" />
                   </div>
-                  <button className="flex h-9 w-9 items-center justify-center rounded-lg hover:bg-bg-hover transition-colors">
-                    <MoreHorizontal size={16} className="text-text-tertiary" />
-                  </button>
                 </div>
                 <p className="text-sm font-medium text-text-secondary mb-2">Valor Estimado</p>
                 <p className="text-[28px] sm:text-kpi-value font-bold text-text-primary" style={{ letterSpacing: '-0.02em', fontVariantNumeric: 'tabular-nums' }}>
