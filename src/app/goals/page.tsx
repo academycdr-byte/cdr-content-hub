@@ -22,13 +22,14 @@ import {
 import { useGoalsStore } from '@/stores/goals-store';
 import { useToastStore } from '@/stores/toast-store';
 import { cn } from '@/lib/utils';
-import type { SocialAccount } from '@/types';
+import type { SocialAccount, GoalWithProgress } from '@/types';
 
 import dynamic from 'next/dynamic';
 import { GoalCard } from '@/components/goals/goal-card';
 import { formatFollowerCount, getPlatformColor, getPlatformLabel } from '@/components/goals/helpers';
 
 const CreateGoalModal = dynamic(() => import('@/components/goals/create-goal-modal').then(m => ({ default: m.CreateGoalModal })), { ssr: false });
+const EditGoalModal = dynamic(() => import('@/components/goals/edit-goal-modal').then(m => ({ default: m.EditGoalModal })), { ssr: false });
 
 // ===== Period Selector for chart =====
 
@@ -50,6 +51,7 @@ export default function GoalsPage() {
     filterPlatform,
     fetchGoals,
     createGoal,
+    updateGoal,
     deleteGoal,
     fetchProgress,
     setFilterPlatform,
@@ -62,6 +64,7 @@ export default function GoalsPage() {
   const [filterAccount, setFilterAccount] = useState('');
   const [chartDays, setChartDays] = useState(90);
   const [selectedChartAccount, setSelectedChartAccount] = useState('');
+  const [editingGoal, setEditingGoal] = useState<GoalWithProgress | null>(null);
   const [confirmDelete, setConfirmDelete] = useState<string | null>(null);
   const [snapshotLoading, setSnapshotLoading] = useState(false);
 
@@ -144,6 +147,20 @@ export default function GoalsPage() {
       addToast('Erro ao criar meta', 'error');
     }
   }, [createGoal, addToast]);
+
+  const handleUpdate = useCallback(async (id: string, data: {
+    targetValue?: number;
+    period?: string;
+    endDate?: string;
+  }) => {
+    const success = await updateGoal(id, data);
+    if (success) {
+      setEditingGoal(null);
+      addToast('Meta atualizada com sucesso', 'success');
+    } else {
+      addToast('Erro ao atualizar meta', 'error');
+    }
+  }, [updateGoal, addToast]);
 
   const handleDelete = useCallback(async (id: string) => {
     const success = await deleteGoal(id);
@@ -458,6 +475,7 @@ export default function GoalsPage() {
               key={goal.id}
               goal={goal}
               onSelect={handleSelectAccount}
+              onEdit={setEditingGoal}
               onDelete={(id) => setConfirmDelete(id)}
             />
           ))}
@@ -470,6 +488,15 @@ export default function GoalsPage() {
           accounts={accounts}
           onClose={() => setShowModal(false)}
           onCreate={handleCreate}
+        />
+      )}
+
+      {/* Edit Modal */}
+      {editingGoal && (
+        <EditGoalModal
+          goal={editingGoal}
+          onClose={() => setEditingGoal(null)}
+          onUpdate={handleUpdate}
         />
       )}
 

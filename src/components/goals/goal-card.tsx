@@ -1,5 +1,5 @@
 import { memo } from 'react';
-import { Trash2, Clock, Trophy, AlertCircle } from 'lucide-react';
+import { Trash2, Pencil, Clock, Trophy, AlertCircle } from 'lucide-react';
 import { GOAL_STATUS_LABELS } from '@/types';
 import type { GoalWithProgress } from '@/types';
 import { formatFollowerCount, getPlatformColor, getPlatformLabel, getStatusColor } from './helpers';
@@ -7,10 +7,11 @@ import { formatFollowerCount, getPlatformColor, getPlatformLabel, getStatusColor
 interface GoalCardProps {
   goal: GoalWithProgress;
   onSelect: (accountId: string) => void;
+  onEdit: (goal: GoalWithProgress) => void;
   onDelete: (id: string) => void;
 }
 
-export const GoalCard = memo(function GoalCard({ goal, onSelect, onDelete }: GoalCardProps) {
+export const GoalCard = memo(function GoalCard({ goal, onSelect, onEdit, onDelete }: GoalCardProps) {
   const account = goal.socialAccount;
   const statusColors = getStatusColor(goal.status);
   const platformColor = getPlatformColor(account?.platform || '');
@@ -21,15 +22,25 @@ export const GoalCard = memo(function GoalCard({ goal, onSelect, onDelete }: Goa
       className="card p-6 card-hover cursor-pointer group relative"
       onClick={() => account && onSelect(account.id)}
     >
-      {/* Delete button */}
-      <button
-        onClick={(e) => { e.stopPropagation(); onDelete(goal.id); }}
-        className="absolute top-3 right-3 p-1.5 rounded-lg opacity-0 group-hover:opacity-100 transition-opacity hover:bg-error-surface"
-        title="Remover meta"
-        aria-label="Remover meta"
-      >
-        <Trash2 size={14} className="text-error" />
-      </button>
+      {/* Action buttons */}
+      <div className="absolute top-3 right-3 flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+        <button
+          onClick={(e) => { e.stopPropagation(); onEdit(goal); }}
+          className="p-1.5 rounded-lg hover:bg-accent-surface transition-colors"
+          title="Editar meta"
+          aria-label="Editar meta"
+        >
+          <Pencil size={14} className="text-accent" />
+        </button>
+        <button
+          onClick={(e) => { e.stopPropagation(); onDelete(goal.id); }}
+          className="p-1.5 rounded-lg hover:bg-error-surface transition-colors"
+          title="Remover meta"
+          aria-label="Remover meta"
+        >
+          <Trash2 size={14} className="text-error" />
+        </button>
+      </div>
 
       {/* Header: Avatar + Platform Badge */}
       <div className="flex items-center gap-3 mb-4">
