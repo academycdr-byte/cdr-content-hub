@@ -1,18 +1,12 @@
-import { NextRequest, NextResponse } from 'next/server';
+import { NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 import { requireAuth } from '@/lib/auth';
 
-export async function GET(request: NextRequest) {
+export async function GET() {
   try {
     const auth = await requireAuth();
     if (auth.error) return auth.error;
     const userId = auth.session!.user.id;
-
-    const { searchParams } = new URL(request.url);
-    const days = parseInt(searchParams.get('days') || '30', 10);
-
-    const since = new Date();
-    since.setDate(since.getDate() - days);
 
     // Get all active accounts for this user
     const accounts = await prisma.socialAccount.findMany({
@@ -32,11 +26,33 @@ export async function GET(request: NextRequest) {
 
     const accountIds = accounts.map((a) => a.id);
 
-    // Get all snapshots for these accounts in the time range
+    // Auto-snapshot today for all accounts (upsert)
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+
+    for (const acc of accounts) {
+      if (acc.followersCount > 0) {
+        await prisma.followerSnapshot.upsert({
+          where: {
+            socialAccountId_snapshotDate: {
+              socialAccountId: acc.id,
+              snapshotDate: today,
+            },
+          },
+          update: { followersCount: acc.followersCount },
+          create: {
+            socialAccountId: acc.id,
+            followersCount: acc.followersCount,
+            snapshotDate: today,
+          },
+        });
+      }
+    }
+
+    // Get ALL snapshots for these accounts (no date filter — full history)
     const snapshots = await prisma.followerSnapshot.findMany({
       where: {
         socialAccountId: { in: accountIds },
-        snapshotDate: { gte: since },
       },
       orderBy: { snapshotDate: 'asc' },
       select: {
@@ -46,46 +62,44 @@ export async function GET(request: NextRequest) {
       },
     });
 
-    // Group snapshots by date, with one column per account
+    // Build username map: accountId -> @username
+    const usernameMap = new Map<string, string>();
+    for (const acc of accounts) {
+      usernameMap.set(acc.id, `@${acc.username}`);
+    }
+
+    // Group snapshots by date, keyed by @username
     const dateMap = new Map<string, Record<string, number>>();
 
     for (const snap of snapshots) {
       const dateKey = snap.snapshotDate.toISOString().split('T')[0];
+      const username = usernameMap.get(snap.socialAccountId) || snap.socialAccountId;
       if (!dateMap.has(dateKey)) {
         dateMap.set(dateKey, {});
       }
-      dateMap.get(dateKey)![snap.socialAccountId] = snap.followersCount;
-    }
-
-    // Add today's data from current follower count if not already present
-    const today = new Date().toISOString().split('T')[0];
-    if (!dateMap.has(today)) {
-      dateMap.set(today, {});
-    }
-    for (const acc of accounts) {
-      if (!dateMap.get(today)![acc.id] && acc.followersCount > 0) {
-        dateMap.get(today)![acc.id] = acc.followersCount;
-      }
+      dateMap.get(dateKey)![username] = snap.followersCount;
     }
 
     // Build series sorted by date
     const sortedDates = Array.from(dateMap.keys()).sort();
+    const usernames = accounts.map((a) => `@${a.username}`);
+
     const series = sortedDates.map((date) => {
       const entry: Record<string, string | number> = { date };
-      for (const acc of accounts) {
-        entry[acc.id] = dateMap.get(date)?.[acc.id] || 0;
+      for (const uname of usernames) {
+        entry[uname] = dateMap.get(date)?.[uname] || 0;
       }
       return entry;
     });
 
-    // Fill gaps: for each account, carry forward the last known value
-    for (const acc of accounts) {
+    // Fill gaps: carry forward last known value per account
+    for (const uname of usernames) {
       let lastKnown = 0;
       for (const point of series) {
-        if ((point[acc.id] as number) > 0) {
-          lastKnown = point[acc.id] as number;
+        if ((point[uname] as number) > 0) {
+          lastKnown = point[uname] as number;
         } else if (lastKnown > 0) {
-          point[acc.id] = lastKnown;
+          point[uname] = lastKnown;
         }
       }
     }
@@ -93,6 +107,7 @@ export async function GET(request: NextRequest) {
     return NextResponse.json({
       accounts: accounts.map((a) => ({
         id: a.id,
+        key: `@${a.username}`,
         username: a.username,
         displayName: a.displayName,
         platform: a.platform,

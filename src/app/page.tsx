@@ -457,7 +457,7 @@ export default function DashboardPage() {
 
             {/* ===== FOLLOWER EVOLUTION CHART ===== */}
             <div className="mb-6 sm:mb-8">
-              <FollowerEvolutionChart days={Math.round((dateRange.end.getTime() - dateRange.start.getTime()) / (1000 * 60 * 60 * 24))} />
+              <FollowerEvolutionChart />
             </div>
 
             {/* ===== SOCIAL METRICS DETAIL ===== */}

@@ -15,6 +15,7 @@ import {
 
 interface AccountInfo {
   id: string;
+  key: string;
   username: string;
   displayName: string;
   platform: string;
@@ -34,18 +35,14 @@ function formatFollowerCount(value: number): string {
   return String(value);
 }
 
-interface FollowerEvolutionChartProps {
-  days: number;
-}
-
-export default function FollowerEvolutionChart({ days }: FollowerEvolutionChartProps) {
+export default function FollowerEvolutionChart() {
   const [data, setData] = useState<FollowerEvolutionData | null>(null);
   const [loading, setLoading] = useState(true);
 
   const fetchData = useCallback(async () => {
     try {
       setLoading(true);
-      const res = await fetch(`/api/analytics/follower-evolution?days=${days}`);
+      const res = await fetch('/api/analytics/follower-evolution');
       if (!res.ok) throw new Error('Failed to fetch');
       const result = await res.json() as FollowerEvolutionData;
       setData(result);
@@ -54,7 +51,7 @@ export default function FollowerEvolutionChart({ days }: FollowerEvolutionChartP
     } finally {
       setLoading(false);
     }
-  }, [days]);
+  }, []);
 
   useEffect(() => {
     fetchData();
@@ -136,23 +133,17 @@ export default function FollowerEvolutionChart({ days }: FollowerEvolutionChartP
               return formatFollowerCount(Number(value));
             }}
           />
-          <Legend
-            formatter={(value: string) => {
-              const acc = data.accounts.find((a) => a.id === value);
-              return `@${acc?.username || value}`;
-            }}
-            wrapperStyle={{ fontSize: 11, paddingTop: 8 }}
-          />
+          <Legend wrapperStyle={{ fontSize: 11, paddingTop: 8 }} />
           {data.accounts.map((acc, index) => (
             <Line
-              key={acc.id}
+              key={acc.key}
               type="monotone"
-              dataKey={acc.id}
-              name={acc.id}
+              dataKey={acc.key}
+              name={acc.key}
               stroke={PROFILE_COLORS[index % PROFILE_COLORS.length]}
               strokeWidth={2}
-              dot={false}
-              activeDot={{ r: 4, strokeWidth: 0 }}
+              dot={{ r: 3, strokeWidth: 0 }}
+              activeDot={{ r: 5, strokeWidth: 0 }}
               connectNulls
             />
           ))}
