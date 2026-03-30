@@ -363,7 +363,7 @@ export default function DashboardPage() {
 
             {/* ===== BREAKDOWNS: Por Rede & Por Perfil ===== */}
             {(stats.platformBreakdown.length > 0 || stats.profileBreakdown.length > 0) && (
-              <div className="grid grid-cols-2 gap-3 sm:gap-4 mb-6 sm:mb-8">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4 mb-6 sm:mb-8">
                 {/* Posts & Valor por Rede */}
                 <div className="card p-6">
                   <p className="text-label text-text-tertiary mb-4">Por Rede {periodLabel}</p>
