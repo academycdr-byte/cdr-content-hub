@@ -86,7 +86,7 @@ export default function Sidebar() {
                       key={item.href}
                       href={item.href}
                       className={cn(
-                        'group flex items-center gap-3 rounded-2xl px-4 py-3 text-[16px] transition-all duration-150',
+                        'group flex items-center gap-3 rounded-2xl px-4 py-2.5 text-[14px] transition-all duration-150',
                         active ? 'font-semibold' : 'font-medium'
                       )}
                       style={{
@@ -126,7 +126,7 @@ export default function Sidebar() {
         <ThemeToggle />
         <button
           onClick={() => signOut({ callbackUrl: '/login' })}
-          className="flex w-full items-center gap-3 rounded-2xl px-4 py-3 text-[16px] font-medium transition-colors"
+          className="flex w-full items-center gap-3 rounded-2xl px-4 py-2.5 text-[14px] font-medium transition-colors"
           style={{ color: 'var(--error)', backgroundColor: 'transparent' }}
           onMouseEnter={(e) => { e.currentTarget.style.backgroundColor = 'var(--error-surface)'; }}
           onMouseLeave={(e) => { e.currentTarget.style.backgroundColor = 'transparent'; }}
