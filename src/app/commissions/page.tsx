@@ -124,7 +124,7 @@ export default function CommissionsPage() {
     <div className="max-w-4xl mx-auto animate-fade-in">
       {/* Header */}
       <div className="mb-6">
-        <h1 className="text-[30px] font-bold leading-tight text-text-primary">Comissões</h1>
+        <h1 className="text-[24px] sm:text-[30px] font-bold leading-tight text-text-primary">Comissões</h1>
         <p className="text-sm text-text-tertiary mt-1">
           Configure o valor CPM (custo por mil views) de cada formato de conteúdo.
         </p>

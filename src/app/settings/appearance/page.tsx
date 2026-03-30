@@ -41,7 +41,7 @@ export default function AppearanceSettingsPage() {
     <div className="max-w-3xl mx-auto animate-fade-in">
       {/* Header */}
       <div className="mb-8">
-        <h1 className="text-[30px] font-bold leading-tight text-text-primary">Aparência</h1>
+        <h1 className="text-[24px] sm:text-[30px] font-bold leading-tight text-text-primary">Aparência</h1>
         <p className="mt-1 text-sm text-text-tertiary">
           Personalize a aparência do Content Hub.
         </p>

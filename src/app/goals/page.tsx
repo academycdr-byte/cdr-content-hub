@@ -185,11 +185,11 @@ export default function GoalsPage() {
   return (
     <div className="max-w-5xl mx-auto animate-fade-in">
       {/* Header */}
-      <div className="flex items-start justify-between mb-6">
+      <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-3 mb-6">
         <div>
           <div className="flex items-center gap-2 mb-1">
             <Target size={24} className="text-accent" />
-            <h1 className="text-[30px] font-bold leading-tight text-text-primary">Metas</h1>
+            <h1 className="text-[24px] sm:text-[30px] font-bold leading-tight text-text-primary">Metas</h1>
           </div>
           <p className="text-sm text-text-tertiary">
             Defina e acompanhe suas metas por perfil.

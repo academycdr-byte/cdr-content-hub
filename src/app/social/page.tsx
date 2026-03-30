@@ -130,9 +130,9 @@ export default function SocialPage() {
   return (
     <div className="max-w-5xl mx-auto animate-fade-in">
       {/* Header */}
-      <div className="flex items-start justify-between mb-6">
+      <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-3 mb-6">
         <div>
-          <h1 className="text-[30px] font-bold leading-tight text-text-primary mb-1">
+          <h1 className="text-[24px] sm:text-[30px] font-bold leading-tight text-text-primary mb-1">
             Contas Sociais
           </h1>
           <p className="text-sm text-text-tertiary">

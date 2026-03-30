@@ -217,9 +217,9 @@ export default function PipelinePage() {
   return (
     <div className="animate-fade-in">
       {/* Header */}
-      <div className="flex items-start justify-between mb-6">
+      <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-3 mb-6">
         <div>
-          <h1 className="text-[30px] font-bold leading-tight text-text-primary mb-1">Pipeline</h1>
+          <h1 className="text-[24px] sm:text-[30px] font-bold leading-tight text-text-primary mb-1">Pipeline</h1>
           <p className="text-sm text-text-tertiary">
             {filteredPosts.length} post{filteredPosts.length !== 1 ? 's' : ''} no pipeline
           </p>

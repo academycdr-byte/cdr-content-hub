@@ -198,7 +198,7 @@ export default function ResultsPage() {
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-6">
         <div>
-          <h1 className="text-[30px] font-bold leading-tight text-text-primary">Resultados</h1>
+          <h1 className="text-[24px] sm:text-[30px] font-bold leading-tight text-text-primary">Resultados</h1>
           <p className="text-sm text-text-tertiary mt-1">
             {total} case{total !== 1 ? 's' : ''} de sucesso cadastrado{total !== 1 ? 's' : ''}
           </p>

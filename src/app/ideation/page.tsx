@@ -292,7 +292,7 @@ export default function IdeationPage() {
             <Sparkles size={20} className="text-accent" />
           </div>
           <div>
-            <h1 className="text-[30px] font-bold leading-tight text-text-primary">Sessão de Ideação</h1>
+            <h1 className="text-[24px] sm:text-[30px] font-bold leading-tight text-text-primary">Sessão de Ideação</h1>
             <p className="text-sm text-text-tertiary">Planejamento semanal de conteúdo</p>
           </div>
         </div>

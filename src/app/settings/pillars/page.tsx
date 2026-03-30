@@ -105,9 +105,9 @@ export default function PillarsSettingsPage() {
   return (
     <div className="max-w-3xl mx-auto animate-fade-in">
       {/* Header */}
-      <div className="flex items-center justify-between mb-8">
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6 sm:mb-8">
         <div>
-          <h1 className="text-[30px] font-bold leading-tight text-text-primary">Pilares de Conteúdo</h1>
+          <h1 className="text-[24px] sm:text-[30px] font-bold leading-tight text-text-primary">Pilares de Conteúdo</h1>
           <p className="mt-1 text-sm text-text-tertiary">
             Configure os pilares e a distribuição percentual do seu mix de conteúdo.
           </p>

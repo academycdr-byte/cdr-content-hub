@@ -34,7 +34,12 @@ export default function ChecklistsSettingsPage() {
       const res = await fetch('/api/checklists/templates');
       if (!res.ok) throw new Error('Failed to fetch');
       const data = await res.json() as ChecklistTemplateData[];
-      setTemplates(data);
+      setTemplates(
+        (Array.isArray(data) ? data : []).map((t) => ({
+          ...t,
+          items: Array.isArray(t.items) ? t.items : [],
+        }))
+      );
     } catch {
       addToast('Erro ao carregar checklists', 'error');
     } finally {
@@ -120,9 +125,9 @@ export default function ChecklistsSettingsPage() {
   return (
     <div className="max-w-3xl mx-auto animate-fade-in">
       {/* Header */}
-      <div className="flex items-center justify-between mb-8">
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6 sm:mb-8">
         <div>
-          <h1 className="text-[30px] font-bold leading-tight text-text-primary">Checklists por Etapa</h1>
+          <h1 className="text-[24px] sm:text-[30px] font-bold leading-tight text-text-primary">Checklists por Etapa</h1>
           <p className="mt-1 text-sm text-text-tertiary">
             Configure os itens de checklist para cada etapa do pipeline de produção.
           </p>
