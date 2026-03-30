@@ -12,7 +12,6 @@ import {
   DollarSign,
   Settings,
   LogOut,
-  Layers,
 } from 'lucide-react';
 import { signOut } from 'next-auth/react';
 import { cn } from '@/lib/utils';
@@ -43,7 +42,6 @@ const NAV_SECTIONS: NavSection[] = [
   {
     title: 'Ferramentas',
     items: [
-      { label: 'Séries', href: '/series', icon: <Layers size={22} /> },
       { label: 'Comissões', href: '/commissions', icon: <DollarSign size={22} /> },
       { label: 'Social', href: '/social', icon: <Share2 size={22} /> },
     ],
