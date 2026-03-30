@@ -7,8 +7,10 @@ import {
   Search,
   Filter,
   TrendingUp,
+  Sparkles,
 } from 'lucide-react';
 import { useRouter } from 'next/navigation';
+import Link from 'next/link';
 import { cn } from '@/lib/utils';
 import { useToastStore } from '@/stores/toast-store';
 import type { Hook, ContentPillar } from '@/types';
@@ -199,13 +201,22 @@ export default function HooksPage() {
             {filteredHooks.length} ideia{filteredHooks.length !== 1 ? 's' : ''} encontrada{filteredHooks.length !== 1 ? 's' : ''}
           </p>
         </div>
-        <button
-          onClick={() => setShowCreateForm(true)}
-          className="btn-accent flex items-center gap-2 shrink-0"
-        >
-          <Plus size={16} />
-          Nova Ideia
-        </button>
+        <div className="flex items-center gap-2">
+          <Link
+            href="/ideation"
+            className="btn-ghost flex items-center gap-2 shrink-0"
+          >
+            <Sparkles size={16} />
+            Sessão de Ideação
+          </Link>
+          <button
+            onClick={() => setShowCreateForm(true)}
+            className="btn-accent flex items-center gap-2 shrink-0"
+          >
+            <Plus size={16} />
+            Nova Ideia
+          </button>
+        </div>
       </div>
 
       {/* Search */}

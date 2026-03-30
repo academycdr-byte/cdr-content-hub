@@ -7,7 +7,6 @@ import {
   LayoutDashboard,
   Calendar,
   Lightbulb,
-  Sparkles,
   MoreHorizontal,
   BarChart3,
   Target,
@@ -28,11 +27,10 @@ const MAIN_ITEMS: NavItem[] = [
   { label: 'Home', href: '/', icon: <LayoutDashboard size={20} /> },
   { label: 'Calendário', href: '/calendar', icon: <Calendar size={20} /> },
   { label: 'Ideias', href: '/hooks', icon: <Lightbulb size={20} /> },
-  { label: 'Ideação', href: '/ideation', icon: <Sparkles size={20} /> },
+  { label: 'Métricas', href: '/metrics', icon: <BarChart3 size={20} /> },
 ];
 
 const MORE_ITEMS: NavItem[] = [
-  { label: 'Métricas', href: '/metrics', icon: <BarChart3 size={20} /> },
   { label: 'Metas', href: '/goals', icon: <Target size={20} /> },
   { label: 'Comissões', href: '/commissions', icon: <DollarSign size={20} /> },
   { label: 'Social', href: '/social', icon: <Share2 size={20} /> },

@@ -12,7 +12,6 @@ import {
   DollarSign,
   Settings,
   LogOut,
-  Sparkles,
   Layers,
 } from 'lucide-react';
 import { signOut } from 'next-auth/react';
@@ -37,7 +36,6 @@ const NAV_SECTIONS: NavSection[] = [
       { label: 'Dashboard', href: '/', icon: <LayoutDashboard size={22} /> },
       { label: 'Calendário', href: '/calendar', icon: <Calendar size={22} /> },
       { label: 'Ideias', href: '/hooks', icon: <Lightbulb size={22} /> },
-      { label: 'Ideação', href: '/ideation', icon: <Sparkles size={22} /> },
       { label: 'Métricas', href: '/metrics', icon: <BarChart3 size={22} /> },
       { label: 'Metas', href: '/goals', icon: <Target size={22} /> },
     ],
