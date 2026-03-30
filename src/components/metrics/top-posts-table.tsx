@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useMemo } from 'react';
-import { ExternalLink, Instagram, Music2, ChevronDown } from 'lucide-react';
+import { ExternalLink, Instagram, Music2, ChevronDown, User } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import type { PostMetrics } from '@/types';
 
@@ -116,6 +116,9 @@ export default function TopPostsTable({ posts, loading }: TopPostsTableProps) {
               <th className="text-left text-[11px] font-semibold uppercase tracking-wider text-text-tertiary px-3 py-3">
                 Post
               </th>
+              <th className="text-left text-[11px] font-semibold uppercase tracking-wider text-text-tertiary px-3 py-3 w-32">
+                Perfil
+              </th>
               <th className="text-left text-[11px] font-semibold uppercase tracking-wider text-text-tertiary px-3 py-3 w-24">
                 Plataforma
               </th>
@@ -166,6 +169,24 @@ export default function TopPostsTable({ posts, loading }: TopPostsTableProps) {
                     <p className="text-sm text-text-primary truncate max-w-[300px]">
                       {post.caption || 'Sem legenda'}
                     </p>
+                  </div>
+                </td>
+                <td className="px-3 py-3">
+                  <div className="flex items-center gap-2">
+                    {post.socialAccount?.profilePictureUrl ? (
+                      <img
+                        src={post.socialAccount.profilePictureUrl}
+                        alt=""
+                        className="h-5 w-5 rounded-full object-cover flex-shrink-0"
+                      />
+                    ) : (
+                      <div className="h-5 w-5 rounded-full bg-bg-hover flex items-center justify-center flex-shrink-0">
+                        <User size={10} className="text-text-tertiary" />
+                      </div>
+                    )}
+                    <span className="text-xs text-text-secondary truncate max-w-[120px]">
+                      @{post.socialAccount?.username || 'desconhecido'}
+                    </span>
                   </div>
                 </td>
                 <td className="px-3 py-3">
@@ -254,6 +275,9 @@ export default function TopPostsTable({ posts, loading }: TopPostsTableProps) {
                   {post.caption || 'Sem legenda'}
                 </p>
                 <div className="flex items-center gap-3 mt-1">
+                  <span className="text-[11px] text-text-tertiary truncate">
+                    @{post.socialAccount?.username || 'desconhecido'}
+                  </span>
                   <PlatformBadge platform={post.platform} />
                   <span className={cn(
                     'text-xs font-medium',

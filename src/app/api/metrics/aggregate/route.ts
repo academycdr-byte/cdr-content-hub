@@ -88,6 +88,7 @@ export async function GET(request: NextRequest) {
               username: true,
               displayName: true,
               platform: true,
+              profilePictureUrl: true,
             },
           },
         },
