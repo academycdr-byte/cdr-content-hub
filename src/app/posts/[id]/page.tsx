@@ -386,10 +386,6 @@ export default function PostBuilderPage({ params }: PostBuilderPageProps) {
           Dashboard
         </Link>
         <ChevronRight size={12} />
-        <Link href="/pipeline" className="hover:text-text-primary transition-colors">
-          Pipeline
-        </Link>
-        <ChevronRight size={12} />
         <span className="text-text-primary font-medium truncate max-w-[200px]">
           {post.title}
         </span>
