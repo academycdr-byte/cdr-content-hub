@@ -132,7 +132,7 @@ function DroppableDay({
     <div
       ref={setNodeRef}
       className={cn(
-        'min-h-[120px] border-b border-r border-border-default p-2 transition-colors group',
+        'min-h-[140px] border-b border-r border-border-default p-2 transition-colors group',
         !isCurrentMonth && 'bg-bg-secondary opacity-40',
         today && 'bg-accent-surface',
         isOver && 'bg-accent-surface border-accent'
@@ -165,7 +165,7 @@ function DroppableDay({
       </div>
 
       {/* Posts & Social Entries */}
-      <div className="space-y-1">
+      <div className="space-y-1.5">
         {/* Internal posts (draggable) */}
         {visiblePosts.map((post) => (
           <DraggablePost

@@ -40,58 +40,70 @@ const CalendarPostCard = memo(function CalendarPostCard({
   return (
     <div
       className={cn(
-        'group/card relative w-full flex items-center gap-1.5 rounded-md px-2 py-1 text-left text-[11px] font-medium transition-[opacity,box-shadow]',
+        'group/card relative w-full rounded-lg px-2.5 py-1.5 text-left transition-[opacity,box-shadow]',
         'hover:ring-1 hover:ring-border-strong',
         isDragging && 'opacity-50 ring-2 ring-accent',
         isPublished && 'opacity-60'
       )}
       style={{
-        backgroundColor: `${pillarColor}12`,
+        backgroundColor: `${pillarColor}18`,
         borderLeft: `3px solid ${pillarColor}`,
       }}
     >
-      {/* Check button — toggle published */}
-      {onTogglePublished && (
-        <button
-          onClick={(e) => {
-            e.stopPropagation();
-            onTogglePublished();
-          }}
-          onPointerDown={(e) => e.stopPropagation()}
-          className={cn(
-            'shrink-0 flex items-center justify-center h-3.5 w-3.5 rounded-full border transition-colors',
-            isPublished
-              ? 'bg-success border-success text-white'
-              : 'border-text-tertiary hover:border-success hover:bg-success/10'
-          )}
-          title={isPublished ? 'Desmarcar como postado' : 'Marcar como postado'}
-        >
-          {isPublished && <Check size={8} strokeWidth={3} />}
-        </button>
-      )}
-
-      <button
-        onClick={onClick}
-        className="flex items-center gap-1.5 min-w-0 flex-1"
-      >
-        <span className="shrink-0" style={{ color: pillarColor }}>
-          {FORMAT_ICONS[post.format as PostFormat]}
-        </span>
-        <span className={cn('truncate text-text-primary', isPublished && 'line-through text-text-tertiary')}>{post.title}</span>
-        <span className="shrink-0 text-[9px] font-normal text-text-tertiary">
-          {FORMAT_LABELS[post.format as PostFormat]}
-        </span>
-        {post.socialAccount && (
-          <span className="shrink-0 flex items-center gap-0.5 text-[9px] font-normal text-text-tertiary" title={`@${post.socialAccount.username}`}>
-            {post.socialAccount.platform === 'instagram' ? (
-              <Instagram size={9} />
-            ) : (
-              <svg width="9" height="9" viewBox="0 0 24 24" fill="currentColor"><path d="M19.59 6.69a4.83 4.83 0 0 1-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 0 1-2.88 2.5 2.89 2.89 0 0 1-2.89-2.89 2.89 2.89 0 0 1 2.89-2.89c.28 0 .54.04.79.1V9.01a6.36 6.36 0 0 0-1-.08 6.27 6.27 0 0 0-6.28 6.28 6.28 6.28 0 0 0 6.28 6.28 6.28 6.28 0 0 0 6.28-6.28V8.87a8.2 8.2 0 0 0 4.84 1.57V7.01a4.85 4.85 0 0 1-.81-.32z"/></svg>
+      <div className="flex items-start gap-1.5">
+        {/* Check button — toggle published */}
+        {onTogglePublished && (
+          <button
+            onClick={(e) => {
+              e.stopPropagation();
+              onTogglePublished();
+            }}
+            onPointerDown={(e) => e.stopPropagation()}
+            className={cn(
+              'shrink-0 flex items-center justify-center h-4 w-4 rounded-full border transition-colors mt-0.5',
+              isPublished
+                ? 'bg-success border-success text-white'
+                : 'border-text-tertiary hover:border-success hover:bg-success/10'
             )}
-            <span className="max-w-[50px] truncate">@{post.socialAccount.username}</span>
-          </span>
+            title={isPublished ? 'Desmarcar como postado' : 'Marcar como postado'}
+          >
+            {isPublished && <Check size={8} strokeWidth={3} />}
+          </button>
         )}
-      </button>
+
+        <button
+          onClick={onClick}
+          className="flex flex-col gap-0.5 min-w-0 flex-1"
+        >
+          {/* Line 1: Title */}
+          <span className={cn(
+            'text-[11px] font-semibold leading-tight text-text-primary truncate w-full text-left',
+            isPublished && 'line-through text-text-tertiary'
+          )}>
+            {post.title}
+          </span>
+
+          {/* Line 2: Format + Account */}
+          <div className="flex items-center gap-1.5">
+            <span className="shrink-0 flex items-center gap-1" style={{ color: pillarColor }}>
+              {FORMAT_ICONS[post.format as PostFormat]}
+              <span className="text-[9px] font-medium">
+                {FORMAT_LABELS[post.format as PostFormat]}
+              </span>
+            </span>
+            {post.socialAccount && (
+              <span className="flex items-center gap-0.5 text-[9px] text-text-tertiary truncate" title={`@${post.socialAccount.username}`}>
+                {post.socialAccount.platform === 'instagram' ? (
+                  <Instagram size={9} className="shrink-0" />
+                ) : (
+                  <svg className="shrink-0" width="9" height="9" viewBox="0 0 24 24" fill="currentColor"><path d="M19.59 6.69a4.83 4.83 0 0 1-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 0 1-2.88 2.5 2.89 2.89 0 0 1-2.89-2.89 2.89 2.89 0 0 1 2.89-2.89c.28 0 .54.04.79.1V9.01a6.36 6.36 0 0 0-1-.08 6.27 6.27 0 0 0-6.28 6.28 6.28 6.28 0 0 0 6.28 6.28 6.28 6.28 0 0 0 6.28-6.28V8.87a8.2 8.2 0 0 0 4.84 1.57V7.01a4.85 4.85 0 0 1-.81-.32z"/></svg>
+                )}
+                <span className="truncate">@{post.socialAccount.username}</span>
+              </span>
+            )}
+          </div>
+        </button>
+      </div>
 
       {onDelete && !isPublished && (
         <button
