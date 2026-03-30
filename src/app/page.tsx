@@ -149,9 +149,9 @@ export default function DashboardPage() {
   return (
     <div className="max-w-6xl mx-auto animate-fade-in">
       {/* Header */}
-      <div className="flex items-center justify-between mb-8">
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6 sm:mb-8">
         <div>
-          <h1 className="text-[30px] font-bold leading-tight text-text-primary">Dashboard</h1>
+          <h1 className="text-[24px] sm:text-[30px] font-bold leading-tight text-text-primary">Dashboard</h1>
           <p className="mt-1 text-sm text-text-tertiary">
             Visão geral da sua produção de conteúdo
           </p>
@@ -164,11 +164,11 @@ export default function DashboardPage() {
         {stats && (
           <>
             {/* ===== HERO KPIs ===== */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-8">
+            <div className="grid grid-cols-2 gap-3 sm:gap-4 mb-6 sm:mb-8">
               {/* Posts Publicados */}
-              <div className="card p-7">
+              <div className="card p-4 sm:p-7">
                 <div className="flex items-center justify-between mb-4">
-                  <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-accent-surface">
+                  <div className="flex h-9 w-9 sm:h-11 sm:w-11 items-center justify-center rounded-xl bg-accent-surface">
                     <CalendarDays size={20} className="text-accent" />
                   </div>
                   <button className="flex h-9 w-9 items-center justify-center rounded-lg hover:bg-bg-hover transition-colors">
@@ -177,7 +177,7 @@ export default function DashboardPage() {
                 </div>
                 <p className="text-sm font-medium text-text-secondary mb-2">Posts Publicados</p>
                 <div className="flex items-baseline gap-2 mb-3">
-                  <p className="text-kpi-value text-text-primary">{syncedPostsCount}</p>
+                  <p className="text-[28px] sm:text-kpi-value font-bold text-text-primary" style={{ letterSpacing: '-0.02em', fontVariantNumeric: 'tabular-nums' }}>{syncedPostsCount}</p>
                   <p className="text-sm text-text-tertiary">/ {stats.monthlyGoal}</p>
                 </div>
                 <div className="h-1.5 w-full rounded-full bg-bg-hover overflow-hidden mb-1.5">
@@ -190,9 +190,9 @@ export default function DashboardPage() {
               </div>
 
               {/* Total Views */}
-              <div className="card p-7">
+              <div className="card p-4 sm:p-7">
                 <div className="flex items-center justify-between mb-4">
-                  <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-accent-surface">
+                  <div className="flex h-9 w-9 sm:h-11 sm:w-11 items-center justify-center rounded-xl bg-accent-surface">
                     <Eye size={20} className="text-accent" />
                   </div>
                   <button className="flex h-9 w-9 items-center justify-center rounded-lg hover:bg-bg-hover transition-colors">
@@ -200,16 +200,16 @@ export default function DashboardPage() {
                   </button>
                 </div>
                 <p className="text-sm font-medium text-text-secondary mb-2">Views</p>
-                <p className="text-kpi-value text-text-primary">
+                <p className="text-[28px] sm:text-kpi-value font-bold text-text-primary" style={{ letterSpacing: '-0.02em', fontVariantNumeric: 'tabular-nums' }}>
                   {stats.metricsSummary ? formatMetricNumber(stats.metricsSummary.views) : '--'}
                 </p>
                 <p className="text-[13px] text-text-tertiary mt-1">{periodLabel}</p>
               </div>
 
               {/* Engajamento Total */}
-              <div className="card p-7">
+              <div className="card p-4 sm:p-7">
                 <div className="flex items-center justify-between mb-4">
-                  <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-accent-surface">
+                  <div className="flex h-9 w-9 sm:h-11 sm:w-11 items-center justify-center rounded-xl bg-accent-surface">
                     <Heart size={20} className="text-accent" />
                   </div>
                   <button className="flex h-9 w-9 items-center justify-center rounded-lg hover:bg-bg-hover transition-colors">
@@ -217,7 +217,7 @@ export default function DashboardPage() {
                   </button>
                 </div>
                 <p className="text-sm font-medium text-text-secondary mb-2">Engajamento</p>
-                <p className="text-kpi-value text-text-primary">
+                <p className="text-[28px] sm:text-kpi-value font-bold text-text-primary" style={{ letterSpacing: '-0.02em', fontVariantNumeric: 'tabular-nums' }}>
                   {totalEngagement > 0 ? formatMetricNumber(totalEngagement) : '--'}
                 </p>
                 {stats.metricsSummary && stats.metricsSummary.posts > 0 ? (
@@ -230,9 +230,9 @@ export default function DashboardPage() {
               </div>
 
               {/* Valor Estimado (CPM) */}
-              <div className="card p-7">
+              <div className="card p-4 sm:p-7">
                 <div className="flex items-center justify-between mb-4">
-                  <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-accent-surface">
+                  <div className="flex h-9 w-9 sm:h-11 sm:w-11 items-center justify-center rounded-xl bg-accent-surface">
                     <DollarSign size={20} className="text-accent" />
                   </div>
                   <button className="flex h-9 w-9 items-center justify-center rounded-lg hover:bg-bg-hover transition-colors">
@@ -240,7 +240,7 @@ export default function DashboardPage() {
                   </button>
                 </div>
                 <p className="text-sm font-medium text-text-secondary mb-2">Valor Estimado</p>
-                <p className="text-kpi-value text-text-primary">
+                <p className="text-[28px] sm:text-kpi-value font-bold text-text-primary" style={{ letterSpacing: '-0.02em', fontVariantNumeric: 'tabular-nums' }}>
                   {stats.totalCpmValue > 0 ? formatCurrency(stats.totalCpmValue) : '--'}
                 </p>
                 <p className="text-[13px] text-text-tertiary mt-1">baseado em CPM</p>
@@ -363,7 +363,7 @@ export default function DashboardPage() {
 
             {/* ===== BREAKDOWNS: Por Rede & Por Perfil ===== */}
             {(stats.platformBreakdown.length > 0 || stats.profileBreakdown.length > 0) && (
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-8">
+              <div className="grid grid-cols-2 gap-3 sm:gap-4 mb-6 sm:mb-8">
                 {/* Posts & Valor por Rede */}
                 <div className="card p-6">
                   <p className="text-label text-text-tertiary mb-4">Por Rede {periodLabel}</p>
@@ -469,7 +469,7 @@ export default function DashboardPage() {
 
             {/* ===== SOCIAL METRICS DETAIL ===== */}
             {stats.metricsSummary && stats.metricsSummary.posts > 0 && (
-              <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
+              <div className="grid grid-cols-2 md:grid-cols-4 gap-3 sm:gap-4 mb-6 sm:mb-8">
                 <div className="card p-6">
                   <div className="flex items-center gap-2 mb-3">
                     <Eye size={14} className="text-text-tertiary" />
@@ -636,7 +636,7 @@ export default function DashboardPage() {
 
             {/* ===== GOALS PROGRESS + CONTENT MIX COMPARISON ===== */}
             {(stats.goalsProgress.length > 0 || stats.contentMixComparison.length > 0) && (
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-8">
+              <div className="grid grid-cols-2 gap-3 sm:gap-4 mb-6 sm:mb-8">
                 {/* Goals Progress */}
                 {stats.goalsProgress.length > 0 && (
                   <div className="card p-6">
@@ -729,7 +729,7 @@ export default function DashboardPage() {
 
             {/* ===== POSTING PACE + SERIES STATUS ===== */}
             {(stats.postingPace || stats.seriesStatus.length > 0) && (
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-8">
+              <div className="grid grid-cols-2 gap-3 sm:gap-4 mb-6 sm:mb-8">
                 {/* Posting Pace */}
                 {stats.postingPace && (
                   <div className="card p-6">
@@ -815,7 +815,7 @@ export default function DashboardPage() {
             </div>
 
             {/* ===== RESULTS ===== */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-8">
+            <div className="grid grid-cols-2 gap-3 sm:gap-4 mb-6 sm:mb-8">
               {/* Results */}
               <div className="card p-6">
                 <div className="flex items-center justify-between mb-4">

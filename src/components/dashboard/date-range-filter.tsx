@@ -174,7 +174,7 @@ export default function DateRangeFilter({ value, onChange }: DateRangeFilterProp
   return (
     <div className="flex flex-col sm:flex-row items-start sm:items-center gap-3">
       {/* Segmented Control */}
-      <div className="flex items-center gap-1 rounded-xl bg-bg-secondary p-1">
+      <div className="flex items-center gap-1 rounded-xl bg-bg-secondary p-1 overflow-x-auto max-w-full no-scrollbar">
         {PRESETS.map((preset) => {
           const isActive =
             preset.key === value.preset ||
@@ -190,7 +190,7 @@ export default function DateRangeFilter({ value, onChange }: DateRangeFilterProp
               key={preset.key}
               onClick={() => handlePreset(preset.key)}
               className={cn(
-                'px-3 py-1.5 rounded-lg text-xs font-medium transition-all duration-200',
+                'px-3 py-1.5 rounded-lg text-xs font-medium transition-all duration-200 whitespace-nowrap shrink-0',
                 isActive
                   ? 'bg-accent text-text-inverted shadow-[var(--shadow-sm)]'
                   : 'text-text-secondary hover:text-text-primary hover:bg-bg-hover'

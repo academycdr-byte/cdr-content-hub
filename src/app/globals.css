@@ -401,6 +401,10 @@ body {
   background: var(--scrollbar-thumb);
   border-radius: 3px;
 }
+/* Hidden scrollbar utility */
+.no-scrollbar::-webkit-scrollbar { display: none; }
+.no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+
 ::-webkit-scrollbar-thumb:hover {
   background: var(--scrollbar-hover);
 }
