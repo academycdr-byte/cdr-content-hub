@@ -28,6 +28,7 @@ import DateRangeFilter, {
 import type { DateRange } from '@/components/dashboard/date-range-filter';
 import SignalsPanel from '@/components/dashboard/signals-panel';
 import FormatSignature from '@/components/dashboard/format-signature';
+import FollowerEvolutionChart from '@/components/dashboard/follower-evolution-chart';
 
 // ===== Helpers =====
 
@@ -454,6 +455,11 @@ export default function DashboardPage() {
               </div>
             )}
 
+            {/* ===== FOLLOWER EVOLUTION CHART ===== */}
+            <div className="mb-6 sm:mb-8">
+              <FollowerEvolutionChart days={Math.round((dateRange.end.getTime() - dateRange.start.getTime()) / (1000 * 60 * 60 * 24))} />
+            </div>
+
             {/* ===== SOCIAL METRICS DETAIL ===== */}
             {stats.metricsSummary && stats.metricsSummary.posts > 0 && (
               <div className="grid grid-cols-2 md:grid-cols-4 gap-3 sm:gap-4 mb-6 sm:mb-8">
@@ -714,85 +720,44 @@ export default function DashboardPage() {
               </div>
             )}
 
-            {/* ===== POSTING PACE + SERIES STATUS ===== */}
-            {(stats.postingPace || stats.seriesStatus.length > 0) && (
-              <div className="grid grid-cols-2 gap-3 sm:gap-4 mb-6 sm:mb-8">
-                {/* Posting Pace */}
-                {stats.postingPace && (
-                  <div className="card p-6">
-                    <p className="text-label text-text-tertiary mb-4">Ritmo de Postagem</p>
-                    <div className="flex items-baseline gap-2 mb-3">
-                      <p className="text-3xl font-bold text-text-primary">{stats.postingPace.actualThisWeek}</p>
-                      <p className="text-sm text-text-secondary">/ {stats.postingPace.targetPerWeek} esta semana</p>
-                    </div>
-                    <span className={cn(
-                      'text-xs font-semibold px-2 py-1 rounded',
-                      stats.postingPace.status === 'ahead' && 'bg-success-surface text-success',
-                      stats.postingPace.status === 'on_track' && 'bg-accent-surface text-accent',
-                      stats.postingPace.status === 'behind' && 'bg-warning-surface text-warning',
-                    )}>
-                      {stats.postingPace.status === 'ahead' ? 'Adiantado' : stats.postingPace.status === 'on_track' ? 'No ritmo' : 'Atrasado'}
-                    </span>
-                    {stats.postingPace.weeklyTrend.length > 0 && (
-                      <div className="flex items-end gap-1 mt-4 h-10">
-                        {stats.postingPace.weeklyTrend.map((count, i) => {
-                          const max = Math.max(...stats.postingPace.weeklyTrend, 1);
-                          const height = Math.max((count / max) * 100, 8);
-                          return (
-                            <div
-                              key={i}
-                              className="flex-1 rounded-t transition-all duration-300"
-                              style={{
-                                height: `${height}%`,
-                                backgroundColor: i === stats.postingPace.weeklyTrend.length - 1 ? 'var(--accent)' : 'var(--bg-hover)',
-                              }}
-                              title={`Semana ${i + 1}: ${count} posts`}
-                            />
-                          );
-                        })}
-                      </div>
-                    )}
+            {/* ===== SERIES STATUS ===== */}
+            {stats.seriesStatus.length > 0 && (
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4 mb-6 sm:mb-8">
+                <div className="card p-6">
+                  <div className="flex items-center justify-between mb-4">
+                    <p className="text-label text-text-tertiary">Séries de Conteúdo</p>
+                    <Link
+                      href="/series"
+                      className="flex h-8 w-8 items-center justify-center rounded-lg bg-accent-surface hover:bg-accent-surface-hover transition-colors"
+                    >
+                      <ArrowRight size={16} className="text-accent" />
+                    </Link>
                   </div>
-                )}
-
-                {/* Series Status */}
-                {stats.seriesStatus.length > 0 && (
-                  <div className="card p-6">
-                    <div className="flex items-center justify-between mb-4">
-                      <p className="text-label text-text-tertiary">Séries de Conteúdo</p>
-                      <Link
-                        href="/series"
-                        className="flex h-8 w-8 items-center justify-center rounded-lg bg-accent-surface hover:bg-accent-surface-hover transition-colors"
-                      >
-                        <ArrowRight size={16} className="text-accent" />
-                      </Link>
-                    </div>
-                    <div className="space-y-3">
-                      {stats.seriesStatus.map((s) => (
-                        <div key={s.id} className="flex items-center gap-3">
-                          <div
-                            className="h-3 w-3 rounded-full shrink-0"
-                            style={{ backgroundColor: s.color }}
-                          />
-                          <div className="flex-1 min-w-0">
-                            <p className="text-sm font-medium text-text-primary truncate">{s.name}</p>
-                            <p className="text-[10px] text-text-tertiary">
-                              EP {s.lastEpisode} {s.lastPublished ? `· ${new Date(s.lastPublished).toLocaleDateString('pt-BR', { day: '2-digit', month: 'short' })}` : ''}
-                            </p>
-                          </div>
-                          <span className={cn(
-                            'text-[10px] font-semibold px-1.5 py-0.5 rounded',
-                            s.status === 'on_track' && 'bg-success-surface text-success',
-                            s.status === 'overdue' && 'bg-error-surface text-error',
-                            s.status === 'paused' && 'bg-bg-hover text-text-tertiary',
-                          )}>
-                            {s.status === 'on_track' ? 'Em dia' : s.status === 'overdue' ? 'Atrasada' : 'Pausada'}
-                          </span>
+                  <div className="space-y-3">
+                    {stats.seriesStatus.map((s) => (
+                      <div key={s.id} className="flex items-center gap-3">
+                        <div
+                          className="h-3 w-3 rounded-full shrink-0"
+                          style={{ backgroundColor: s.color }}
+                        />
+                        <div className="flex-1 min-w-0">
+                          <p className="text-sm font-medium text-text-primary truncate">{s.name}</p>
+                          <p className="text-[10px] text-text-tertiary">
+                            EP {s.lastEpisode} {s.lastPublished ? `· ${new Date(s.lastPublished).toLocaleDateString('pt-BR', { day: '2-digit', month: 'short' })}` : ''}
+                          </p>
                         </div>
-                      ))}
-                    </div>
+                        <span className={cn(
+                          'text-[10px] font-semibold px-1.5 py-0.5 rounded',
+                          s.status === 'on_track' && 'bg-success-surface text-success',
+                          s.status === 'overdue' && 'bg-error-surface text-error',
+                          s.status === 'paused' && 'bg-bg-hover text-text-tertiary',
+                        )}>
+                          {s.status === 'on_track' ? 'Em dia' : s.status === 'overdue' ? 'Atrasada' : 'Pausada'}
+                        </span>
+                      </div>
+                    ))}
                   </div>
-                )}
+                </div>
               </div>
             )}
 
@@ -801,50 +766,6 @@ export default function DashboardPage() {
               <FormatSignature />
             </div>
 
-            {/* ===== RESULTS ===== */}
-            <div className="grid grid-cols-2 gap-3 sm:gap-4 mb-6 sm:mb-8">
-              {/* Results */}
-              <div className="card p-6">
-                <div className="flex items-center justify-between mb-4">
-                  <p className="text-label text-text-tertiary">Resultados</p>
-                  <Link
-                    href="/results"
-                    className="flex h-8 w-8 items-center justify-center rounded-lg bg-accent-surface hover:bg-accent-surface-hover transition-colors"
-                  >
-                    <ArrowRight size={16} className="text-accent" />
-                  </Link>
-                </div>
-                <p className="text-3xl font-bold text-text-primary mb-1">{stats.resultsWithoutPost}</p>
-                <p className="text-sm text-text-secondary">
-                  resultado{stats.resultsWithoutPost !== 1 ? 's' : ''} cadastrado{stats.resultsWithoutPost !== 1 ? 's' : ''}
-                </p>
-                {stats.resultsWithoutPost > 0 && (
-                  <Link
-                    href="/results"
-                    className="text-xs text-accent hover:text-accent-hover font-medium flex items-center gap-1 mt-2"
-                  >
-                    <TrendingUp size={12} />
-                    Transformar em case study
-                  </Link>
-                )}
-              </div>
-
-              {/* Metrics Posts count */}
-              <div className="card p-6">
-                <div className="flex items-center justify-between mb-4">
-                  <p className="text-label text-text-tertiary">Posts Sincronizados</p>
-                  <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-accent-surface">
-                    <TrendingUp size={16} className="text-accent" />
-                  </div>
-                </div>
-                <p className="text-3xl font-bold text-text-primary mb-1">
-                  {stats.metricsSummary?.posts || 0}
-                </p>
-                <p className="text-sm text-text-secondary">
-                  posts com métricas {periodLabel}
-                </p>
-              </div>
-            </div>
           </>
         )}
       </div>

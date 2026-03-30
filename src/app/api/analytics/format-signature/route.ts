@@ -11,14 +11,23 @@ interface FormatSignatureItem {
   avgShares: number;
 }
 
-export async function GET() {
+export async function GET(request: Request) {
   try {
     const auth = await requireAuth();
     if (auth.error) return auth.error;
 
+    const { searchParams } = new URL(request.url);
+    const accountId = searchParams.get('accountId');
+
+    // Build where clause
+    const where: Record<string, unknown> = {};
+    if (accountId) {
+      where.socialAccountId = accountId;
+    }
+
     // Aggregate PostMetrics by mediaType (mapped from Post.format via linked posts)
-    // Also get unlinked metrics aggregated by mediaType
     const metrics = await prisma.postMetrics.findMany({
+      where,
       select: {
         views: true,
         likes: true,
