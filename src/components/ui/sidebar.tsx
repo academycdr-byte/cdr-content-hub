@@ -10,7 +10,6 @@ import {
   Target,
   Share2,
   DollarSign,
-  Settings,
   LogOut,
 } from 'lucide-react';
 import { signOut } from 'next-auth/react';
@@ -44,7 +43,6 @@ const NAV_SECTIONS: NavSection[] = [
     items: [
       { label: 'Comissões', href: '/commissions', icon: <DollarSign size={22} /> },
       { label: 'Social', href: '/social', icon: <Share2 size={22} /> },
-      { label: 'Configurações', href: '/settings/pillars', icon: <Settings size={22} /> },
     ],
   },
 ];

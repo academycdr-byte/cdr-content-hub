@@ -1,7 +1,8 @@
 'use client';
 
 import { useEffect, useState, useCallback } from 'react';
-import { DollarSign, Save, Info, Film, Images, Image, Clapperboard } from 'lucide-react';
+import { DollarSign, Save, Info, Film, Images, Image, Clapperboard, Settings } from 'lucide-react';
+import Link from 'next/link';
 import { cn } from '@/lib/utils';
 
 interface CpmConfig {
@@ -225,6 +226,25 @@ export default function CommissionsPage() {
             </div>
           );
         })}
+      </div>
+
+      {/* Configurações */}
+      <div className="mt-8 pt-6 border-t border-border-default">
+        <p className="text-label text-text-tertiary mb-3">Configurações</p>
+        <div className="flex flex-wrap gap-2">
+          <Link href="/settings/pillars" className="badge bg-bg-secondary text-text-secondary hover:bg-bg-hover transition-colors cursor-pointer">
+            Pilares de Conteúdo
+          </Link>
+          <Link href="/settings/checklists" className="badge bg-bg-secondary text-text-secondary hover:bg-bg-hover transition-colors cursor-pointer">
+            Checklists
+          </Link>
+          <Link href="/settings/dm-keywords" className="badge bg-bg-secondary text-text-secondary hover:bg-bg-hover transition-colors cursor-pointer">
+            DM Keywords
+          </Link>
+          <Link href="/settings/appearance" className="badge bg-bg-secondary text-text-secondary hover:bg-bg-hover transition-colors cursor-pointer">
+            Aparência
+          </Link>
+        </div>
       </div>
     </div>
   );
