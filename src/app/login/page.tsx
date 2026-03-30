@@ -4,6 +4,7 @@ import { useState, type FormEvent } from 'react';
 import { signIn } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
 import { Eye, EyeOff, Loader2 } from 'lucide-react';
+import Image from 'next/image';
 
 export default function LoginPage() {
   const router = useRouter();
@@ -45,12 +46,7 @@ export default function LoginPage() {
         <div className="p-8 md:p-10" style={{ background: 'var(--bg-card)', borderRadius: 'var(--radius-lg)', border: '1px solid var(--border)' }}>
           {/* Logo badge */}
           <div className="mb-8 text-center">
-            <div
-              className="mx-auto mb-4 flex h-12 w-12 items-center justify-center text-lg font-bold"
-              style={{ backgroundColor: 'var(--accent)', color: 'var(--text-inverted)', borderRadius: '12px' }}
-            >
-              CH
-            </div>
+            <Image src="/logo-cdr.jpg" alt="CDR" width={48} height={48} className="mx-auto mb-4 rounded-xl" />
             <h1 className="text-heading-2 text-text-primary">Bem-vindo de volta</h1>
             <p className="mt-1 text-sm text-text-secondary">CDR Group - Produção de Conteúdo</p>
           </div>

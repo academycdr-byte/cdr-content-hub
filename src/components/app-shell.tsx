@@ -4,6 +4,7 @@ import { useEffect, useState, useCallback } from 'react';
 import { useSession } from 'next-auth/react';
 import { usePathname, useRouter } from 'next/navigation';
 import { redirect } from 'next/navigation';
+import Image from 'next/image';
 import Sidebar from '@/components/ui/sidebar';
 import MobileBottomNav from '@/components/ui/mobile-bottom-nav';
 import SearchCommand from '@/components/ui/search-command';
@@ -103,12 +104,7 @@ export default function AppShell({ children }: AppShellProps) {
     return (
       <div className="flex h-screen items-center justify-center" style={{ backgroundColor: 'var(--bg-outer)' }}>
         <div className="flex flex-col items-center gap-4">
-          <div
-            className="h-10 w-10 rounded-xl flex items-center justify-center font-bold"
-            style={{ backgroundColor: 'var(--accent)', color: 'var(--text-inverted)' }}
-          >
-            CH
-          </div>
+          <Image src="/logo-cdr.jpg" alt="CDR" width={40} height={40} className="rounded-xl" />
           <div className="h-1 w-24 overflow-hidden rounded-full bg-bg-hover">
             <div className="h-full w-1/2 rounded-full animate-[shimmer_1s_ease-in-out_infinite]" style={{ backgroundColor: 'var(--accent)' }} />
           </div>
@@ -147,12 +143,7 @@ export default function AppShell({ children }: AppShellProps) {
         >
           {/* Left: Logo */}
           <div className="flex items-center gap-3">
-            <div
-              className="flex h-9 w-9 items-center justify-center text-xs font-bold"
-              style={{ backgroundColor: 'var(--accent)', color: '#fff', borderRadius: '12px' }}
-            >
-              CH
-            </div>
+            <Image src="/logo-cdr.jpg" alt="CDR" width={36} height={36} className="rounded-xl" />
             <span className="text-[15px] font-bold" style={{ color: 'var(--text-primary)' }}>
               Content Hub
             </span>
