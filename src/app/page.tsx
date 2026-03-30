@@ -720,46 +720,6 @@ export default function DashboardPage() {
               </div>
             )}
 
-            {/* ===== SERIES STATUS ===== */}
-            {stats.seriesStatus.length > 0 && (
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4 mb-6 sm:mb-8">
-                <div className="card p-6">
-                  <div className="flex items-center justify-between mb-4">
-                    <p className="text-label text-text-tertiary">Séries de Conteúdo</p>
-                    <Link
-                      href="/series"
-                      className="flex h-8 w-8 items-center justify-center rounded-lg bg-accent-surface hover:bg-accent-surface-hover transition-colors"
-                    >
-                      <ArrowRight size={16} className="text-accent" />
-                    </Link>
-                  </div>
-                  <div className="space-y-3">
-                    {stats.seriesStatus.map((s) => (
-                      <div key={s.id} className="flex items-center gap-3">
-                        <div
-                          className="h-3 w-3 rounded-full shrink-0"
-                          style={{ backgroundColor: s.color }}
-                        />
-                        <div className="flex-1 min-w-0">
-                          <p className="text-sm font-medium text-text-primary truncate">{s.name}</p>
-                          <p className="text-[10px] text-text-tertiary">
-                            EP {s.lastEpisode} {s.lastPublished ? `· ${new Date(s.lastPublished).toLocaleDateString('pt-BR', { day: '2-digit', month: 'short' })}` : ''}
-                          </p>
-                        </div>
-                        <span className={cn(
-                          'text-[10px] font-semibold px-1.5 py-0.5 rounded',
-                          s.status === 'on_track' && 'bg-success-surface text-success',
-                          s.status === 'overdue' && 'bg-error-surface text-error',
-                          s.status === 'paused' && 'bg-bg-hover text-text-tertiary',
-                        )}>
-                          {s.status === 'on_track' ? 'Em dia' : s.status === 'overdue' ? 'Atrasada' : 'Pausada'}
-                        </span>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              </div>
-            )}
 
             {/* ===== FORMAT SIGNATURE ===== */}
             <div className="mb-8">
