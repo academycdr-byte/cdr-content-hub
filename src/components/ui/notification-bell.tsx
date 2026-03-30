@@ -119,7 +119,7 @@ export default function NotificationBell() {
       {isOpen && (
         <div
           ref={panelRef}
-          className="absolute left-0 top-full mt-2 w-[340px] z-50 animate-scale-in"
+          className="absolute right-0 top-full mt-2 w-[340px] z-50 animate-scale-in"
           style={{
             background: 'var(--sidebar-bg, #0a0a0a)',
             border: '1px solid var(--sidebar-border)',
