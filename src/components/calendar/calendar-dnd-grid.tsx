@@ -21,7 +21,7 @@ interface CalendarDndGridProps {
   onTogglePublished?: (post: Post) => void;
 }
 
-const WEEKDAYS = ['Dom', 'Seg', 'Ter', 'Qua', 'Qui', 'Sex', 'Sáb'];
+const WEEKDAYS = ['Seg', 'Ter', 'Qua', 'Qui', 'Sex'];
 
 export default function CalendarDndGrid({
   year,
@@ -51,7 +51,7 @@ export default function CalendarDndGrid({
   return (
     <div className="card overflow-hidden">
       {/* Weekday Headers */}
-      <div className="grid grid-cols-7 border-b border-border-default">
+      <div className="grid grid-cols-5 border-b border-border-default">
         {WEEKDAYS.map((day) => (
           <div
             key={day}
@@ -62,27 +62,32 @@ export default function CalendarDndGrid({
         ))}
       </div>
 
-      {/* Calendar Grid */}
-      <div className="grid grid-cols-7">
-        {days.map((date, index) => {
-          const isCurrentMonth = date.getMonth() === month;
-          const dayPosts = getPostsForDay(date);
-          const socialEntries = getSocialEntriesForDay(date);
+      {/* Calendar Grid — weekdays only (Mon-Fri) */}
+      <div className="grid grid-cols-5">
+        {days
+          .filter((date) => {
+            const dow = date.getDay();
+            return dow !== 0 && dow !== 6; // exclude Sun (0) and Sat (6)
+          })
+          .map((date, index) => {
+            const isCurrentMonth = date.getMonth() === month;
+            const dayPosts = getPostsForDay(date);
+            const socialEntries = getSocialEntriesForDay(date);
 
-          return (
-            <DroppableDay
-              key={index}
-              date={date}
-              isCurrentMonth={isCurrentMonth}
-              posts={dayPosts}
-              socialEntries={socialEntries}
-              onDayClick={onDayClick}
-              onPostClick={onPostClick}
-              onDeletePost={onDeletePost}
-              onTogglePublished={onTogglePublished}
-            />
-          );
-        })}
+            return (
+              <DroppableDay
+                key={index}
+                date={date}
+                isCurrentMonth={isCurrentMonth}
+                posts={dayPosts}
+                socialEntries={socialEntries}
+                onDayClick={onDayClick}
+                onPostClick={onPostClick}
+                onDeletePost={onDeletePost}
+                onTogglePublished={onTogglePublished}
+              />
+            );
+          })}
       </div>
     </div>
   );
