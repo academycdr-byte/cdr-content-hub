@@ -143,12 +143,12 @@ export default function CreatePostModal({
       {/* Modal */}
       <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
         <div
-          className="w-full max-w-[480px] rounded-[20px] bg-bg-modal border border-border-default animate-scale-in"
+          className="w-full max-w-[480px] max-h-[90vh] flex flex-col rounded-[20px] bg-bg-modal border border-border-default animate-scale-in"
           style={{ boxShadow: 'var(--shadow-xl)' }}
           onClick={(e) => e.stopPropagation()}
         >
           {/* Header */}
-          <div className="flex items-center justify-between border-b border-border-default px-6 py-4">
+          <div className="flex items-center justify-between border-b border-border-default px-6 py-4 shrink-0">
             <h2 className="text-heading-2 text-text-primary">Novo Post</h2>
             <button
               onClick={onClose}
@@ -159,7 +159,7 @@ export default function CreatePostModal({
           </div>
 
           {/* Form */}
-          <form onSubmit={handleSubmit} className="p-6 space-y-5">
+          <form onSubmit={handleSubmit} className="p-6 space-y-5 overflow-y-auto">
             {/* Title */}
             <div>
               <label htmlFor="post-title" className="text-label text-text-secondary mb-2 block">
