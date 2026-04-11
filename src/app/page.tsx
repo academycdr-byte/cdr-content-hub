@@ -568,7 +568,7 @@ export default function DashboardPage() {
                 <div className="flex items-center justify-between mb-4">
                   <p className="text-label text-text-tertiary">Próximos Posts</p>
                   <Link
-                    href="/calendar"
+                    href="/pipeline"
                     className="flex h-8 w-8 items-center justify-center rounded-lg bg-accent-surface hover:bg-accent-surface-hover transition-colors"
                   >
                     <ArrowRight size={16} className="text-accent" />
@@ -617,7 +617,7 @@ export default function DashboardPage() {
                     <Clock size={24} className="text-text-tertiary mb-2" />
                     <p className="text-sm text-text-tertiary">Nenhum post agendado</p>
                     <Link
-                      href="/calendar"
+                      href="/pipeline"
                       className="text-xs text-accent hover:text-accent-hover mt-2 font-medium"
                     >
                       Agendar post

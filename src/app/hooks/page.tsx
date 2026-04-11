@@ -104,7 +104,7 @@ export default function HooksPage() {
     params.set('hook', hook.text);
     if (hook.pillarId) params.set('pillarId', hook.pillarId);
     if (hook.format !== 'ALL') params.set('format', hook.format);
-    router.push(`/calendar?${params.toString()}`);
+    router.push(`/pipeline?newPost=true&${params.toString()}`);
   }, [router]);
 
   const handleUpdateHook = useCallback(async (hookId: string, data: {

@@ -390,42 +390,6 @@ export const SERIES_FREQUENCIES = {
   variable: 'Variavel',
 } as const;
 
-// ===== Calendar Entry Types =====
-
-export const CalendarEntryType = {
-  INTERNAL: 'internal',
-  SOCIAL: 'social',
-} as const;
-export type CalendarEntryType = (typeof CalendarEntryType)[keyof typeof CalendarEntryType];
-
-export const SocialPlatform = {
-  INSTAGRAM: 'instagram',
-  TIKTOK: 'tiktok',
-} as const;
-export type SocialPlatform = (typeof SocialPlatform)[keyof typeof SocialPlatform];
-
-export interface CalendarEntry {
-  id: string;
-  type: CalendarEntryType;
-  title: string;
-  platform?: SocialPlatform;
-  accountName?: string;
-  accountId?: string;
-  thumbnailUrl?: string;
-  status: string;
-  format?: string;
-  metrics?: { views: number; likes: number; comments: number };
-  date: string;
-  postUrl?: string;
-  pillarColor?: string;
-  pillarName?: string;
-}
-
-export interface CalendarApiResponse {
-  entries: Record<string, CalendarEntry[]>;
-  accounts: Array<{ id: string; platform: SocialPlatform; username: string; displayName: string }>;
-}
-
 // ===== Sync Log Types =====
 
 export type SyncTrigger = 'cron' | 'webhook' | 'manual';
@@ -446,13 +410,6 @@ export interface SyncLog {
 }
 
 // ===== UI Types =====
-
-export interface CalendarDay {
-  date: Date;
-  isCurrentMonth: boolean;
-  isToday: boolean;
-  posts: Post[];
-}
 
 export interface ToastMessage {
   id: string;

@@ -74,10 +74,6 @@ export default function AppShell({ children }: AppShellProps) {
           if (pillars.length === 0) fetchPillars();
           setShowCreatePost(true);
           break;
-        case 'c':
-          e.preventDefault();
-          router.push('/calendar');
-          break;
         case 'p':
           e.preventDefault();
           router.push('/pipeline');

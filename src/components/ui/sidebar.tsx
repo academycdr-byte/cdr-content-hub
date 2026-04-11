@@ -4,7 +4,6 @@ import { usePathname } from 'next/navigation';
 import Link from 'next/link';
 import {
   LayoutDashboard,
-  Calendar,
   Lightbulb,
   BarChart3,
   Target,
@@ -32,7 +31,6 @@ const NAV_SECTIONS: NavSection[] = [
     title: 'Menu',
     items: [
       { label: 'Dashboard', href: '/', icon: <LayoutDashboard size={22} /> },
-      { label: 'Calendário', href: '/calendar', icon: <Calendar size={22} /> },
       { label: 'Ideias', href: '/hooks', icon: <Lightbulb size={22} /> },
       { label: 'Métricas', href: '/metrics', icon: <BarChart3 size={22} /> },
       { label: 'Metas', href: '/goals', icon: <Target size={22} /> },

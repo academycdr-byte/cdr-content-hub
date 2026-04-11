@@ -186,7 +186,7 @@ export default function IdeationPage() {
   }, [newIdeaText, addToast]);
 
   const handleCreatePostFromIdea = useCallback((idea: IdeationIdea) => {
-    // Navigate to calendar with the idea text as title
+    // Navigate to pipeline with the idea text as title
     const params = new URLSearchParams();
     params.set('title', idea.text);
     if (idea.pillarId) params.set('pillarId', idea.pillarId);
